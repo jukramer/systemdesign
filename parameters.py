@@ -1,0 +1,9 @@
+MAX_PAYLOAD_MASS = 1010 # [kg]
+M_CRUISE = 0.68 # @ 41000ft
+
+TAKEOFF_DIST = 1250 # [m]
+LANDING_DIST = 620 # [m]
+
+RANGE_DESIGN = 4482e3 # [m] @ 1010kg
+RANGE_HARMONIC = 6.1e6 # [m] @ 1010kg
+RANGE_FERRY = 7e6 # [m] 
