@@ -13,9 +13,9 @@ class Calc:
         return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2
     
     def alphaT(self, T, P):
-        pt = P*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)**(GAMMA/(GAMMA-1))   
+        pt = P*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)**(GAMMA/(GAMMA-1))
         Tt = T*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)
-        
+
         deltat = pt/P_SL 
         thetat = Tt/T_SL
         alphat = None
@@ -30,9 +30,9 @@ class Calc:
                 alphat = deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE))
             elif thetat >= THETA_BREAK:
                 alphat = deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE) - 3*(thetat-THETA_BREAK)/(1.5+MACH_CRUISE))
-                
+
         return alphat
-    
+
     def TSCruiseSpeed(self, beta,  WS):
         alphat = self.alphaT(T_CR, P_CR)
         V_cr = MACH_CRUISE * np.sqrt(GAMMA*R*T_CR)
@@ -46,12 +46,16 @@ class Calc:
 
     def TSLToF(self, beta, WS):
         alphat = self.alphaT(T_SL, P_SL)
-        
+
         if N_E > 1:
             return 1.15*alphat*np.sqrt(N_E/(N_E-1)*WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e))+N_E/(N_E-1)*4*H2/TAKEOFF_DIST
 
+    def TSClimbGradient(self,beta,WS,c_gr):
+
+        return N_e/(N_e-1)*beta/alphat*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
+
     def drawMatchingDiagram(self):
         pass
-    
+
             
     
