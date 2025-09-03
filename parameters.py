@@ -17,6 +17,9 @@ CL_MAX_CR = 1.6 # Cruise
 CL_MAX_TO = 1.9 # Takeoff
 CL_MAX_L = 2.1 # Landing
 
+C_LFL = 0.45 # FAR 25 0.6 for 23
+V_APP = 60 # [m/s] estimate
+
 # ENVIRONMENTAL CONDITIONS
 RHO = 1.225 # [kg/m^3]
 n_v = 0.85
