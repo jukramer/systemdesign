@@ -7,3 +7,5 @@ LANDING_DIST = 620 # [m]
 RANGE_DESIGN = 4482e3 # [m] @ 1010kg
 RANGE_HARMONIC = 6.1e6 # [m] @ 1010kg
 RANGE_FERRY = 7e6 # [m] 
+
+n_v = 0.85
