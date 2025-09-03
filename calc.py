@@ -50,9 +50,14 @@ class Calc:
         if N_E > 1:
             return 1.15*alphat*np.sqrt(N_E/(N_E-1)*WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e))+N_E/(N_E-1)*4*H2/TAKEOFF_DIST
 
-    def TSClimbGradient(self,beta,WS,c_gr):
+        return None
 
-        return N_e/(N_e-1)*beta/alphat*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
+    def TSClimbGradient(self,beta,WS,c_gr,OEI):
+        if OEI:
+            oei=N_E/(N_E-1)
+        else:
+            oei=1
+        return oei*beta/alphat*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
 
     def drawMatchingDiagram(self):
         pass
