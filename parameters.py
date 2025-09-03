@@ -10,14 +10,14 @@ RANGE_HARMONIC = 6.1e6 # [m] @ 1010kg
 RANGE_FERRY = 7e6 # [m] 
 
 # AIRCRAFT PROPERTIES - FOR NOW ASSUME FAR/25
-M_OEW = 10000 # [kg]
-M_MTOW = 12000 # [kg]
+M_OEW = 10000 # [kg] DUMMY
+M_MTOW = 12000 # [kg] DUMMY
 
 CL_MAX_CR = 1.6 # Cruise
 CL_MAX_TO = 1.9 # Takeoff
 CL_MAX_L = 2.1 # Landing
-AR = 10 # Aspect ratio
-CD_0 = 0.2 # CD0
+AR = 10 # Aspect ratio DUMMY
+CD_0 = 0.2 # CD0 DUMMY
 
 C_LFL = 0.6 # FAR 25 0.6 for 23
 V_APP = 60 # [m/s] estimate
@@ -34,6 +34,7 @@ H2 = 15 # from adsee reader, for normal cs23 ac
 RHO_SL = 1.225 # [kg/m^3]
 GAMMA = 1.4 # specific heat ratio in air
 R = 287 # gas constant in air
+
 n_v = 0.85
 
 alt_cr = 41000 #ft = 12496.8m
@@ -43,10 +44,10 @@ T_CR = 216.65 # [K]
 P_CR = 17868.132 # [Pa]
 RHO_CR = 0.287368 # [kg/m**3]
 
-e = 0.95  #OSWALD EFFICIENCY FACTOR
+e = 0.95  #OSWALD EFFICIENCY FACTOR DUMMY
 
 #CLIMB RATE AND GRADIENTS
-c = 5 #dummy [m/s]
+c = 5 # [m/s] DUMMY
 
 
 
