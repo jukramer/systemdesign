@@ -31,6 +31,12 @@ GAMMA = 1.4 # specific heat ratio in air
 
 n_v = 0.85
 
+# ENVIRONMENTAL CONDITIONS AT CRUISE ALTITUDE
+alt_cr = 41000 #ft
+    = 12496.8 #m
+Temp_cr = 216.65 #K
+p_cr = 17868.132 #Pa
+rho_cr = 0.287368 #kg/m^3
 T_SL = 288.15 # [K]
 P_SL = 101325 # [Pa]
 T_CR = 200

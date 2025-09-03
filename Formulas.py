@@ -21,4 +21,6 @@ page 80
 beta = m/m_MTO
 
 LANDING_DIST = 1/0.6 * (AIR_DIST * GROUNDROLL_DIST) #p149
-LANDING_DIST =
+
+
+
