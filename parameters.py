@@ -24,6 +24,11 @@ V_APP = 60 # [m/s] estimate
 
 B = 5 # Bypass ratio, assumed
 THETA_BREAK = 1.07 # assumed
+N_E = 2 # number of engines
+KT = 0.85 # from adsee reader
+
+H2 = 15 # from adsee reader, for normal cs23 ac
+
 
 # ENVIRONMENTAL CONDITIONS
 RHO_SL = 1.225 # [kg/m^3]
@@ -31,7 +36,6 @@ GAMMA = 1.4 # specific heat ratio in air
 R = 287 # gas constant in air
 n_v = 0.85
 
-# ENVIRONMENTAL CONDITIONS AT CRUISE ALTITUDE
 alt_cr = 41000 #ft = 12496.8m
 T_SL = 288.15 # [K]
 P_SL = 101325 # [Pa]
