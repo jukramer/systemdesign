@@ -1,6 +1,6 @@
 # REQUIREMENTS
-MAX_PAYLOAD_MASS = 1010 # [kg]
-M_CRUISE = 0.68 # @ 41000ft
+M_MAX_PL= 1010 # [kg]
+MACH_CRUISE = 0.68 # @ 41000ft
 
 TAKEOFF_DIST = 1250 # [m]
 LANDING_DIST = 620 # [m]
@@ -9,7 +9,15 @@ RANGE_DESIGN = 4482e3 # [m] @ 1010kg
 RANGE_HARMONIC = 6.1e6 # [m] @ 1010kg
 RANGE_FERRY = 7e6 # [m] 
 
+# AIRCRAFT PROPERTIES - FOR NOW ASSUME FAR/25
+M_OEW = 10000 # [kg]
+M_MTOW = 12000 # [kg]
+
+CL_MAX_CR = 1.6 # Cruise
+CL_MAX_TO = 1.9 # Takeoff
+CL_MAX_L = 2.1 # Landing
 
 # ENVIRONMENTAL CONDITIONS
 RHO = 1.225 # [kg/m^3]
 n_v = 0.85
+
