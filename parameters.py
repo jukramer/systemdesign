@@ -28,18 +28,15 @@ THETA_BREAK = 1.07 # assumed
 # ENVIRONMENTAL CONDITIONS
 RHO_SL = 1.225 # [kg/m^3]
 GAMMA = 1.4 # specific heat ratio in air
-
+R = 287 # gas constant in air
 n_v = 0.85
 
 # ENVIRONMENTAL CONDITIONS AT CRUISE ALTITUDE
-alt_cr = 41000 #ft
-    = 12496.8 #m
-Temp_cr = 216.65 #K
-p_cr = 17868.132 #Pa
-rho_cr = 0.287368 #kg/m^3
+alt_cr = 41000 #ft = 12496.8m
 T_SL = 288.15 # [K]
 P_SL = 101325 # [Pa]
-T_CR = 200
-P_CR = 50000
+T_CR = 216.65
+P_CR = 17868.132
+RHO_CR = 0.287368
 
 
