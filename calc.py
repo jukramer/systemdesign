@@ -16,7 +16,7 @@ class Calc:
         pt = P*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)**(GAMMA/(GAMMA-1))
         Tt = T*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)
 
-        deltat = pt/P_SL 
+        deltat = pt/P_SL
         thetat = Tt/T_SL
         alphat = None
         
@@ -46,11 +46,9 @@ class Calc:
 
     def TSLToF(self, beta, WS):
         alphat = self.alphaT(T_SL, P_SL)
+        return 1.15*alphat*np.sqrt(WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e))+4*H2/TAKEOFF_DIST
 
-        if N_E > 1:
-            return 1.15*alphat*np.sqrt(N_E/(N_E-1)*WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e))+N_E/(N_E-1)*4*H2/TAKEOFF_DIST
-
-        return None
+    def TSClimbGradient(self,beta,WS,c_gr):
 
     def TSClimbGradient(self,beta,WS,c_gr,OEI):
         if OEI:
@@ -60,7 +58,3 @@ class Calc:
         return oei*beta/alphat*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
 
     def drawMatchingDiagram(self):
-        pass
-
-            
-    
