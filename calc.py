@@ -30,8 +30,10 @@ class Calc:
                 alphat = deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE))
             elif thetat >= THETA_BREAK:
                 alphat = deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE) - 3*(thetat-THETA_BREAK)/(1.5+MACH_CRUISE))
-                
-        
+
+        V_cr = MACH_CRUISE* sqrt(GAMMA*R*T_CR)
+
+        return beta/alphat*(CD_0/2*rho_cr*V_cr)
         
            
     
