@@ -6,8 +6,8 @@ class Calc:
     def __init__(self):
         pass
     
-    def WSMaxApproach(self, beta): # 1.23 gone for CS23
-        return 1/beta*RHO_SL/2*(V_APP/1.23)**2*CL_MAX_L
+    def WSMaxApproach(self, beta):
+        return 1/beta*RHO_SL/2*(V_APP)**2*CL_MAX_L
         
     def WSMaxLField(self, beta):
         return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2

@@ -19,7 +19,7 @@ CL_MAX_L = 2.1 # Landing
 AR = 10 # Aspect ratio
 CD_0 = 0.2 # CD0
 
-C_LFL = 0.45 # FAR 25 0.6 for 23
+C_LFL = 0.6 # FAR 25 0.6 for 23
 V_APP = 60 # [m/s] estimate
 
 B = 5 # Bypass ratio, assumed
