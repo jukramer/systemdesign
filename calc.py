@@ -12,7 +12,7 @@ class Calc:
     def WSMaxLField(beta):
         return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2
     
-    def CruiseSpeed(beta):
+    def TSCruiseSpeed(beta,WS):
         pt = P_CR*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)**(GAMMA/(GAMMA-1))   
         Tt = T_CR*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)
         
@@ -31,9 +31,9 @@ class Calc:
             elif thetat >= THETA_BREAK:
                 alphat = deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE) - 3*(thetat-THETA_BREAK)/(1.5+MACH_CRUISE))
 
-        V_cr = MACH_CRUISE* sqrt(GAMMA*R*T_CR)
+        V_cr = MACH_CRUISE * np.sqrt(GAMMA*R*T_CR)
 
-        return beta/alphat*(CD_0/2*rho_cr*V_cr)
+        return beta/alphat*((CD_0/2*RHO_CR*V_cr/(beta*WS))+(beta*WS/(np.pi*AR*e/2*RHO_CR*V_cr)))
         
            
     
