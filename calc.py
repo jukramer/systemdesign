@@ -6,13 +6,13 @@ class Calc:
     def __init__(self):
         pass
     
-    def WSMaxApproach(beta): # 1.23 gone for CS23
+    def WSMaxApproach(self, beta): # 1.23 gone for CS23
         return 1/beta*RHO_SL/2*(V_APP/1.23)**2*CL_MAX_L
         
-    def WSMaxLField(beta):
+    def WSMaxLField(self, beta):
         return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2
     
-    def TSCruiseSpeed(beta,WS):
+    def TSCruiseSpeed(self, beta, WS):
         pt = P_CR*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)**(GAMMA/(GAMMA-1))   
         Tt = T_CR*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)
         
@@ -33,9 +33,10 @@ class Calc:
 
         V_cr = MACH_CRUISE * np.sqrt(GAMMA*R*T_CR)
 
-        return beta/alphat*((CD_0/2*RHO_CR*V_cr/(beta*WS))+(beta*WS/(np.pi*AR*e/2*RHO_CR*V_cr)))
+        return beta /alphat*((CD_0/2*RHO_CR*V_cr/(beta * WS))+(beta * WS/(np.pi*AR*e/2*RHO_CR*V_cr)))
         
-           
+    def TSRateofClimb(self,beta,WS):
+
     
             
     
