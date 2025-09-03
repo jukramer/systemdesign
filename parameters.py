@@ -12,3 +12,4 @@ RANGE_FERRY = 7e6 # [m]
 
 # ENVIRONMENTAL CONDITIONS
 RHO = 1.225 # [kg/m^3]
+n_v = 0.85
