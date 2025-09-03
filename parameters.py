@@ -16,7 +16,7 @@ M_MTOW = 12000 # [kg]
 CL_MAX_CR = 1.6 # Cruise
 CL_MAX_TO = 1.9 # Takeoff
 CL_MAX_L = 2.1 # Landing
-AR = 5 # Aspect ratio
+AR = 10 # Aspect ratio
 CD_0 = 0.2 # CD0
 
 C_LFL = 0.45 # FAR 25 0.6 for 23
