@@ -53,4 +53,4 @@ class Calc:
         return N_E/(N_E-1)*beta/alphat*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
 
     def drawMatchingDiagram(self):
-        
+        pass
