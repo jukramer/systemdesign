@@ -29,6 +29,10 @@ KT = 0.85 # from adsee reader
 
 H2 = 15 # from adsee reader, for normal cs23 ac
 
+BETA_TO = 1 # Takeoff mass fraction
+BETA_CR = 1
+BETA_L = 0.85 # Landing mass fraction
+
 
 # ENVIRONMENTAL CONDITIONS
 RHO_SL = 1.225 # [kg/m^3]
