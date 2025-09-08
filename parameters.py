@@ -54,7 +54,7 @@ P_CG = 101325 # [Pa]
 RHO_SL = 1.225 # [kg/m^3]
 
 #CLIMB RATE
-c = 5 # [m/s] DUMMY
+c = 18 # [m/s] DUMMY
 T_CR = 216.65 # [K]
 P_CR = 17868.132 # [Pa]
 RHO_CR = 0.287368 # [kg/m**3]
