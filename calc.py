@@ -57,7 +57,7 @@ class Calc:
             oei=N_E/(N_E-1)
         else:
             oei=1
-        return oei*beta/alphat*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
+        return oei*beta/alphaT*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
 
     def drawMatchingDiagram(self):
         while True:
