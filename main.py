@@ -4,8 +4,9 @@ from parameters import *
 from calc import *
 
 if __name__ == '__main__':
+    # DRAWING PARAMS
+    WS_MIN = 300
+    WS_MAX = 4000
+    
     calc = Calc()
-    WSList = np.arange(100, 4000, 5)
-    WSMaxApp = calc.WSMaxApproach(0.85)
-    WSMaxFld = calc.WSMaxLField(0.85)
-    TSCrsList = calc.TSCruiseSpeed(0.95, WSList)
+    calc.drawMatchingDiagram(WS_MIN, WS_MAX)

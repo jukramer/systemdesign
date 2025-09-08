@@ -18,6 +18,7 @@ CL_MAX_TO = 1.9 # Takeoff
 CL_MAX_L = 2.1 # Landing
 AR = 10 # Aspect ratio DUMMY
 CD_0 = 0.2 # CD0 DUMMY
+e = 0.95  #OSWALD EFFICIENCY FACTOR DUMMY
 
 C_LFL = 0.45 # FAR 25: 0.45, FAR 23: 0.6
 V_APP = 60 # [m/s] estimate
@@ -30,12 +31,10 @@ KT = 0.85 # from adsee reader
 H2 = 15 # from adsee reader, for normal cs23 ac
 
 BETA_TO = 1 # Takeoff mass fraction
-BETA_CR = 1
+BETA_CR = 1 # Cruise mass fraction
 BETA_L = 0.85 # Landing mass fraction
 
-
 # ENVIRONMENTAL CONDITIONS
-RHO_SL = 1.225 # [kg/m^3]
 GAMMA = 1.4 # specific heat ratio in air
 R = 287 # gas constant in air
 
@@ -44,11 +43,12 @@ n_v = 0.85
 alt_cr = 41000 #ft = 12496.8m
 T_SL = 288.15 # [K]
 P_SL = 101325 # [Pa]
+RHO_SL = 1.225 # [kg/m^3]
+
 T_CR = 216.65 # [K]
 P_CR = 17868.132 # [Pa]
-RHO_CR = 0.287368 # [kg/m**3]
+RHO_CR = 0.287368 # [kg/m^3]
 
-e = 0.95  #OSWALD EFFICIENCY FACTOR DUMMY
 
 #CLIMB RATE AND GRADIENTS
 c = 5 # [m/s] DUMMY
