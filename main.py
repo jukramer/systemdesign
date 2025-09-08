@@ -5,7 +5,7 @@ from calc import *
 
 if __name__ == '__main__':
     # DRAWING PARAMS
-    WS_MIN = 300
+    WS_MIN = 0
     WS_MAX = 4000
     
     calc = Calc()
