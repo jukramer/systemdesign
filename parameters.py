@@ -38,8 +38,6 @@ BETA_L = 0.85 # Landing mass fraction
 GAMMA = 1.4 # specific heat ratio in air
 R = 287 # gas constant in air
 
-n_v = 0.85
-
 alt_cr = 41000 #ft = 12496.8m
 T_SL = 288.15 # [K]
 P_SL = 101325 # [Pa]
@@ -50,8 +48,15 @@ P_CR = 17868.132 # [Pa]
 RHO_CR = 0.287368 # [kg/m^3]
 
 
-#CLIMB RATE AND GRADIENTS
-c = 5 # [m/s] DUMMY
+#CLIMB GRADIENTS
+T_CG = 288.15 # [K]
+P_CG = 101325 # [Pa]
+RHO_SL = 1.225 # [kg/m^3]
 
+#CLIMB RATE
+c = 5 # [m/s] DUMMY
+T_CR = 216.65 # [K]
+P_CR = 17868.132 # [Pa]
+RHO_CR = 0.287368 # [kg/m**3]
 
 

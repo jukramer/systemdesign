@@ -6,9 +6,19 @@ class Calc:
     def __init__(self):
         pass
     
-    def alphaT(self, T, P):
-        pt = P*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)**(GAMMA/(GAMMA-1))
-        Tt = T*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)
+    def WSMaxApproach(self, beta): # /1.23 for FAR 25
+        return 1/beta*RHO_SL/2*(V_APP/1.23)**2*CL_MAX_L
+        
+    def WSMaxLField(self, beta):
+        return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2
+    
+    def alphaT(self,WS, T, P, rho,CL):
+        V_alpha = np.sqrt(WS*2/rho*1/CL)
+
+        MACH = V_alpha/np.sqrt(GAMMA*R*T)
+
+        pt = P*(1+(GAMMA-1)/GAMMA*MACH**2)**(GAMMA/(GAMMA-1))
+        Tt = T*(1+(GAMMA-1)/GAMMA*MACH**2)
 
         deltat = pt/P_SL
         thetat = Tt/T_SL
