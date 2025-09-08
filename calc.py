@@ -48,8 +48,6 @@ class Calc:
         alphat = self.alphaT(T_SL, P_SL)
         return 1.15*alphat*np.sqrt(WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e))+4*H2/TAKEOFF_DIST
 
-    def TSClimbGradient(self, beta, WS ,c_gr):
-
     def TSClimbGradient(self,beta,WS,c_gr,OEI):
         if OEI:
             oei=N_E/(N_E-1)
