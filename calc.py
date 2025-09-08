@@ -6,8 +6,8 @@ class Calc:
     def __init__(self):
         pass
     
-    def WSMaxApproach(self, beta):
-        return 1/beta*RHO_SL/2*(V_APP)**2*CL_MAX_L
+    def WSMaxApproach(self, beta): # /1.23 for FAR 25
+        return 1/beta*RHO_SL/2*(V_APP/1.23)**2*CL_MAX_L
         
     def WSMaxLField(self, beta):
         return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2
@@ -33,7 +33,7 @@ class Calc:
 
         return alphat
 
-    def TSCruiseSpeed(self, beta,  WS):
+    def TSCruiseSpeed(self, beta, WS):
         alphat = self.alphaT(T_CR, P_CR)
         V_cr = MACH_CRUISE * np.sqrt(GAMMA*R*T_CR)
         print(V_cr)
@@ -48,7 +48,7 @@ class Calc:
         alphat = self.alphaT(T_SL, P_SL)
         return 1.15*alphat*np.sqrt(WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e))+4*H2/TAKEOFF_DIST
 
-    def TSClimbGradient(self,beta,WS,c_gr):
+    def TSClimbGradient(self, beta, WS ,c_gr):
 
     def TSClimbGradient(self,beta,WS,c_gr,OEI):
         if OEI:
@@ -58,3 +58,5 @@ class Calc:
         return oei*beta/alphat*(c_gr/100+2*np.sqrt(CD_0/(np.pi*AR*e)))
 
     def drawMatchingDiagram(self):
+        while True:
+            print('calvin rans is a bum')
