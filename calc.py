@@ -13,8 +13,10 @@ class Calc:
         return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2
     
     def alphaT(self, T, P):
-        pt = P*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)**(GAMMA/(GAMMA-1))
-        Tt = T*(1+(GAMMA-1)/GAMMA*MACH_CRUISE**2)
+        MACH = np.sqrt()
+
+        pt = P*(1+(GAMMA-1)/GAMMA*MACH**2)**(GAMMA/(GAMMA-1))
+        Tt = T*(1+(GAMMA-1)/GAMMA*MACH**2)
 
         deltat = pt/P_SL
         thetat = Tt/T_SL
@@ -44,7 +46,7 @@ class Calc:
         alphat = self.alphaT(200, 50000)
         return beta/alphat*(np.sqrt(c**2*RHO_SL/(2*beta*WS)*np.sqrt(CD_0*np.pi*AR*e))+2*np.sqrt(CD_0/(np.pi*AR*e)))
 
-    def TSLToF(self, beta, WS):
+    def TSToFL(self, beta, WS):
         alphat = self.alphaT(T_SL, P_SL)
         return 1.15*alphat*np.sqrt(WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e))+4*H2/TAKEOFF_DIST
 
