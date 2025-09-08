@@ -12,8 +12,10 @@ class Calc:
     def WSMaxLField(self, beta):
         return 1/beta*LANDING_DIST/C_LFL*RHO_SL*CL_MAX_L/2
     
-    def alphaT(self, T, P):
-        MACH = np.sqrt()
+    def alphaT(self,WS, T, P, rho,CL):
+        V_alpha = np.sqrt(WS*2/rho*1/CL)
+
+        MACH = V_alpha/np.sqrt(GAMMA*R*T)
 
         pt = P*(1+(GAMMA-1)/GAMMA*MACH**2)**(GAMMA/(GAMMA-1))
         Tt = T*(1+(GAMMA-1)/GAMMA*MACH**2)
