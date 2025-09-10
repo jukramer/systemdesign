@@ -72,8 +72,8 @@ class Calc:
         else:
             return beta/alphat*(climbgrad/V+2*np.sqrt(CD_0/(np.pi*AR*e)))
     
-    def drawMatchingDiagram(self, WS_MIN, WS_MAX):
-        WS_VALS = np.arange(WS_MIN, WS_MAX, 100)
+    def drawMatchingDiagram(self, WS_MIN, WS_MAX, WS_INTRVL):
+        WS_VALS = np.arange(WS_MIN, WS_MAX, WS_INTRVL)
         
         # Approach/Landing Constraints
         WS_MAX_APP = self.WSMaxApproach(0.85) # 0.85 assumed
@@ -90,6 +90,7 @@ class Calc:
         TS_VALS_CLIMBGRAD_8 = self.TSClimbGradient(1, WS_VALS, CL_MAX_TO, True, 0.012)
         TS_VALS_CLIMBGRAD_9 = self.TSClimbGradient(1, WS_VALS, CL_MAX_L, False, 0.021)
         
+        # Plotting
         plt.xlim((WS_MIN, WS_MAX))
         
         plt.axvline(WS_MAX_APP, color='#236ee8', label='Stall', zorder=2)
@@ -104,16 +105,49 @@ class Calc:
         plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_8, color="#B1FF14", label='Climb Gradient REQ_8', zorder=2)
         plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_9, color="#1FCF62", label='Climb Gradient REQ_9', zorder=2)
         
-        a = np.maximum.reduce(np.array([TS_VALS_CR, TS_VALS_ROC, TS_VALS_TAKEOFF, TS_VALS_CLIMBGRAD_6, TS_VALS_CLIMBGRAD_7, TS_VALS_CLIMBGRAD_8, TS_VALS_CLIMBGRAD_9]))
-        print(a)
-        plt.fill_betweenx(a, 1, min(WS_MAX_APP, WS_MAX_LAND))
+        # Max values of all TS curves
+        TS_VALS_MAX = np.maximum.reduce(np.array([TS_VALS_CR, TS_VALS_ROC, TS_VALS_TAKEOFF, TS_VALS_CLIMBGRAD_6, TS_VALS_CLIMBGRAD_7, TS_VALS_CLIMBGRAD_8, TS_VALS_CLIMBGRAD_9]))
+        print(TS_VALS_MAX.shape, WS_VALS.shape)
         
+        # WS and TW values spanning design space
+        WS_VALS_RED, TS_VALS_MAX_RED = self.designSpace(WS_MIN, WS_INTRVL, WS_MAX_APP, WS_MAX_LAND, TS_VALS_MAX)
+        plt.fill_between(WS_VALS_RED, TS_VALS_MAX_RED, max(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)])*np.ones_like(TS_VALS_MAX_RED), color="#f7d7d9")
         plt.scatter(2084, 0.55, color='#ff0000', edgecolors='black', label='Design Point', zorder=3)
         
+        # Labeling
         plt.legend(title='Constraints')
         plt.xlabel(xlabel='Wing Loading [N/m$^2$]')
         plt.ylabel(ylabel='Thrust-to-Weight Ratio [-]')
-    
+        designSpaceLabelPos = (np.mean((min(WS_VALS_RED), max(WS_VALS_RED))), # x
+                               np.mean((min(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)]), max(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)])))) # y
+        print(designSpaceLabelPos)
+        plt.text(*designSpaceLabelPos, 'Design Space', horizontalalignment='center', color="#000000")
+        
         plt.show()
         
         # if I have time: function to draw hatchings next to lines
+        
+    def designSpace(self, WS_MIN, WS_INTRVL, WS_MAX_APP, WS_MAX_LAND, TS_VALS_MAX):        
+        WS_MAX = min(WS_MAX_APP, WS_MAX_LAND)
+        WS_VALS_RED = np.arange(WS_MIN, WS_MAX, WS_INTRVL)
+        N_VALS = len(WS_VALS_RED)
+        
+        TS_VALS_MAX_RED = TS_VALS_MAX[:N_VALS]
+        
+        WS_MAX_POINT = np.array((WS_MAX, TS_VALS_MAX[N_VALS])).reshape(-1, 1)
+        print(WS_MAX_POINT.shape)
+        POINTS = np.vstack((WS_VALS_RED.T, TS_VALS_MAX_RED.T))
+        POINTS = np.hstack((POINTS, WS_MAX_POINT))
+
+        print(POINTS.shape)
+        # POINTS = np.vstack((POINTS, np.array(WS_MAX, TS_VALS_MAX[N_VALS])))
+        # print(np.array((WS_MAX, TS_VALS_MAX[N_VALS])).shape)
+        # print(POINTS.shape)
+        
+        # POINTS = None
+        # WS_VALS_DSPACE = np.arange(WS_MIN, WS)
+        
+        return POINTS[0,], POINTS[1,]
+        
+        
+        
