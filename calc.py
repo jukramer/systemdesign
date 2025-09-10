@@ -80,7 +80,7 @@ class Calc:
         WS_MAX_LAND = self.WSMaxLField(0.85)
         
         # TS Cruise/ROC/Takeoff
-        # TS_VALS_CR = self.TSCruiseSpeed(0.95, WS_VALS) # 0.95 assumed
+        TS_VALS_CR = self.TSCruiseSpeed(0.95, WS_VALS) # 0.95 assumed
         TS_VALS_ROC = self.TSRateofClimb(1, WS_VALS) # 1 assumed
         TS_VALS_TAKEOFF = self.TSToF(1, WS_VALS) # 1 assumed
         
@@ -92,16 +92,28 @@ class Calc:
         
         plt.xlim((WS_MIN, WS_MAX))
         
-        plt.axvline(WS_MAX_APP)
-        plt.axvline(WS_MAX_LAND)
+        plt.axvline(WS_MAX_APP, color='#236ee8', label='Stall', zorder=2)
+        plt.axvline(WS_MAX_LAND, color="#be18f0", label='Landing Field', zorder=2)
         
-        # plt.plot(WS_VALS, TS_VALS_CR)
+        plt.plot(WS_VALS, TS_VALS_CR, color="#0FCBFF", label='Cruise', zorder=2)
         
-        plt.plot(WS_VALS, TS_VALS_ROC)
-        plt.plot(WS_VALS, TS_VALS_TAKEOFF)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_6)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_7)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_8)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_9)
+        plt.plot(WS_VALS, TS_VALS_ROC, color="#1E6E10", label='Rate of Climb', zorder=2)
+        plt.plot(WS_VALS, TS_VALS_TAKEOFF, color="#FF3C3C", label='Takeoff Field', zorder=2)
+        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_6, color="#FF8A1D", label='Climb Gradient REQ_6', zorder=2)
+        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_7, color="#FFE100", label='Climb Gradient REQ_7', zorder=2)
+        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_8, color="#B1FF14", label='Climb Gradient REQ_8', zorder=2)
+        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_9, color="#1FCF62", label='Climb Gradient REQ_9', zorder=2)
         
+        a = np.maximum.reduce(np.array([TS_VALS_CR, TS_VALS_ROC, TS_VALS_TAKEOFF, TS_VALS_CLIMBGRAD_6, TS_VALS_CLIMBGRAD_7, TS_VALS_CLIMBGRAD_8, TS_VALS_CLIMBGRAD_9]))
+        print(a)
+        plt.fill_betweenx(a, 1, min(WS_MAX_APP, WS_MAX_LAND))
+        
+        plt.scatter(2084, 0.55, color='#ff0000', edgecolors='black', label='Design Point', zorder=3)
+        
+        plt.legend(title='Constraints')
+        plt.xlabel(xlabel='Wing Loading [N/m$^2$]')
+        plt.ylabel(ylabel='Thrust-to-Weight Ratio [-]')
+    
         plt.show()
+        
+        # if I have time: function to draw hatchings next to lines
