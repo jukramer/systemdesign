@@ -28,7 +28,7 @@ THETA_BREAK = 1.07 # assumed, from reader
 N_E = 2 # number of engines
 KT = 0.85 # from adsee reader
 
-H2 = 11 # from adsee reader, for normal cs25 ac
+H2 = 11 # [m] from adsee reader, for normal cs25 ac
 
 BETA_TO = 1 # Takeoff mass fraction
 BETA_CR = 1 # Cruise mass fraction
