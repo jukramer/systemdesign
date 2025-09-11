@@ -60,7 +60,7 @@ class Calc:
 
     def TSToF(self, beta, WS): # takeoff field length
         alphat = self.alphaT(WS, T_SL, P_SL, RHO_SL, CL_MAX_TO) # SL T/P Vals
-        return 1.15*alphat*np.sqrt(WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e)) + 4*H2/TAKEOFF_DIST
+        return 1.15/alphat*np.sqrt(WS/(TAKEOFF_DIST*KT*RHO_SL*9.80665*np.pi*AR*e)) + 4*H2/TAKEOFF_DIST
 
     def TSClimbGradient(self, beta, WS, CL, OEI, climbgrad):
         alphat = self.alphaT(WS, T_SL, P_SL, RHO_SL, CL) # SL T/P Vals
