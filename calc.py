@@ -6,7 +6,6 @@ from parameters import *
 class Calc:
     def __init__(self):
         pass
-
     
     def alphaT(self, WS, T, P, rho, CL, MACH = None):
         V_alpha = np.sqrt(WS*2/rho*1/CL)
@@ -24,21 +23,11 @@ class Calc:
         alphat = None
     
         if B < 5:
-            # if thetat < THETA_BREAK:
-            #     alphat = deltat
-            # elif thetat >= THETA_BREAK:
-            #     alphat = deltat*(1-2.1*(thetat-THETA_BREAK)/THETA_BREAK)   
             alphat = np.where(thetat<THETA_BREAK, deltat, deltat*(1-2.1*(thetat-THETA_BREAK)/THETA_BREAK))
             
         elif B >= 5:
-            # if theta < THETA_BREAK:
-            #     alphat[i] = deltat[i]*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE))
-            # elif theta >= THETA_BREAK:
-            #     alphat[i] = deltat[i]*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE) - 3*(thetaval-THETA_BREAK)/(1.5+MACH_CRUISE))
-
             alphat = np.where(thetat < THETA_BREAK, deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE)), 
                               deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE) - 3*(thetat-THETA_BREAK)/(1.5+MACH_CRUISE)))
-
 
         return alphat
     
