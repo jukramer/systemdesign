@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import colorsys as cs
 from parameters import *
 
 class Calc:
@@ -90,42 +91,57 @@ class Calc:
         TS_VALS_CLIMBGRAD_8 = self.TSClimbGradient(1, WS_VALS, CL_MAX_TO, True, 0.012)
         TS_VALS_CLIMBGRAD_9 = self.TSClimbGradient(1, WS_VALS, CL_MAX_L, False, 0.021)
         
-        # Plotting
-        plt.xlim((WS_MIN, WS_MAX))
-        
-        plt.axvline(WS_MAX_APP, color='#236ee8', label='Stall', zorder=2)
-        plt.axvline(WS_MAX_LAND, color="#be18f0", label='Landing Field', zorder=2)
-        
-        plt.plot(WS_VALS, TS_VALS_CR, color="#0FCBFF", label='Cruise', zorder=2)
-        
-        plt.plot(WS_VALS, TS_VALS_ROC, color="#1E6E10", label='Rate of Climb', zorder=2)
-        plt.plot(WS_VALS, TS_VALS_TAKEOFF, color="#FF3C3C", label='Takeoff Field', zorder=2)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_6, color="#FF8A1D", label='Climb Gradient REQ_6', zorder=2)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_7, color="#FFE100", label='Climb Gradient REQ_7', zorder=2)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_8, color="#B1FF14", label='Climb Gradient REQ_8', zorder=2)
-        plt.plot(WS_VALS, TS_VALS_CLIMBGRAD_9, color="#1FCF62", label='Climb Gradient REQ_9', zorder=2)
-        
         # Max values of all TS curves
         TS_VALS_MAX = np.maximum.reduce(np.array([TS_VALS_CR, TS_VALS_ROC, TS_VALS_TAKEOFF, TS_VALS_CLIMBGRAD_6, TS_VALS_CLIMBGRAD_7, TS_VALS_CLIMBGRAD_8, TS_VALS_CLIMBGRAD_9]))
-        print(TS_VALS_MAX.shape, WS_VALS.shape)
-        
-        # WS and TW values spanning design space
         WS_VALS_RED, TS_VALS_MAX_RED = self.designSpace(WS_MIN, WS_INTRVL, WS_MAX_APP, WS_MAX_LAND, TS_VALS_MAX)
+
+        # Plotting
+        fig, ax = plt.subplots()
+        plt.subplots_adjust(right=0.7)
+        plt.subplots_adjust(left=0.08)
+        ax.set_xlim((WS_MIN, WS_MAX))
+        ax.set_ylim((0, 0.5*max(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)])//1))
+        
+        line1 = ax.axvline(WS_MAX_APP, color='#236ee8', label='Stall', zorder=2)
+        line2 = ax.axvline(WS_MAX_LAND, color="#be18f0", label='Landing Field', zorder=2)
+        
+        line3, = ax.plot(WS_VALS, TS_VALS_CR, color="#0FCBFF", label='Cruise', zorder=2)
+        
+        line4, = ax.plot(WS_VALS, TS_VALS_ROC, color="#1E6E10", label='Rate of Climb', zorder=2)
+        line5, = ax.plot(WS_VALS, TS_VALS_TAKEOFF, color="#FF3C3C", label='Takeoff Field', zorder=2)
+        line6, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_6, color="#FF8A1D", label='Climb Gradient REQ_6', zorder=2)
+        line7, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_7, color="#FFE100", label='Climb Gradient REQ_7', zorder=2)
+        line8, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_8, color="#B1FF14", label='Climb Gradient REQ_8', zorder=2)
+        line9, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_9, color="#1FCF62", label='Climb Gradient REQ_9', zorder=2)
+                
+        # WS and TW values spanning design space
         plt.fill_between(WS_VALS_RED, TS_VALS_MAX_RED, max(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)])*np.ones_like(TS_VALS_MAX_RED), color="#f7d7d9")
-        plt.scatter(2084, 0.55, color='#ff0000', edgecolors='black', label='Design Point', zorder=3)
         
         # Labeling
-        plt.legend(title='Constraints')
+        legendConstraints = plt.legend(title='Constraints', bbox_to_anchor=(1.01,1), loc='upper left', handles=[line1, line2, line3, line4, line5, line6, line7, line8, line9])
+        ax.add_artist(legendConstraints)
+        
         plt.xlabel(xlabel='Wing Loading [N/m$^2$]')
         plt.ylabel(ylabel='Thrust-to-Weight Ratio [-]')
-        designSpaceLabelPos = (np.mean((min(WS_VALS_RED), max(WS_VALS_RED))), # x
-                               np.mean((min(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)]), max(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)])))) # y
-        print(designSpaceLabelPos)
+        plt.title('Aircraft T/W-W/S Diagram')
+        
+        designSpaceLabelPos = (1.15*np.mean((min(WS_VALS_RED), max(WS_VALS_RED))), # x
+                               0.5*np.mean((min(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)]), max(TS_VALS_MAX_RED[~np.isnan(TS_VALS_MAX_RED)])))) # y
         plt.text(*designSpaceLabelPos, 'Design Space', horizontalalignment='center', color="#000000")
         
-        plt.show()
+        # Design Points (including reference aircraft)
+        designPointHandles = []
+        designPoint = plt.scatter(2084, 0.55, color='#ff0000', edgecolors='black', label='Design Point', zorder=3)
+        designPointHandles.append(designPoint)
         
-        # if I have time: function to draw hatchings next to lines
+        for i, ac in enumerate(TWWS_AC_REF):
+            designPointRef = plt.scatter(*ac[1:3], color=ac[3], label=ac[0], edgecolors='#000000', zorder=3)
+            designPointHandles.append(designPointRef)
+            
+        legendDesignPoints = plt.legend(title='Design Points', bbox_to_anchor=(1.01,0), handles=designPointHandles, loc='lower left')
+        ax.add_artist(legendDesignPoints)
+
+        plt.show()
         
     def designSpace(self, WS_MIN, WS_INTRVL, WS_MAX_APP, WS_MAX_LAND, TS_VALS_MAX):        
         WS_MAX = min(WS_MAX_APP, WS_MAX_LAND)
@@ -135,19 +151,12 @@ class Calc:
         TS_VALS_MAX_RED = TS_VALS_MAX[:N_VALS]
         
         WS_MAX_POINT = np.array((WS_MAX, TS_VALS_MAX[N_VALS])).reshape(-1, 1)
-        print(WS_MAX_POINT.shape)
         POINTS = np.vstack((WS_VALS_RED.T, TS_VALS_MAX_RED.T))
         POINTS = np.hstack((POINTS, WS_MAX_POINT))
-
-        print(POINTS.shape)
-        # POINTS = np.vstack((POINTS, np.array(WS_MAX, TS_VALS_MAX[N_VALS])))
-        # print(np.array((WS_MAX, TS_VALS_MAX[N_VALS])).shape)
-        # print(POINTS.shape)
-        
-        # POINTS = None
-        # WS_VALS_DSPACE = np.arange(WS_MIN, WS)
         
         return POINTS[0,], POINTS[1,]
         
-        
+# class Aircraft():
+#     def __init__(self, ):
+#         self.        
         

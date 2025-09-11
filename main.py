@@ -9,4 +9,3 @@ if __name__ == '__main__':
     
     calc = Calc()
     calc.drawMatchingDiagram(WS_MIN, WS_MAX, WS_INTRVL)
-    # calc.designSpace(500, 100, 2601, 3599, None)
