@@ -58,4 +58,14 @@ T_CR = 216.65 # [K]
 P_CR = 17868.132 # [Pa]
 RHO_CR = 0.287368 # [kg/m**3]
 
+# REFERENCE AIRCRAFT
+TWWS_AC_REF = (('Cessna Citation Latitude', 2719.36, 0.383, "#ff8400"),
+               ('Cessna Citation Sovereign', 2717.02, 0.37, "#ffee00"),
+               ('Embraer Praetor 500', 2272.81, 0.57, "#3cff00"),
+               ('Bombardier Challenger 300', 3564.37, 0.35, "#12600b"),
+               ('Gulfstream G200', 4598.97, 0.29, "#00ffff"),
+               ('Bombardier Challenger 350', 3759.78, 0.39, "#1100ff"),
+               ('Cessna Citation Longitude', 3521.65, 0.39, "#bb00ff"),
+               ('Embraer Praetor 600', 4256.84, 0.35, "#ff00dd"))
+
 
