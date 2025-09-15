@@ -17,6 +17,5 @@ class Calc():
         x = y*np.tan(LAMBDA_LE)
         
         return x, y
-    
-    def 
+
     

@@ -8,4 +8,4 @@ LAMBDA_LE = 20 # [deg]
 LAMBDA_C4 = 30 # [deg]
 LAMBDA_TE = 40 # [deg]
 
-TAPER_RATIO = 0.4 # [-]
+TAPER_RATIO = 0.306 # [-]
