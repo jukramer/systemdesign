@@ -10,18 +10,25 @@ RANGE_HARMONIC = 6.1e6 # [m] @ 1010kg
 RANGE_FERRY = 7e6 # [m] 
 
 # AIRCRAFT PROPERTIES - FAR/25
-M_OEW = 7000 # [kg] DUMMY
-M_MTOW = 11000 # [kg] DUMMY
+M_OEW = 6012 # [kg] DUMMY
+M_MTOW = 9970.6 # [kg] DUMMY
 
 CL_MAX_CR = 1.6 # Cruise
 CL_MAX_TO = 1.9 # Takeoff
 CL_MAX_L = 2.1 # Landing
-AR = 8.5 # Aspect ratio
-CD_0 = 0.0228 # CD0
-e = 0.812  #OSWALD EFFICIENCY FACTOR
+AR = 8.9 # Aspect ratio 
+
+CD_0_CR = 0.019 # CD0
+CD_0_TO_GRUP = 0.0385 # CD0
+CD_0_TO_GRDWN = 0.056 # CD0
+CD_0_L_GRUP = 0.0645 # CD0
+CD_0_L_GRDWN = 0.082 # CD0
+e_CR = 0.81 
+e_TO = 0.879
+e_L = 0.971
 
 C_LFL = 0.45 # FAR 25: 0.45, FAR 23: 0.6
-V_APP = 60 # [m/s] estimate
+V_APP = 60.41 # [m/s] estimate
 
 B = 5 # Bypass ratio, assumed
 THETA_BREAK = 1.07 # assumed, from reader
@@ -31,7 +38,7 @@ KT = 0.85 # from adsee reader
 H2 = 11 # [m] from adsee reader, for normal cs25 ac
 
 BETA_TO = 1 # Takeoff mass fraction
-BETA_CR = 1 # Cruise mass fraction
+BETA_CR = 1 # Cruise mass fraction 
 BETA_L = 0.85 # Landing mass fraction
 
 # ENVIRONMENTAL CONDITIONS
@@ -58,7 +65,7 @@ T_CR = 216.65 # [K]
 P_CR = 17868.132 # [Pa]
 RHO_CR = 0.287368 # [kg/m**3]
 
-# REFERENCE AIRCRAFT
+# REFERENCE AIRCRAFT - Name, W/S, T/W, plot color
 TWWS_AC_REF = (('Cessna Citation Latitude', 2719.36, 0.383, "#ff8400"),
                ('Cessna Citation Sovereign', 2717.02, 0.37, "#ffee00"),
                ('Embraer Praetor 500', 2272.81, 0.57, "#3cff00"),
@@ -67,5 +74,3 @@ TWWS_AC_REF = (('Cessna Citation Latitude', 2719.36, 0.383, "#ff8400"),
                ('Bombardier Challenger 350', 3759.78, 0.39, "#1100ff"),
                ('Cessna Citation Longitude', 3521.65, 0.39, "#bb00ff"),
                ('Embraer Praetor 600', 4256.84, 0.35, "#ff00dd"))
-
-
