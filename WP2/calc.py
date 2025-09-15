@@ -12,6 +12,11 @@ class Calc():
         y_VALS = np.arange(0, b/2, self.INT_INTRVLS)
         return 2/S*np.trapz(self.c(y_VALS), y_VALS)
     
+    def pos_mac(self):
+        y = (b/6)*((1+2*TAPER_RATIO)/(1+TAPER_RATIO))
+        x = y*np.tan(LAMBDA_LE)
+        
+        return x, y
     
-    
+    def 
     
