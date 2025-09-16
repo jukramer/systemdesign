@@ -1,11 +1,20 @@
-S = 50 # [m^2]
-b = 20 # [m]
+S = 46.919 # [m^2]
+b = 20.435 # [m]
 
-c_ROOT = 5 # [m]
-c_TIP = 2 # [m]
-
-LAMBDA_LE = 8 # [deg]
+LAMBDA_LE = 14.822 # [deg]
 LAMBDA_C4 = 10.56 # [deg]
 LAMBDA_TE = 40 # [deg]
 
 TAPER_RATIO = 0.363 # [-]
+
+C_ROOT = 4.512 # [m]
+C_TIP = 1.638 # [m]
+
+TC_MAX = 0.1 # [-]
+AIRFOILS = (('4', 26), # Airfoil type, DeltaY val
+            ('5', 26)
+            ('64', 21.3),
+            ('65', 19.3),
+            ('Biconvex', 11.8)) 
+
+
