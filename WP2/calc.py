@@ -13,7 +13,7 @@ class Calc():
         print(C_ROOT, TAPER_RATIO*C_ROOT)
     
     def c(self, y):
-        return C_ROOT - (C_ROOT - C_TIP)*(2*y/(b))
+        return c_ROOT - (c_ROOT - c_TIP)*(2*y/(b))
     
     def mac(self):
         y_VALS = np.arange(0, b/2, self.INT_INTRVLS)
@@ -22,25 +22,39 @@ class Calc():
     def pos_mac(self):
         y = (b/6)*((1+2*TAPER_RATIO)/(1+TAPER_RATIO))
         x = y*np.tan(LAMBDA_LE)
-        
+
         return x, y
+
     
+
+    def descent(self):
+        q = 0.5 * 1.225 * (V**2) # [N/m^2]
+        CL_des = 1.1 / q *(0.5 * (WS_start - WS_end))
+        return CL_des
     
-    def CL_Max(self, airfoil): # airfoil should be 1, 2, 3, 4, or 5, see AIRFOILS in parameters.py
-        # DELTA_Y = AIRFOILS[airfoil+1][1]
-        # delta_Y = TC_MAX*DELTA_Y
-        pass
-        
-        # Use graph to find CL_MAX
-        
-    def alpha_stall(self):
-        pass
+    def airfoil_Cl(self):
+        Cl_airfoil = None
     
+    def check_aspect_ratio(self):
+        A_check = 4 / ((Cl_airfoil + 1)*cos(LAMBDA_LE))
+        if A_check < A:
+            return True
+        else:
+            return False
     
+    def estimayte_MDD(self):
+        MDD = k_a / cos(LAMBDA) - tc_streamwise / cos(LAMBDA)**2 - CL / (10 * cos(LAMBDA)**3)
+        return MDD
     
-    
-    
-    
-    
-    
-    
+    def wing_component_form_factor(self):
+        FF_w = (1 + 0.6 / x_c_m * tc + 100 * tc**4) * (1.34 * M**0.18 * cos(LAMBDA_LE)**0.28)
+        return FF_w
+     
+    def wave_drag(self):
+        if M < M_critical:
+            CD_wave = 0 
+        elif M >= M_critical and M <= MDD:
+            CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(-1)
+        else:
+            CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(2.5)
+        return CD_wave
