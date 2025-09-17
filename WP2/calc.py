@@ -27,13 +27,14 @@ class Calc():
     
     
     def CL_Max(self, airfoil): # airfoil should be 1, 2, 3, 4, or 5, see AIRFOILS in parameters.py
-        DELTA_Y = AIRFOILS[airfoil+1][1]
-        delta_Y = TC_MAX*DELTA_Y
+        # DELTA_Y = AIRFOILS[airfoil+1][1]
+        # delta_Y = TC_MAX*DELTA_Y
+        pass
         
         # Use graph to find CL_MAX
         
     def alpha_stall(self):
-        
+        pass
     
     
     

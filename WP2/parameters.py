@@ -12,7 +12,7 @@ C_TIP = 1.638 # [m]
 
 TC_MAX = 0.1 # [-]
 AIRFOILS = (('4', 26), # Airfoil type, DeltaY val
-            ('5', 26)
+            ('5', 26),
             ('64', 21.3),
             ('65', 19.3),
             ('Biconvex', 11.8)) 
