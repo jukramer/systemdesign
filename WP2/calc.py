@@ -9,7 +9,7 @@ class Calc():
         return np.rad2deg(np.arctan(np.tan(np.deg2rad(LAMBDA_C4))-C_ROOT/(2*b)*(TAPER_RATIO-1))) 
     
     def calc_c(self):
-        C_ROOT = 2*S/(b*1+TAPER_RATIO)
+        C_ROOT = 2*S/(b*1+b*TAPER_RATIO)
         print(C_ROOT, TAPER_RATIO*C_ROOT)
     
     def c(self, y):
