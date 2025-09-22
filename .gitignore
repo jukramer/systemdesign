@@ -1,3 +1,5 @@
+/.vscode,
+/WP2/__pycache__
 *.dat
 *.xfl
 *.pyc
