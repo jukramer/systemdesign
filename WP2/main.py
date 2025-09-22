@@ -3,7 +3,8 @@ import numpy as np
 
 if __name__ == '__main__':
     INT_INTRVLS = 100 # integration intervals
-    # calc = Calc(INT_INTRVLS)
+    calc = Calc(INT_INTRVLS)
+    print(calc.calc_c())
     
     # C_ROOT = 2*S/(b*1+b*TAPER_RATIO)
     # print(C_ROOT, TAPER_RATIO*C_ROOT)
