@@ -13,7 +13,7 @@ class Calc():
         print(C_ROOT, TAPER_RATIO*C_ROOT)
     
     def c(self, y):
-        return c_ROOT - (c_ROOT - c_TIP)*(2*y/(b))
+        return C_ROOT - (C_ROOT - C_TIP)*(2*y/(b))
     
     def mac(self):
         y_VALS = np.arange(0, b/2, self.INT_INTRVLS)
