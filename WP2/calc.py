@@ -25,8 +25,6 @@ class Calc():
 
         return x, y
 
-    
-
     def descent(self):
         q = 0.5 * 1.225 * (V**2) # [N/m^2]
         CL_des = 1.1 / q *(0.5 * (WS_start - WS_end))
@@ -58,3 +56,8 @@ class Calc():
         else:
             CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(2.5)
         return CD_wave
+    
+    def getM(self, polar_file, v_inf):
+        polar = np.loadtxt(polar_file, skiprows=11)
+        c_p = polar[:,7]
+        return np.sqrt(1-c_p)*v_inf
