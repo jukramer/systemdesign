@@ -9,9 +9,10 @@ TAPER_RATIO = 0.363 # [-]
 
 V_CRUISE = 200.62878
 
-# Wrong? see commented values
-C_ROOT = 4.512 # [m] 3.369056118203828
-C_TIP = 1.638 # [m] 1.2229673709079896
+a_CRUISE = 295.042
+
+C_ROOT = 3.369056118203828 # [m]
+C_TIP = 1.2229673709079896 # [m] 
 
 TC_MAX = 0.1 # [-]
 AIRFOILS = (('4', 26), # Airfoil type, DeltaY val

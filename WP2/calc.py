@@ -25,8 +25,6 @@ class Calc():
 
         return x, y
 
-    
-
     def descent(self):
         q = 0.5 * 1.225 * (V**2) # [N/m^2]
         CL_des = 1.1 / q *(0.5 * (WS_start - WS_end))
@@ -58,3 +56,28 @@ class Calc():
         else:
             CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(2.5)
         return CD_wave
+    
+    def getM(self, polar_file, v_inf):
+        polar = np.loadtxt(polar_file, skiprows=11)
+        c_p = polar[:,7]/np.sqrt(1-0.68**2)
+        alpha = polar[:,0]
+        v = np.sqrt(1-c_p)*v_inf
+        v *= np.cos(14.822*np.pi/180)
+        # print(np.concatenate((alpha[:, None], c_p[:, None]), axis=1).shape)
+        
+        return np.concatenate((alpha[:, None], v[:, None]/a_CRUISE), axis=1)
+    
+    def getLD(self, polar_file):
+        polar = np.loadtxt(polar_file, skiprows=11)
+        cl = polar[:,1]/np.sqrt(1-0.68**2)
+        cd = polar[:,2]
+        cl_CR = 0.264310512
+
+        LD = cl/cd
+        LD_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), LD, -100)).item()
+        cd_min = np.min(cd)
+        cl_cdmin = np.max(np.where(cd==cd_min, cl, -100)).item()
+        delta_cl = np.abs(cl_CR-cl_cdmin)
+        cl_max = np.max(cl) # Nope
+        print(f"cd_min: {cd_min}, delta_cl: {delta_cl}")
+        return LD_CR
