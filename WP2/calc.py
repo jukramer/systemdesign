@@ -25,37 +25,37 @@ class Calc():
 
         return x, y
 
-    def descent(self):
-        q = 0.5 * 1.225 * (V**2) # [N/m^2]
-        CL_des = 1.1 / q *(0.5 * (WS_start - WS_end))
-        return CL_des
+    # def descent(self):
+    #     q = 0.5 * 1.225 * (V**2) # [N/m^2]
+    #     CL_des = 1.1 / q *(0.5 * (WS_start - WS_end))
+    #     return CL_des
     
     def airfoil_Cl(self):
         Cl_airfoil = None
     
-    def check_aspect_ratio(self):
-        A_check = 4 / ((Cl_airfoil + 1)*cos(LAMBDA_LE))
-        if A_check < A:
-            return True
-        else:
-            return False
+    # def check_aspect_ratio(self):
+    #     A_check = 4 / ((Cl_airfoil + 1)*cos(LAMBDA_LE))
+    #     if A_check < A:
+    #         return True
+    #     else:
+    #         return False
     
-    def estimayte_MDD(self):
-        MDD = k_a / cos(LAMBDA) - tc_streamwise / cos(LAMBDA)**2 - CL / (10 * cos(LAMBDA)**3)
-        return MDD
+    # def estimayte_MDD(self):
+    #     MDD = k_a / cos(LAMBDA) - tc_streamwise / cos(LAMBDA)**2 - CL / (10 * cos(LAMBDA)**3)
+    #     return MDD
     
-    def wing_component_form_factor(self):
-        FF_w = (1 + 0.6 / x_c_m * tc + 100 * tc**4) * (1.34 * M**0.18 * cos(LAMBDA_LE)**0.28)
-        return FF_w
+    # def wing_component_form_factor(self):
+    #     FF_w = (1 + 0.6 / x_c_m * tc + 100 * tc**4) * (1.34 * M**0.18 * cos(LAMBDA_LE)**0.28)
+    #     return FF_w
      
-    def wave_drag(self):
-        if M < M_critical:
-            CD_wave = 0 
-        elif M >= M_critical and M <= MDD:
-            CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(-1)
-        else:
-            CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(2.5)
-        return CD_wave
+    # def wave_drag(self):
+    #     if M < M_critical:
+    #         CD_wave = 0 
+    #     elif M >= M_critical and M <= MDD:
+    #         CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(-1)
+    #     else:
+    #         CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(2.5)
+    #     return CD_wave
     
     def getM(self, polar_file, v_inf):
         polar = np.loadtxt(polar_file, skiprows=11)
@@ -71,13 +71,16 @@ class Calc():
         polar = np.loadtxt(polar_file, skiprows=11)
         cl = polar[:,1]/np.sqrt(1-0.68**2)
         cd = polar[:,2]
-        cl_CR = 0.264310512
+        cl_CR = 0.2643
 
         LD = cl/cd
+        # print(LD)
         LD_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), LD, -100)).item()
         cd_min = np.min(cd)
         cl_cdmin = np.max(np.where(cd==cd_min, cl, -100)).item()
         delta_cl = np.abs(cl_CR-cl_cdmin)
-        cl_max = np.max(cl) # Nope
-        print(f"cd_min: {cd_min}, delta_cl: {delta_cl}")
+        print(polar[:,0])
+        print(f'AoA: {np.max(np.where(cl == np.max(cl), polar[:,0], -100))}')
+        print(f'CLmax: {np.max(cl)}')
+        # print(f"cd_min: {cd_min}, delta_cl: {delta_cl}")
         return LD_CR
