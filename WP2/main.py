@@ -16,8 +16,7 @@ if __name__ == '__main__':
 
     for entry in os.scandir(dir):
         if entry.is_file():
-            try:
-                print(entry.path)
-                Calc.getLD(Calc, entry.path)
-            except:
-                print(entry.path, 'Failed')
+            print(entry.path)
+            alpha_cr = Calc.getLD(Calc, entry.path) #type: ignore
+            # print(Calc.getM(Calc, entry, 200.62878, alpha_cr))
+            # print(entry.path, 'Failed')

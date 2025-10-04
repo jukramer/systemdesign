@@ -57,15 +57,16 @@ class Calc():
     #         CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(2.5)
     #     return CD_wave
     
-    def getM(self, polar_file, v_inf):
-        polar = np.loadtxt(polar_file, skiprows=11)
-        c_p = polar[:,7]/np.sqrt(1-0.68**2)
-        alpha = polar[:,0]
-        v = np.sqrt(1-c_p)*v_inf
-        v *= np.cos(14.822*np.pi/180)
-        # print(np.concatenate((alpha[:, None], c_p[:, None]), axis=1).shape)
-        
-        return np.concatenate((alpha[:, None], v[:, None]/a_CRUISE), axis=1)
+    # def getM(self, polar_file, v_inf, alpha_cr):
+    #     polar = np.loadtxt(polar_file, skiprows=11)
+    #     c_p = polar[:,7]/np.sqrt(1-0.68**2)
+    #     alpha = polar[:,0]
+    #     v = np.sqrt(1-c_p)*v_inf
+    #     v *= np.cos(14.822*np.pi/180)
+    #     # print(np.concatenate((alpha[:, None], c_p[:, None]), axis=1).shape)
+    #     M = np.concatenate((alpha[:, None], v[:, None]/a_CRUISE), axis=1)
+    #     M_CR = np.max(np.where(np.abs(alpha_cr-alpha)==np.min(np.abs(alpha_cr-alpha)), v[:, None]/a_CRUISE, -100)).item()
+    #     return M_CR
     
     def getLD(self, polar_file):
         polar = np.loadtxt(polar_file, skiprows=11)
@@ -79,8 +80,25 @@ class Calc():
         cd_min = np.min(cd)
         cl_cdmin = np.max(np.where(cd==cd_min, cl, -100)).item()
         delta_cl = np.abs(cl_CR-cl_cdmin)
-        print(polar[:,0])
-        print(f'AoA: {np.max(np.where(cl == np.max(cl), polar[:,0], -100))}')
-        print(f'CLmax: {np.max(cl)}')
-        # print(f"cd_min: {cd_min}, delta_cl: {delta_cl}")
-        return LD_CR
+        slope = (cl[12]-cl[8])/(polar[12,0]-polar[8,0]) *180/np.pi
+        cl_0 = np.max(np.where(polar[:,0]==0, cl, -100)).item()
+        cm_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), polar[:,4], -100)).item()
+        alpha_cr = (cl_CR-cl_0)/slope
+
+        c_p = polar[:,7]/np.sqrt(1-0.68**2)
+        v = np.sqrt(1-c_p)*V_CRUISE
+        v *= np.cos(14.822*np.pi/180)
+        M_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), v/a_CRUISE, -100)).item()
+
+        print()
+        print(abs(cm_CR))
+        print(np.max(cl)*np.sqrt(1-0.68**2))
+        print(np.max(np.where(cl == np.max(cl), polar[:,0], -100)))
+        print(abs(alpha_cr/np.pi*180))
+        print()
+        print(M_CR)
+        print(cd_min)
+        print(delta_cl)
+        print(LD_CR)
+        print()
+        return alpha_cr
