@@ -13,7 +13,7 @@ RANGE_FERRY = 7e6 # [m]
 M_OEW = 6012 # [kg] DUMMY
 M_MTOW = 9970.6 # [kg] DUMMY
 
-CL_MAX_CR = 1.6 # Cruise
+CL_MAX_CR = 1.4 # Cruise
 CL_MAX_TO = 1.9 # Takeoff
 CL_MAX_L = 2.1 # Landing
 AR = 8.9 # Aspect ratio 
