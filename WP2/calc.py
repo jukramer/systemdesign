@@ -57,15 +57,16 @@ class Calc():
     #         CD_wave = 0.002 * (1 + 2.5 * (MDD - M)/0.05)**(2.5)
     #     return CD_wave
     
-    def getM(self, polar_file, v_inf):
-        polar = np.loadtxt(polar_file, skiprows=11)
-        c_p = polar[:,7]/np.sqrt(1-0.68**2)
-        alpha = polar[:,0]
-        v = np.sqrt(1-c_p)*v_inf
-        v *= np.cos(14.822*np.pi/180)
-        # print(np.concatenate((alpha[:, None], c_p[:, None]), axis=1).shape)
-        
-        return np.concatenate((alpha[:, None], v[:, None]/a_CRUISE), axis=1)
+    # def getM(self, polar_file, v_inf, alpha_cr):
+    #     polar = np.loadtxt(polar_file, skiprows=11)
+    #     c_p = polar[:,7]/np.sqrt(1-0.68**2)
+    #     alpha = polar[:,0]
+    #     v = np.sqrt(1-c_p)*v_inf
+    #     v *= np.cos(14.822*np.pi/180)
+    #     # print(np.concatenate((alpha[:, None], c_p[:, None]), axis=1).shape)
+    #     M = np.concatenate((alpha[:, None], v[:, None]/a_CRUISE), axis=1)
+    #     M_CR = np.max(np.where(np.abs(alpha_cr-alpha)==np.min(np.abs(alpha_cr-alpha)), v[:, None]/a_CRUISE, -100)).item()
+    #     return M_CR
     
     def getLD(self, polar_file):
         
