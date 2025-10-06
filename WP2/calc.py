@@ -68,19 +68,25 @@ class Calc():
         return np.concatenate((alpha[:, None], v[:, None]/a_CRUISE), axis=1)
     
     def getLD(self, polar_file):
+        
         polar = np.loadtxt(polar_file, skiprows=11)
+        print('got here 1')
+        
         cl = polar[:,1]/np.sqrt(1-0.68**2)
         cd = polar[:,2]
         cl_CR = 0.2643
 
         LD = cl/cd
         # print(LD)
-        LD_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), LD, -100)).item()
+        # LD_CR = np.max(np.where(np.ab   (cl-cl_CR)==np.min(np.abs(cl-cl_CR)), LD, -100)).item()
         cd_min = np.min(cd)
-        cl_cdmin = np.max(np.where(cd==cd_min, cl, -100)).item()
-        delta_cl = np.abs(cl_CR-cl_cdmin)
-        print(polar[:,0])
-        print(f'AoA: {np.max(np.where(cl == np.max(cl), polar[:,0], -100))}')
-        print(f'CLmax: {np.max(cl)}')
+        print(cd_min)
+        print(cd)
+        # cl_cdmin = np.max(np.where(cd==cd_min, cl, -100)).item()
+        # delta_cl = np.abs(cl_CR-cl_cdmin)
+        print('got here')
+        print(np.vstack((polar[:,0], polar[:,1])))
+        # print(f'AoA: {np.max(np.where(cl == np.max(cl), polar[:,0], -100))}')
+        # print(f'CLmax: {np.max(cl)}')
         # print(f"cd_min: {cd_min}, delta_cl: {delta_cl}")
-        return LD_CR
+        return None

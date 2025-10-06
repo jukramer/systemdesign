@@ -16,8 +16,8 @@ if __name__ == '__main__':
 
     for entry in os.scandir(dir):
         if entry.is_file():
-            try:
+            # try:
                 print(entry.path)
                 Calc.getLD(Calc, entry.path)
-            except:
-                print(entry.path, 'Failed')
+            # # except:
+            #     print(entry.path, 'Failed')
