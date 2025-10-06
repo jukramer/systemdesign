@@ -84,21 +84,23 @@ class Calc():
         cl_0 = np.max(np.where(polar[:,0]==0, cl, -100)).item()
         cm_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), polar[:,4], -100)).item()
         alpha_cr = (cl_CR-cl_0)/slope
+        alpha_0cl = (0-cl_0)/slope
 
         c_p = polar[:,7]/np.sqrt(1-0.68**2)
         v = np.sqrt(1-c_p)*V_CRUISE
         v *= np.cos(14.822*np.pi/180)
         M_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), v/a_CRUISE, -100)).item()
 
-        print()
-        print(abs(cm_CR))
-        print(np.max(cl)*np.sqrt(1-0.68**2))
-        print(np.max(np.where(cl == np.max(cl), polar[:,0], -100)))
-        print(abs(alpha_cr/np.pi*180))
-        print()
-        print(M_CR)
-        print(cd_min)
-        print(delta_cl)
-        print(LD_CR)
-        print()
+        # print()
+        # print(abs(cm_CR))
+        # print(np.max(cl)*np.sqrt(1-0.68**2))
+        # print(np.max(np.where(cl == np.max(cl), polar[:,0], -100)))
+        # print(abs(alpha_cr/np.pi*180))
+        # print()
+        # print(M_CR)
+        # print(cd_min)
+        # print(delta_cl)
+        # print(LD_CR)
+        # print()
+        print(alpha_0cl)
         return alpha_cr
