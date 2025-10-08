@@ -50,7 +50,9 @@ class Calc():
         return CD_wave
     
     def getLD(self, polar_file):
+        
         polar = np.loadtxt(polar_file, skiprows=11)
+        
         cl = polar[:,1]/np.sqrt(1-0.68**2)
         cd = polar[:,2]
         cl_CR = 0.2643
@@ -58,6 +60,8 @@ class Calc():
         LD = cl/cd
         LD_CR = np.max(np.where(np.abs(cl-cl_CR)==np.min(np.abs(cl-cl_CR)), LD, -100)).item()
         cd_min = np.min(cd)
+        print(cd_min)
+        print(cd)
         cl_cdmin = np.max(np.where(cd==cd_min, cl, -100)).item()
         delta_cl = np.abs(cl_CR-cl_cdmin)
         slope = (cl[12]-cl[8])/(polar[12,0]-polar[8,0]) *180/np.pi
