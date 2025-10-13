@@ -60,7 +60,7 @@ Cf_turbulent = 0.455 / ((m.log10(Re))**2.58*(1+0.144*M**2)**0.65)
 Cf_fuselage = 0.1*Cf_laminar + 0.9*Cf_turbulent
 Cf_wing = 0.35*Cf_laminar + 0.65*Cf_turbulent
 Cf_tail = 0.35*Cf_laminar + 0.65*Cf_turbulent
-
+Cf_nac = 0 #CF nacelle still needed
 
 # FF
 FFwing =(1+(0.6/xc)*(tc)+100(tc)^4) (1.34*M^0.18*(m.cos(sweep)^0.28))
@@ -68,3 +68,22 @@ FFhort = (1+(0.6/xct)*(tct)+100(tct)^4) (1.34*M^0.18*(m.cos(sweeptail)^0.28))
 FFvertc = (1+(0.6/xcv)*(tcv)+100(tcv)^4) (1.34*M^0.18*(m.cos(sweepvtail)^0.28))
 FFfus = (1+(60/ffus^3)+(ffus/400))
 FFnac = (1+(0.35/fnac))
+
+#IF constants
+
+IFnac = 1.5 #directly under fuselage nacelle
+IFwing = 1.2 #low wing config
+IFfuselage = 1 #?
+IFtail = 1.04 #T-tail accounts for vtail and htail
+
+totalwing = FFwing*Cf_wing*IFwing*Swet_wing
+totalfus = FFfus*Cf_fuselage*IFfuselage*Swet_fus
+totalvtail = FFvertc*Cf_tail*IFtail*Swet_vert
+totalhtail = FFhort*Cf_tail*IFtail*Swet_hor
+totalnac = FFnac*Cf_nac*IFnac*Swet_nac
+
+total = totalwing+ totalfus+ totalhtail +totalvtail +totalnac
+Sref = 0 #wing area
+
+ 
+Cd0 = 1/Sref * total +Cdmis
