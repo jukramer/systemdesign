@@ -31,6 +31,10 @@ sweepvtail = 0 #sweep vertical tail
 xcv = 0 #(x/c)m vertical tail
 tcv = 0 #(t/c) vertical tail
 
+u = 0 # upsweep angle [rad]
+Amax = 0 # maximum fuselage cross-sectional area [m^2]
+Abase = 0 # fuselage base area
+
 
 #Sw calulation
 Swet_wing = 1.07 * 2 * S_wexp
@@ -87,3 +91,11 @@ Sref = 0 #wing area
 
  
 Cd0 = 1/Sref * total +Cdmis
+
+# Miscellaneous drag
+Cd_wavedrag = 0
+
+Dq_upsweep = 3.83*u**2.5*Amax
+Cd_upsweep = Dq_upsweep / 
+
+Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase
