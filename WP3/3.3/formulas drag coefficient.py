@@ -9,16 +9,16 @@ S_wexp = 0 # exposed wing surface area [m^2]
 S_hexp = 0 # exposed horizontal tail surface area [m^2]
 S_vexp = 0 # exposed vertical tail surface area [m^2]
 
-rho = 0 # density [kg/m^3]
-V = 0 # velocity [m/s]
-l = 0 # length [m]
-mu = 0 # viscosity [Pa*s]
+rho = 0.287 # density [kg/m^3]
+V = 200.63 # velocity [m/s]
+l = 2.296 # length average root tip chord[m]
+mu = 1.8 * 10^-5 # viscosity [Pa*s]
 k = 0.052*10**-5 # Surface: smooth molded composite [m]
-M = 0 # Mach number [-]
+M = 0.68 # Mach number [-]
 
 xc = 0 #(x/c)m
 tc = 0 #thicknes chord airfoil
-M = 0 #machnumber
+M = 0.68 #machnumber
 sweep = 0 #wingsweep
 ffus = (L1+L2+L3)/D_fus
 lnac = 0 #length nacele
@@ -107,6 +107,7 @@ Ss = d_LG*w_LG # reference area landing gear
 C_Ds = 0.05328*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
 Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
 
+
 #flap constants
 Fflap = 0.0074
 cfc =  0.25 #flap chord ratio
@@ -119,4 +120,4 @@ Cd_flap = Fflap* (cfc)(Sflap/Sref)*(deltaf-10)
 Cdmis = Cd_wavedrag + Cd_upsweep + Cd_base + Cd_LG + Cd_flap
 
 # Cd0
-Cd0 = (1/Sref * total + Cdmis)*1.03 # Total Cd0, with 3% of total CD0 for excrescence and leakage
+Cd0 = (1/Sref * total +Cdmis)*1.03 # Total Cd0, with 3% of total Cd0 for excrescence and leakage
