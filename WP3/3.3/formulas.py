@@ -93,8 +93,6 @@ totalnac = FFnac*Cf_nac*IFnac*Swet_nac
 total = totalwing+ totalfus+ totalhtail +totalvtail +totalnac
 Sref = 0 #wing area
 
- 
-Cd0 = 1/Sref * total +Cdmis
 
 # Miscellaneous drag
 Cd_wavedrag = 0 # no wave drag because M < Mcr
@@ -108,5 +106,10 @@ Cd_base = Dq_base / Sref # fuselage base drag
 Ss = d_LG*w_LG # reference area landing gear
 C_Ds = 0.05328*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
 Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
+
+Cdmis = Cd_wavedrag + Cd_upsweep + Cd_base + Cd_LG
+
+# Cd0
+Cd0 = 1/Sref * total +Cdmis
 
 
