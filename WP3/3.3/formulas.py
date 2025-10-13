@@ -107,9 +107,6 @@ Ss = d_LG*w_LG # reference area landing gear
 C_Ds = 0.05328*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
 Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
 
-Cdmis = Cd_wavedrag + Cd_upsweep + Cd_base + Cd_LG
-
-
 
 #flap constants
 Fflap = 0.0074
@@ -117,6 +114,10 @@ cfc =  0.25 #flap chord ratio
 Sflap = 20.135#area flap
 deltaf = 40 #deflection flap
 
-Dflap = Fflap* (cfc)(Sflap/Sref)*(deltaf-10)
+Cd_flap = Fflap* (cfc)(Sflap/Sref)*(deltaf-10)
+
+# Total miscellaneous drag
+Cdmis = Cd_wavedrag + Cd_upsweep + Cd_base + Cd_LG + Cd_flap
+
 # Cd0
-Cd0 = 1/Sref * total +Cdmis
+Cd0 = (1/Sref * total +Cdmis)*1.03 # Total Cd0, with 3% of total Cd0 for excrescence and leakage
