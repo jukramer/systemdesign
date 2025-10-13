@@ -5,16 +5,16 @@ D_fus = 0 #fuselage diameter
 L1 = 0 #length first
 L2 = 0
 L3 = 0
-S_wexp = 0
-S_hexp = 0
-S_vexp = 0
+S_wexp = 0 # exposed wing surface area [m^2]
+S_hexp = 0 # exposed horizontal tail surface area [m^2]
+S_vexp = 0 # exposed vertical tail surface area [m^2]
 
-rho = 0
-V = 0
-l = 0
-mu = 0
-k = 0
-M = 0
+rho = 0 # density [kg/m^3]
+V = 0 # velocity [m/s]
+l = 0 # length [m]
+mu = 0 # viscosity [Pa*s]
+k = 0.052*10**-5 # Surface: smooth molded composite [m]
+M = 0 # Mach number [-]
 
 xc = 0 #(x/c)m
 tc = 0 #thicknes chord airfoil
@@ -33,7 +33,11 @@ tcv = 0 #(t/c) vertical tail
 
 u = 0 # upsweep angle [rad]
 Amax = 0 # maximum fuselage cross-sectional area [m^2]
-Abase = 0 # fuselage base area
+Abase = 0 # fuselage base area [m^2]
+
+SA_LG = 0 # frontal area landing gear [m^2]
+d_LG = 0 # height landing gear [m]
+w_LG = 0 # width landing gear [m]
 
 
 #Sw calulation
@@ -93,9 +97,16 @@ Sref = 0 #wing area
 Cd0 = 1/Sref * total +Cdmis
 
 # Miscellaneous drag
-Cd_wavedrag = 0
+Cd_wavedrag = 0 # no wave drag because M < Mcr
 
 Dq_upsweep = 3.83*u**2.5*Amax
-Cd_upsweep = Dq_upsweep / 
+Cd_upsweep = Dq_upsweep / Sref # miscellaneous drag due to fuselage upsweep
 
-Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase
+Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase 
+Cd_base = Dq_base / Sref # fuselage base drag
+
+Ss = d_LG*w_LG # reference area landing gear
+C_Ds = 0.05328*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
+Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
+
+
