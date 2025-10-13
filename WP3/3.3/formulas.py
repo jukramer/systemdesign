@@ -91,7 +91,7 @@ totalhtail = FFhort*Cf_tail*IFtail*Swet_hor
 totalnac = FFnac*Cf_nac*IFnac*Swet_nac
 
 total = totalwing+ totalfus+ totalhtail +totalvtail +totalnac
-Sref = 0 #wing area
+Sref = 46.919 #wing area
 
 
 # Miscellaneous drag
@@ -100,7 +100,7 @@ Cd_wavedrag = 0 # no wave drag because M < Mcr
 Dq_upsweep = 3.83*u**2.5*Amax
 Cd_upsweep = Dq_upsweep / Sref # miscellaneous drag due to fuselage upsweep
 
-Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase 
+Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase
 Cd_base = Dq_base / Sref # fuselage base drag
 
 Ss = d_LG*w_LG # reference area landing gear
@@ -109,7 +109,14 @@ Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
 
 Cdmis = Cd_wavedrag + Cd_upsweep + Cd_base + Cd_LG
 
+
+
+#flap constants
+Fflap = 0.0074
+cfc =  0.25 #flap chord ratio
+Sflap = 20.135#area flap
+deltaf = 40 #deflection flap
+
+Dflap = Fflap* (cfc)(Sflap/Sref)*(deltaf-10)
 # Cd0
 Cd0 = 1/Sref * total +Cdmis
-
-
