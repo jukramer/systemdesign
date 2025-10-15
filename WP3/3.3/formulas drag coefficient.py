@@ -1,43 +1,5 @@
 import math as m
-
-# Constants
-D_fus = 0 #fuselage diameter
-L1 = 0 #length first
-L2 = 0
-L3 = 0
-S_wexp = 0 # exposed wing surface area [m^2]
-S_hexp = 0 # exposed horizontal tail surface area [m^2]
-S_vexp = 0 # exposed vertical tail surface area [m^2]
-
-rho = 0.287 # density [kg/m^3]
-V = 200.63 # velocity [m/s]
-l = 2.296 # length average root tip chord[m]
-mu = 1.8 * 10^-5 # viscosity [Pa*s]
-k = 0.052*10**-5 # Surface: smooth molded composite [m]
-M = 0.68 # Mach number [-]
-
-xc = 0 #(x/c)m
-tc = 0 #thicknes chord airfoil
-M = 0.68 #machnumber
-sweep = 0 #wingsweep
-ffus = (L1+L2+L3)/D_fus
-lnac = 0 #length nacele
-dnac = 0 #diameter nacele
-fnac = lnac/dnac
-xct = 0 #(x/c)m for the horizontal tail
-sweeptail = 0 #sweep horizontal tail
-tct = 0 #thicknes chord airfoil horizontal tail
-sweepvtail = 0 #sweep vertical tail
-xcv = 0 #(x/c)m vertical tail
-tcv = 0 #(t/c) vertical tail
-
-u = 0 # upsweep angle [rad]
-Amax = 0 # maximum fuselage cross-sectional area [m^2]
-Abase = 0 # fuselage base area [m^2]
-
-SA_LG = 0 # frontal area landing gear [m^2]
-d_LG = 0 # height landing gear [m]
-w_LG = 0 # width landing gear [m]
+from parameters import *
 
 
 #Sw calulation
@@ -45,7 +7,7 @@ Swet_wing = 1.07 * 2 * S_wexp
 Swet_fus = ((m.pi * D_fus)/4)(1/(3*L1^2)((4*L1^2+D_fus^2/4)^1.5-(D_fus^3/8))-D_fus+4*L2+2*m.sqrt(L3^2+D_fus^2/4))
 Swet_hor = 1.05 * 2 * S_hexp
 Swet_vert = 1.05 * 2 * S_vexp
-Swet_nac = 0 #wetted area nacelle is dependent on team engine
+Swet_nac = 9.5902 #wetted area nacelle is dependent on team engine
 
 
 print(Swet_wing)
