@@ -36,6 +36,9 @@ W_ox = 40 + 2.4* N_pax
 #auxilary power unit
 W_apu = 0.08 * W_TO
 
+#furnishing weight estimation
+W_fur = 0.211(W_TO - W_F)^0.91
+
 W_f = 0.021*k_f*(V_D*l_h/(w_f + h_f))^(1/2)*S_fgs**1.2
 
 # Nacelle weight estimation (high bypass ratio turbofan)
