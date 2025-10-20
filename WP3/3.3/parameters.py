@@ -41,12 +41,14 @@ w_LG = 0 # width landing gear [m]
 
 # Weight
 g = 9.80665         # gravitational acceleration [m/s^2]
+lbs_to_N = 4.448    # pound to newton conversion
+m_to_ft = 3.280839895   # meter to feet conversion
 W_TO = 9907.7*g     # maximum take off weight [N]
 W_F = 2960*g        # fuel weight [N]
-W_MZF = W_TO - W_F  # maximum zero fuel weight
-b = 20.435          # span [m]
+W_MZF = (W_TO - W_F)/lbs_to_N  # maximum zero fuel weight
+b = 20.435*m_to_ft          # span [ft]
 Lambda_12 = 0       # wing semi-chord sweep angle [rad]
-S = 46.919          # wing area [m^2]
+S = 46.919*m_to_ft**2          # wing area [m^2]
 n_ult = 4.275       # ultimate load factor [-]
 t_r = 0             # maximum root thickness [m]
 
@@ -62,4 +64,20 @@ k_v = 1 + 0.15*(S_h*z_h/(S_v*b_v))         # for fuselage mounted horizontal tai
 Lambda_12_v = 0     # semi-chord sweep angle horizontal tail [rad]
 
 k_f = 1.08          # for a pressurized fuselage
+V_D = 0             # design dive speed [KEAS]
+l_h = 0             # distance from wing root c/4 to hor. tail root c/4 [ft]
+w_f = 0             # maximum fuselage width [ft]
+h_f = 0             # maximum fuselage height [ft]
+S_fgs = 0           # fuselage gross shell area [ft]
 
+T_TO = 0            # total required take-off thrust
+
+K_gr = 1.0          # for low wing airplanes
+A_g_main = 33.0
+B_g_main = 0.04
+C_g_main = 0.021
+D_g_main = 0.0
+A_g_nose = 12.0
+B_g_nose = 0.06
+C_g_nose = 0.0
+D_g_nose = 0.0
