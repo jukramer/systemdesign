@@ -62,4 +62,10 @@ k_v = 1 + 0.15*(S_h*z_h/(S_v*b_v))         # for fuselage mounted horizontal tai
 Lambda_12_v = 0     # semi-chord sweep angle horizontal tail [rad]
 
 k_f = 1.08          # for a pressurized fuselage
+K_fc = 0.64         # constant for airplanes with powerd flight controls
+V_pax = 0           # passenger cabin volime in [ft^3]
+R = 0               # range in nautical miles
+W_E = 0             # empty weight in[lbs]
+l_pax = 0           # length of the passenger cabin [ft]
+N_pax = 6           # number of passengers
 
