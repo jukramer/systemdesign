@@ -13,7 +13,6 @@ W_emp = W_h + W_v
 # Fuselage weight estimation
 
 
-
 #Flight control system
 W_fc = K_fc * (W_TO)^(2/3)
 
