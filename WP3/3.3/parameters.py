@@ -84,7 +84,7 @@ D_g_nose = 0.0      # constant for land gear nose [-]
 K_fc = 0.64         # constant for airplanes with powerd flight controls [-]
 V_pax = 0           # passenger cabin volime in [ft^3]
 R = 0               # range in nautical miles
-W_E = 0             # empty weight in[lbs]
+W_E = 0             # empty weight in [lbs]
 l_pax = 0           # length of the passenger cabin [ft]
 N_pax = 6           # number of passengers
 
