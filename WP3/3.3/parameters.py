@@ -1,4 +1,6 @@
-# Drag coefficient
+from math import pi
+
+ # Drag coefficient
 D_fus = 2.72 #fuselage diameter
 L1 = 5.445 #length first
 L2 = 3.956  
@@ -29,7 +31,7 @@ sweepvtail = 0 #sweep vertical tail
 xcv = 0 #(x/c)m vertical tail
 tcv = 0 #(t/c) vertical tail
 
-u = 0 # upsweep angle [rad]
+u = 5*(pi/180) # upsweep angle [rad]
 Amax = 0 # maximum fuselage cross-sectional area [m^2]
 Abase = 0 # fuselage base area [m^2]
 
@@ -40,9 +42,9 @@ w_LG = 0 # width landing gear [m]
 
 
 # Weight
-g = 9.80665                     # gravitational acceleration [m/s^2]
-lbs_to_N = 4.448                # pound to newton conversion
 m_to_ft = 3.280839895           # meter to feet conversion
+g = 9.80665 * m_to_ft                     # gravitational acceleration [m/s^2]
+lbs_to_N = 4.448                # pound to newton conversion
 W_TO = 9907.7*g                 # maximum take off weight [N]
 W_F = 2960*g                    # fuel weight [N]
 W_MZF = (W_TO - W_F)/lbs_to_N   # maximum zero fuel weight
@@ -60,8 +62,8 @@ Lambda_12_h = 0                 # semi-chord sweep angle horizontal tail [rad]
 S_v = 0                         # vertical tail area [ft^2]
 z_h = 0                         # distance from vert.tail root to where ht is mounted on the v.t. [ft]
 b_v = 0                         # vertical tail span [ft]
-k_v = 1 + 0.15*(S_h*z_h/(S_v*b_v))         # for fuselage mounted horizontal tails
-Lambda_12_v = 0                 # semi-chord sweep angle horizontal tail [rad]
+k_v = 1 + 0.15*(S_h*z_h/(S_v*b_v))         # for fuselage mounted vertical tails
+Lambda_12_v = 0                 # semi-chord sweep angle vertical tail [rad]
 
 k_f = 1.08          # for a pressurized fuselage
 V_D = 0             # design dive speed [KEAS]
@@ -88,3 +90,10 @@ W_E = 0             # empty weight in [lbs]
 l_pax = 0           # length of the passenger cabin [ft]
 N_pax = 6           # number of passengers
 
+
+c = 10 #wing mean geometric chord [ft]
+CL_alpha = 0.5 #CL alpha
+h_cr = 41000 #cruise altitude [ft]
+Gw = 90 #flight design gross weight [lbs]
+W_cr = 100 #cruise weight [lbs]
+CL_max = 0 
