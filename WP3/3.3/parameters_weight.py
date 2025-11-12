@@ -1,10 +1,12 @@
 # Weight
 m_to_ft = 3.280839895           # meter to feet conversion
-g = 9.80665 * m_to_ft                     # gravitational acceleration [m/s^2]
+g = 9.80665 * m_to_ft           # gravitational acceleration [ft/s^2]
 lbs_to_N = 4.448                # pound to newton conversion
-W_TO = 9907.7*g                 # maximum take off weight [N]
-W_F = 2960*g                    # fuel weight [N]
-W_MZF = (W_TO - W_F)/lbs_to_N   # maximum zero fuel weight
+kg_to_lbs = 2.20462262          # kg to lbs
+
+W_TO = 9907.7*kg_to_lbs         # maximum take off weight [lbs]
+W_F = 2960*kg_to_lbs            # fuel weight [lbs]
+W_MZF = W_TO - W_F              # maximum zero fuel weight [lbs]
 b = 20.435*m_to_ft              # span [ft]
 Lambda_12 = 0                   # wing semi-chord sweep angle [rad]
 S = 46.919*m_to_ft**2           # wing area [ft^2]

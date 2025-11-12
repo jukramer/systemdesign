@@ -31,14 +31,14 @@ W_struc = lbs_to_N*W_struc                     # [N]
 
 
 #Flight control system
-W_fc = K_fc * (W_TO)^(2/3)
+W_fc = K_fc * (W_TO)**(2/3)
 
 #Hydraulic systems
 W_hy = 0.008 * W_TO
 
 
 #electrical systems
-W_ELS = 10.8(V_pax)^0.7*(1-0.018(V_pax)^0.35)
+W_ELS = 10.8*(V_pax)**0.7*(1-0.018(V_pax)^0.35)
 
 #instrumentation, avionics and electronics
 W_IAE = 0.575(W_E)^0.556 * R^0.25
