@@ -1,20 +1,23 @@
+from math import pi
+
 # Weight
 m_to_ft = 3.280839895           # meter to feet conversion
 g = 9.80665 * m_to_ft           # gravitational acceleration [ft/s^2]
 lbs_to_N = 4.448                # pound to newton conversion
 kg_to_lbs = 2.20462262          # kg to lbs
+deg_to_rad = pi/180             # degrees to radians conversion
 
 W_TO = 9907.7*kg_to_lbs         # maximum take off weight [lbs]
 W_F = 2960*kg_to_lbs            # fuel weight [lbs]
 W_MZF = W_TO - W_F              # maximum zero fuel weight [lbs]
 b = 20.435*m_to_ft              # span [ft]
-Lambda_12 = 0                   # wing semi-chord sweep angle [rad]
+Lambda_12 = 23.67888685*deg_to_rad      # wing semi-chord sweep angle [rad]
 S = 46.919*m_to_ft**2           # wing area [ft^2]
 n_ult = 4.275                   # ultimate load factor [-]
-t_r = 0                         # maximum root thickness [ft]
+t_r = 3.368779881*0.179*m_to_ft         # maximum root thickness [ft] root chord x max thickness %
 
 k_h = 1.0                       # for fixed incidence stabilizers [-]
-S_h = 0                         # horizontal tail area [ft^2]
+S_h = 13.71342911*m_to_ft**2    # horizontal tail area [ft^2]
 V_D = 0                         # design dive speed [KEAS]
 Lambda_12_h = 0                 # semi-chord sweep angle horizontal tail [rad]
 
@@ -27,8 +30,8 @@ Lambda_12_v = 0                 # semi-chord sweep angle vertical tail [rad]
 k_f = 1.08          # for a pressurized fuselage
 V_D = 0             # design dive speed [KEAS]
 l_h = 0             # distance from wing root c/4 to hor. tail root c/4 [ft]
-w_f = 0             # maximum fuselage width [ft]
-h_f = 0             # maximum fuselage height [ft]
+w_f = 2.722625*m_to_ft             # maximum fuselage width [ft]
+h_f = 2.722625*m_to_ft             # maximum fuselage height [ft]
 S_fgs = 0           # fuselage gross shell area [ft]
 
 T_TO = 0            # total required take-off thrust

@@ -1,6 +1,6 @@
 from math import pi
 
- # Drag coefficient
+# Drag coefficient
 D_fus = 2.72 #fuselage diameter
 L1 = 5.445 #length first
 L2 = 3.956  
