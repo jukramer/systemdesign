@@ -43,7 +43,7 @@ FFnac = (1+(0.35/fnac))
 
 IFnac = 1.5 #directly under fuselage nacelle
 IFwing = 1.2 #low wing config
-IFfuselage = 1 #?
+IFfuselage = 1 #fuselage doesn't interfere with itself
 IFtail = 1.04 #T-tail accounts for vtail and htail
 
 totalwing = FFwing*Cf_wing*IFwing*Swet_wing
@@ -54,7 +54,6 @@ totalnac = FFnac*Cf_nac*IFnac*Swet_nac
 
 total = totalwing+ totalfus+ totalhtail +totalvtail +totalnac
 Sref = 46.919 #wing area
-
 
 # Miscellaneous drag
 Cd_wavedrag = 0 # no wave drag because M < Mcr
