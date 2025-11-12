@@ -1,4 +1,4 @@
-from parameters import *
+from parameters_drag import *
 import math as m
 
 
