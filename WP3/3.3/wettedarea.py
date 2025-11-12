@@ -1,14 +1,5 @@
-
+from parameters_drag import *
 import math as m
-
-D_fus = 0 #fuselage diameter
-L1 = 0 #length first
-L2 = 0
-L3 = 0
-S_wexp = 0
-S_hexp = 0
-S_vexp = 0
-
 
 
 #Sw calulation
@@ -29,23 +20,6 @@ S_wet = Swet_wing + Swet_fus + Swet_hor + Swet_vert
 print(S_wet)
 
 #FF calculation
-
-xc = 0 #(x/c)m
-tc = 0 #thicknes chord airfoil
-M = 0 #machnumber
-sweep = 0 #wingsweep
-ffus = (L1+L2+L3)/D_fus
-lnac = 0 #length nacele
-dnac = 0 #diameter nacele
-fnac = lnac/dnac
-xct = 0 #(x/c)m for the horizontal tail
-sweeptail = 0 #sweep horizontal tail
-tct = 0 #thicknes chord airfoil horizontal tail
-sweepvtail = 0 #sweep vertical tail
-xcv = 0 #(x/c)m vertical tail
-tcv = 0 #(t/c) vertical tail
-
-
 
 
 FFwing =(1+(0.6/xc)*(tc)+100(tc)^4) (1.34*M^0.18*(m.cos(sweep)^0.28))
