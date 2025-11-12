@@ -22,6 +22,7 @@ V_cr = 200.629*ms_to_KEAS
 
 k_h = 1.0                       # for fixed incidence stabilizers [-]
 S_h = 13.71342911*m_to_ft**2    # horizontal tail area [ft^2]
+V_D = 0                         # design dive speed [KEAS]
 Lambda_12_h = 23.67888685*deg_to_rad # semi-chord sweep angle horizontal tail [rad]
 
 S_v = 11.37711*m_to_ft**2                         # vertical tail area [ft^2]
