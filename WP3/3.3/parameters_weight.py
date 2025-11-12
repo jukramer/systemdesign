@@ -2,7 +2,6 @@
 m_to_ft = 3.280839895           # meter to feet conversion
 g = 9.80665 * m_to_ft                     # gravitational acceleration [m/s^2]
 lbs_to_N = 4.448                # pound to newton conversion
-m_to_ft = 3.280839895           # meter to feet conversion
 W_TO = 9907.7*g                 # maximum take off weight [N]
 W_F = 2960*g                    # fuel weight [N]
 W_MZF = (W_TO - W_F)/lbs_to_N   # maximum zero fuel weight
@@ -20,8 +19,8 @@ Lambda_12_h = 0                 # semi-chord sweep angle horizontal tail [rad]
 S_v = 11.37711*m_to_ft**2                         # vertical tail area [ft^2]
 z_h = 0                         # distance from vert.tail root to where ht is mounted on the v.t. [ft]
 b_v = 0                         # vertical tail span [ft]
-k_v = 1 + 0.15*(S_h*z_h/(S_v*b_v))         # for fuselage mounted horizontal tails
-Lambda_12_v = 0                 # semi-chord sweep angle horizontal tail [rad]
+k_v = 1 + 0.15*(S_h*z_h/(S_v*b_v))         # for fuselage mounted vertical tails
+Lambda_12_v = 0                 # semi-chord sweep angle vertical tail [rad]
 
 k_f = 1.08          # for a pressurized fuselage
 V_D = 0             # design dive speed [KEAS]
@@ -49,9 +48,10 @@ l_pax = 0           # length of the passenger cabin [ft]
 N_pax = 6           # number of passengers
 
 
-c = 10              # wing mean geometric chord [ft]
-CL_alpha = 0.5      # CL alpha
-h_cr = 41000        # cruise altitude [ft]
-Gw = 90             # flight design gross weight [lbs]
-W_cr = 100          # cruise weight [lbs]
-CL_max = 0          # CL max [rad]
+
+c = 10 #wing mean geometric chord [ft]
+CL_alpha = 0.5 #CL alpha
+h_cr = 41000 #cruise altitude [ft]
+Gw = 90 #flight design gross weight [lbs]
+W_cr = 100 #cruise weight [lbs]
+CL_max = 0 

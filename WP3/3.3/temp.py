@@ -91,6 +91,7 @@ l_pax = 0           # length of the passenger cabin [ft]
 N_pax = 6           # number of passengers
 
 
+
 c = 10 #wing mean geometric chord [ft]
 CL_alpha = 0.5 #CL alpha
 h_cr = 41000 #cruise altitude [ft]
