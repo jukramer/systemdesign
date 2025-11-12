@@ -27,7 +27,7 @@ W_g = W_g_main + W_g_nose
 
 # Total structure weight
 W_struc = W_W + W_emp + W_f + W_n + W_g     # [lbs]
-W_struc = lbs_to_N*W_struc                     # [N]
+W_struc = lbs_to_N*W_struc                  # [N]
 
 
 #Flight control system
