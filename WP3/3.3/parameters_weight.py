@@ -1,4 +1,5 @@
 from math import pi
+from wettedarea import *
 
 # Weight
 m_to_ft = 3.280839895           # meter to feet conversion
@@ -32,7 +33,7 @@ V_D = 0             # design dive speed [KEAS]
 l_h = 0             # distance from wing root c/4 to hor. tail root c/4 [ft]
 w_f = 2.722625*m_to_ft             # maximum fuselage width [ft]
 h_f = 2.722625*m_to_ft             # maximum fuselage height [ft]
-S_fgs = 0           # fuselage gross shell area [ft]
+S_fgs = Swet_fus*m_to_ft           # fuselage gross shell area [ft]
 
 T_TO = 0            # total required take-off thrust
 
@@ -47,16 +48,16 @@ C_g_nose = 0.0      # constant for land gear nose [-]
 D_g_nose = 0.0      # constant for land gear nose [-]
 K_fc = 0.64         # constant for airplanes with powerd flight controls [-]
 V_pax = 0           # passenger cabin volime in [ft^3]
-R = 0               # range in nautical miles
+R =                # range in nautical miles
 W_E = 0             # empty weight in [lbs]
 l_pax = 0           # length of the passenger cabin [ft]
 N_pax = 6           # number of passengers
 
 
 
-c = 10 #wing mean geometric chord [ft]
-CL_alpha = 0.5 #CL alpha
-h_cr = 41000 #cruise altitude [ft]
-Gw = 90 #flight design gross weight [lbs]
-W_cr = 100 #cruise weight [lbs]
-CL_max = 0 
+c = 2.463102156*m_to_ft              #wing mean geometric chord [ft] is mean aerodynamic chord
+CL_alpha = 6.03     # CL alpha [1/rad]
+h_cr = 41000        # cruise altitude [ft]
+Gw =                # flight design gross weight [lbs]
+W_cr =              # cruise weight [lbs]
+CL_max = 1.663      #
