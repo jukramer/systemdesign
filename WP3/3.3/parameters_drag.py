@@ -5,7 +5,7 @@ D_fus = 2.72 #fuselage diameter
 L1 = 5.445 #length first
 L2 = 3.956  
 L3 = 8.712
-S_wexp = 0 # exposed wing surface area [m^2]
+S_wexp = 38 # exposed wing surface area [m^2]
 S_hexp = 0 # exposed horizontal tail surface area [m^2]
 S_vexp = 0 # exposed vertical tail surface area [m^2]
 
@@ -33,7 +33,7 @@ tcv = 0 #(t/c) vertical tail
 
 u = 5*(pi/180) # upsweep angle [rad]
 Amax = 2.722 # maximum fuselage cross-sectional area [m^2]
-Abase = 0 # fuselage base area [m^2]
+#Abase = 0 # fuselage base area [m^2]
 
 SA_LG = 0 # frontal area landing gear [m^2]
 d_LG = 0 # height landing gear [m]

@@ -62,8 +62,8 @@ Cd_wavedrag = 0 # no wave drag because M < Mcr
 Dq_upsweep = 3.83*u**2.5*Amax
 Cd_upsweep = Dq_upsweep / Sref # miscellaneous drag due to fuselage upsweep
 
-Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase
-Cd_base = Dq_base / Sref # fuselage base drag
+# Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase
+# Cd_base = Dq_base / Sref # fuselage base drag
 
 Ss = d_LG*w_LG # reference area landing gear
 C_Ds = 0.05328*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
@@ -79,7 +79,7 @@ deltaf = 40 #deflection flap
 Cd_flap = Fflap* (cfc)(Sflap/Sref)*(deltaf-10)
 
 # Total miscellaneous drag
-Cdmis = Cd_wavedrag + Cd_upsweep + Cd_base + Cd_LG + Cd_flap
+Cdmis = Cd_wavedrag + Cd_upsweep + Cd_LG + Cd_flap #cd_base
 
 # Cd0
 Cd0 = (1/Sref * total +Cdmis)*1.03 # Total Cd0, with 3% of total Cd0 for excrescence and leakage
