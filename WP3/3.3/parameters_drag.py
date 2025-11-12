@@ -8,6 +8,7 @@ L3 = 8.712
 S_wexp = 38 # exposed wing surface area [m^2]
 S_hexp = 0 # exposed horizontal tail surface area [m^2]
 S_vexp = 0 # exposed vertical tail surface area [m^2]
+Sref = 46.919 #wing area
 
 rho = 0.287 # density [kg/m^3]
 V = 200.63 # velocity [m/s]
