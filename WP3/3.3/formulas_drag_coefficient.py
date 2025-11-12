@@ -1,4 +1,5 @@
 import math as m
+import numpy as np
 from parameters_drag import *
 
 #IF constants
@@ -12,6 +13,9 @@ Fflap = 0.0074
 cfc =  0.25 #flap chord ratio
 Sflap = 20.135 #area flap
 deltaf = 40 #deflection flap
+
+# def calc_empennage(V_v):
+#     S_v=V_v*S_w*b_w/l_v # volume coeff, wing surf, wing span, moment arm = 6.741754
 
 def calc_s_wet():
     #Sw calulation
@@ -75,18 +79,23 @@ def calc_CD0(S_wet_vals, cf_vals, FF_vals):
 
     Dq_upsweep = 3.83*u**2.5*Amax
     Cd_upsweep = Dq_upsweep / Sref # miscellaneous drag due to fuselage upsweep
-
-    Ssm = 2* d_mLG*w_mLG # reference area main landing gear
-    ssn = d_nLG * d_nLG # reference area nose landing gear
-    ss = Ssm +ssn
-    SA_LG = SA_NLG + SA_MLG * 2
-    C_Ds = 0.04955*m.exp((5.615*SA_LG)/ss) # for open wheel wells, for closed: 0.04955
-    Cd_LG = C_Ds*ss/Sref # landing gear miscellaneous drag
+    
+    # Landing Gear
+    Delta_CDS_N = 0.04955*np.exp(5.615*SA_N/SS_N)
+    Delta_CDS_M = 0.04955*np.exp(5.615*SA_M/SS_M)
+    Delta_CDREF_N = Delta_CDS_N*SS_N/Sref
+    Delta_CDREF_M = Delta_CDS_M*SS_M/Sref
+    
+    Delta_CDREF_TOT = 2*Delta_CDREF_M + Delta_CDREF_N
+    
     Cd_flap = Fflap* (cfc)*(Sflap/Sref)*(deltaf-10) # flaps (misc drag)
-    Cdmisc = Cd_wavedrag + Cd_upsweep + Cd_LG + Cd_flap #cd_base, total miscellaneous drag
+    Cdmisc = Cd_wavedrag + Cd_upsweep + Delta_CDREF_TOT + Cd_flap #cd_base, total miscellaneous drag
+    print(Cd_wavedrag, Cd_upsweep, Delta_CDREF_TOT, Cd_flap)
 
+    print(total)
+    print(Cdmisc)
     # CD0
-    Cd0 = (1/Sref * total +Cdmisc)*1.03 # Total Cd0, with 3% of total Cd0 for excrescence and leakage
+    Cd0 = (1/Sref*total+Cdmisc)*1.03 # Total Cd0, with 3% of total Cd0 for excrescence and leakage
     
     return Cd0
 

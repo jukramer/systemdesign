@@ -10,14 +10,14 @@ Swet_vert = 1.05 * 2 * S_vexp
 Swet_nac = 0 #wetted area nacelle is dependent on team engine
 
 
-print(Swet_wing)
-print(Swet_hor)
-print(Swet_vert)
-print(Swet_fus)
+# print(Swet_wing)
+# print(Swet_hor)
+# print(Swet_vert)
+# print(Swet_fus)
 
 
 S_wet = Swet_wing + Swet_fus + Swet_hor + Swet_vert
-print(S_wet)
+# print(S_wet)
 
 #FF calculation
 

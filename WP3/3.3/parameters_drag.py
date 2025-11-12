@@ -1,6 +1,7 @@
 from math import pi
 
 # Drag coefficient
+# FUSELAGE DIMENSIONS
 D_fus = 2.72 #fuselage diameter
 L1 = 5.445 #length first
 L2 = 3.956  
@@ -10,11 +11,12 @@ S_hexp = 0 # exposed horizontal tail surface area [m^2]
 S_vexp = 0 # exposed vertical tail surface area [m^2]
 Sref = 46.919 #wing area
 
+# AMBIENT PROPERTIES
 rho = 0.287 # density [kg/m^3]
 V = 200.63 # velocity [m/s]
 l = 2.296 # length average root tip chord[m]
-mu = 1.8 * 10**-5 # viscosity [Pa*s]
-k = 0.052*10**-5 # Surface: smooth molded composite [m]
+mu = 1.8e-5 # viscosity [Pa*s]
+k = 0.052e-5 # Surface: smooth molded composite [m]
 M = 0.68 # Mach number [-]
 
 xc = 0.413 #(x/c)m
@@ -36,12 +38,17 @@ u = 5*(pi/180) # upsweep angle [rad]
 Amax = 2.722 # maximum fuselage cross-sectional area [m^2]
 #Abase = 0 # fuselage base area [m^2]
 
+# LANDING GEAR
 d_mLG = 0.777 # height main landing gear [m]
 w_mLG = 0.513 # width main landing gear [m]
 d_nLG = 0.665 # height nose landing gear [m]
 w_nLG = 0.456 # width nose landing gear
-SA_MLG = 0.8 # frontal area main landing gear [m^2]
-SA_NLG = 0.303  # frontal area main landing gear [m^2]
+SS_N = 0.302
+SA_N = 0.188
+SS_M = 0.399
+SA_M = 0.276
+# SA_MLG = 0.8 # frontal area main landing gear [m^2]
+# SA_NLG = 0.303  # frontal area main landing gear [m^2]
 
 # nose lg total area = 0.303
 # main lg total area = 0.8 
