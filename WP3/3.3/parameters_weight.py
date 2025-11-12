@@ -59,5 +59,5 @@ N_pax = 6           # number of passengers
 c = 2.463102156*m_to_ft              #wing mean geometric chord [ft] is mean aerodynamic chord
 CL_alpha = 6.03     # CL alpha [1/rad]
 h_cr = 41000        # cruise altitude [ft]
-Gw =  8000*kg_to_lbs              # flight design gross weight [lbs]
+Gw =  5000*kg_to_lbs              # flight design gross weight [lbs] still needst to be reassesed 
 CL_max = 1.663      #

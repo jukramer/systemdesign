@@ -6,8 +6,8 @@ L1 = 5.445 #length first
 L2 = 3.956  
 L3 = 8.712
 S_wexp = 38 # exposed wing surface area [m^2]
-S_hexp = 0 # exposed horizontal tail surface area [m^2]
-S_vexp = 0 # exposed vertical tail surface area [m^2]
+S_hexp = 0 # exposed horizontal tail surface area [m^2] needs to be plugged in 
+S_vexp = 0 # exposed vertical tail surface area [m^2] needs to be plugged in 
 
 rho = 0.287 # density [kg/m^3]
 V = 200.63 # velocity [m/s]

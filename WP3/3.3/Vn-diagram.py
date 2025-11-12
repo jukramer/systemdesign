@@ -10,9 +10,9 @@ UdeC = 66.67 - 0.000833*h_cr
 UdeD = 33.34 - 0.000417* h_cr
 
 
-SlopeB = (kg*UdeB*CL_alpha)/(498* Gw/S)
-SlopeC = (kg*UdeC*CL_alpha)/(498* Gw/S)
-SlopeD = (kg*UdeD*CL_alpha)/(498* Gw/S)
+SlopeB = (kg*UdeB*CL_alpha)/(498*Gw/S)
+SlopeC = (kg*UdeC*CL_alpha)/(498*Gw/S)
+SlopeD = (kg*UdeD*CL_alpha)/(498 * Gw/S)
 
 
 n_plim = 2.1 + (24000/(Gw+10000))
@@ -42,7 +42,7 @@ def N_d(x):
 
 
 
-x_vals = np.arange(0, 8000, 0.1)
+x_vals = np.arange(0, 400, 0.1)
 N_b_vals = N_b(x_vals)
 N_c_vals = N_c(x_vals)
 N_d_vals = N_d(x_vals)
@@ -52,8 +52,8 @@ N_d_vals = N_d(x_vals)
 plt.plot((x_vals), (N_b_vals), linestyle='dashed') # (x1, x2), (y1, y2)
 plt.plot((x_vals), (N_c_vals), linestyle='dashed') 
 plt.plot((x_vals), (N_d_vals), linestyle='dashed')
-plt.hlines(n_plim,0,8000)
-plt.hlines(-1,0,8000)
+plt.hlines(n_plim,0,400)
+plt.hlines(-1,0,400)
 
 
 plt.show()
