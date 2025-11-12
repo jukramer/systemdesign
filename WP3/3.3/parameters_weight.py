@@ -31,7 +31,7 @@ Lambda_12_v = 22.10157387*deg_to_rad # semi-chord sweep angle vertical tail [rad
 
 k_f = 1.08          # for a pressurized fuselage
 V_D = 0             # design dive speed [KEAS]
-l_h = 0             # distance from wing root c/4 to hor. tail root c/4 [ft]
+l_h = 7.8*m_to_ft             # distance from wing root c/4 to hor. tail root c/4 [ft]
 w_f = 2.722625*m_to_ft             # maximum fuselage width [ft]
 h_f = 2.722625*m_to_ft             # maximum fuselage height [ft]
 S_fgs = Swet_fus*m_to_ft           # fuselage gross shell area [ft]
@@ -51,7 +51,7 @@ K_fc = 0.64         # constant for airplanes with powerd flight controls [-]
 l_pax = 3.51*m_to_ft           # length of the passenger cabin [ft]
 V_pax = l_pax * (h_f/2)**2 * pi         # passenger cabin volume in [ft^3]
 R = 6100000*m_to_nm   # range in nautical miles
-W_E = 0             # empty weight in [lbs]
+W_E = 6012*kg_to_lbs             # empty weight in [lbs]
 N_pax = 6           # number of passengers
 
 
@@ -59,6 +59,5 @@ N_pax = 6           # number of passengers
 c = 2.463102156*m_to_ft              #wing mean geometric chord [ft] is mean aerodynamic chord
 CL_alpha = 6.03     # CL alpha [1/rad]
 h_cr = 41000        # cruise altitude [ft]
-Gw =                # flight design gross weight [lbs]
-W_cr =              # cruise weight [lbs]
+Gw =  8000*kg_to_lbs              # flight design gross weight [lbs]
 CL_max = 1.663      #

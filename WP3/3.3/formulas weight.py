@@ -11,7 +11,7 @@ W_v = k_v*S_v*(3.81*(S_v**0.2*V_D)/((1000*math.cos(Lambda_12_v))**(1/2))-0.287)
 W_emp = W_h + W_v
 
 # Fuselage weight
-W_f = 0.021*k_f*(V_D*l_h/(w_f + h_f))^(1/2)*S_fgs**1.2
+W_f = 0.021*k_f*(V_D*l_h/(w_f + h_f))**(1/2)*S_fgs**1.2
 
 # Nacelle weight estimation (high bypass ratio turbofan)
 W_n = 0.065*T_TO
@@ -38,13 +38,13 @@ W_hy = 0.008 * W_TO
 
 
 #electrical systems
-W_ELS = 10.8*(V_pax)**0.7*(1-0.018(V_pax)^0.35)
+W_ELS = 10.8*(V_pax)**0.7*(1-0.018*(V_pax)**0.35)
 
 #instrumentation, avionics and electronics
-W_IAE = 0.575(W_E)^0.556 * R^0.25
+W_IAE = 0.575*(W_E)**0.556 * R**0.25
 
 #airconditioning pressurization, ani- and- deicing systems
-W_api = 6.75(l_pax)^1.28
+W_api = 6.75*(l_pax)**1.28
 
 #oxygen system
 W_ox = 40 + 2.4* N_pax
@@ -53,4 +53,4 @@ W_ox = 40 + 2.4* N_pax
 W_apu = 0.08 * W_TO
 
 #furnishing weight estimation
-W_fur = 0.211(W_TO - W_F)^0.91
+W_fur = 0.211*(W_TO - W_F)**0.91

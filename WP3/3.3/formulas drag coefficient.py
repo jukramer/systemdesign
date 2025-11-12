@@ -4,7 +4,7 @@ from parameters_drag import *
 
 #Sw calulation
 Swet_wing = 1.07 * 2 * S_wexp
-Swet_fus = ((m.pi * D_fus)/4)(1/(3*L1^2)((4*L1^2+D_fus^2/4)^1.5-(D_fus^3/8))-D_fus+4*L2+2*m.sqrt(L3^2+D_fus^2/4))
+Swet_fus = ((m.pi * D_fus)/4)*(1/(3*L1**2)*((4*L1**2+D_fus**2/4)**1.5-(D_fus**3/8))-D_fus+4*L2+2*m.sqrt(L3**2+D_fus**2/4))
 Swet_hor = 1.05 * 2 * S_hexp
 Swet_vert = 1.05 * 2 * S_vexp
 Swet_nac = 9.5902 #wetted area nacelle is dependent on team engine
@@ -33,10 +33,10 @@ Cf_tail = 0.35*Cf_laminar + 0.65*Cf_turbulent
 Cf_nac = 0 #CF nacelle still needed
 
 # FF
-FFwing =(1+(0.6/xc)*(tc)+100(tc)^4) (1.34*M^0.18*(m.cos(sweep)^0.28))
-FFhort = (1+(0.6/xct)*(tct)+100(tct)^4) (1.34*M^0.18*(m.cos(sweeptail)^0.28))
-FFvertc = (1+(0.6/xcv)*(tcv)+100(tcv)^4) (1.34*M^0.18*(m.cos(sweepvtail)^0.28))
-FFfus = (1+(60/ffus^3)+(ffus/400))
+FFwing =(1+(0.6/xc)*(tc)+100*(tc)**4) *(1.34*M**0.18*(m.cos(sweep)**0.28))
+FFhort = (1+(0.6/xct)*(tct)+100*(tct)**4)* (1.34*M**0.18*(m.cos(sweeptail)**0.28))
+FFvertc = (1+(0.6/xcv)*(tcv)+100*(tcv)**4)* (1.34*M**0.18*(m.cos(sweepvtail)**0.28))
+FFfus = (1+(60/ffus**3)+(ffus/400))
 FFnac = (1+(0.35/fnac))
 
 #IF constants
@@ -69,8 +69,8 @@ Ssm = 2* d_mLG*w_mLG # reference area main landing gear
 ssn = d_nLG * d_nLG # reference area nose landing gear
 ss = Ssm +ssn
 SA_LG = SA_NLG + SA_MLG * 2
-C_Ds = 0.04955*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
-Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
+C_Ds = 0.04955*m.exp((5.615*SA_LG)/ss) # for open wheel wells, for closed: 0.04955
+Cd_LG = C_Ds*ss/Sref # landing gear miscellaneous drag
 
 
 #flap constants
@@ -79,7 +79,7 @@ cfc =  0.25 #flap chord ratio
 Sflap = 20.135#area flap
 deltaf = 40 #deflection flap
 
-Cd_flap = Fflap* (cfc)(Sflap/Sref)*(deltaf-10)
+Cd_flap = Fflap* (cfc)*(Sflap/Sref)*(deltaf-10)
 
 # Total miscellaneous drag
 Cdmis = Cd_wavedrag + Cd_upsweep + Cd_LG + Cd_flap #cd_base
