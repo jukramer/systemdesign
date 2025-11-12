@@ -19,20 +19,20 @@ M = 0.68 # Mach number [-]
 xc = 0 #(x/c)m
 tc = 0.12 #thicknes chord airfoil
 M = 0.68 #machnumber
-sweep = 0 #wingsweep
+sweep = 10.56*(pi/180) #wingsweep
 ffus = (L1+L2+L3)/D_fus
 lnac = 2.502 #length nacele
 dnac = 1.35 #diameter nacele
 fnac = lnac/dnac
 xct = 0 #(x/c)m for the horizontal tail
-sweeptail = 0 #sweep horizontal tail
+sweeptail = 25*(pi/180) #sweep horizontal tail
 tct = 0 #thicknes chord airfoil horizontal tail
-sweepvtail = 0 #sweep vertical tail
+sweepvtail = 35*(pi/180) #sweep vertical tail
 xcv = 0 #(x/c)m vertical tail
 tcv = 0 #(t/c) vertical tail
 
 u = 5*(pi/180) # upsweep angle [rad]
-Amax = 0 # maximum fuselage cross-sectional area [m^2]
+Amax = 2.722 # maximum fuselage cross-sectional area [m^2]
 Abase = 0 # fuselage base area [m^2]
 
 SA_LG = 0 # frontal area landing gear [m^2]
@@ -59,7 +59,7 @@ S_h = 0                         # horizontal tail area [ft^2]
 V_D = 0                         # design dive speed [KEAS]
 Lambda_12_h = 0                 # semi-chord sweep angle horizontal tail [rad]
 
-S_v = 0                         # vertical tail area [ft^2]
+S_v = 11.37711*m_to_ft**2                         # vertical tail area [ft^2]
 z_h = 0                         # distance from vert.tail root to where ht is mounted on the v.t. [ft]
 b_v = 0                         # vertical tail span [ft]
 k_v = 1 + 0.15*(S_h*z_h/(S_v*b_v))         # for fuselage mounted vertical tails

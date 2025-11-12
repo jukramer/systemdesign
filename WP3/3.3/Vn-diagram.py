@@ -29,7 +29,6 @@ V_A = V_s1 * n_plim**(1/2)
 
 
 
-
 def N_b(x):
     return 1 + SlopeB * x
 
