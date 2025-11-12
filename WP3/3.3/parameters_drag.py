@@ -16,7 +16,7 @@ mu = 1.8 * 10**-5 # viscosity [Pa*s]
 k = 0.052*10**-5 # Surface: smooth molded composite [m]
 M = 0.68 # Mach number [-]
 
-xc = 0 #(x/c)m
+xc = 0.413 #(x/c)m
 tc = 0.12 #thicknes chord airfoil
 M = 0.68 #machnumber
 sweep = 10.56*(pi/180) #wingsweep
@@ -24,20 +24,34 @@ ffus = (L1+L2+L3)/D_fus
 lnac = 2.502 #length nacele
 dnac = 1.35 #diameter nacele
 fnac = lnac/dnac
-xct = 0 #(x/c)m for the horizontal tail
+xct = 0.3 #(x/c)m for the horizontal tail , location of maximum thickness
 sweeptail = 25*(pi/180) #sweep horizontal tail
-tct = 0 #thicknes chord airfoil horizontal tail
+tct = 0.12 #thicknes chord airfoil horizontal tail
 sweepvtail = 35*(pi/180) #sweep vertical tail
-xcv = 0 #(x/c)m vertical tail
-tcv = 0 #(t/c) vertical tail
+xcv = 0.3 #(x/c)m vertical tail location of maximum thickness
+tcv = 0.12 #(t/c) vertical tail
 
 u = 5*(pi/180) # upsweep angle [rad]
 Amax = 2.722 # maximum fuselage cross-sectional area [m^2]
 #Abase = 0 # fuselage base area [m^2]
 
-SA_LG = 0 # frontal area landing gear [m^2]
-d_LG = 0 # height landing gear [m]
-w_LG = 0 # width landing gear [m]
+
+d_mLG = 0.777 # height main landing gear [m]
+w_mLG = 0.513 # width main landing gear [m]
+d_nLG = 0.665 # height nose landing gear [m]
+w_nLG = 0.456 # width nose landing gear
+SA_MLG = 0.8 # frontal area main landing gear [m^2]
+SA_NLG = 0.303  # frontal area main landing gear [m^2]
 
 
+
+
+
+
+# nose lg total area = 0.303
+# main lg total area = 0.8 
+# main lg height = 0.777
+# main lg width = 0.513
+# nose lg height = 0.665
+# nose lg width 0.456
 

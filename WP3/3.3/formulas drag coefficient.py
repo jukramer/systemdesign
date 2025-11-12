@@ -65,8 +65,11 @@ Cd_upsweep = Dq_upsweep / Sref # miscellaneous drag due to fuselage upsweep
 # Dq_base = (0.139 + 0.419*(M - 0.161)**2)*Abase
 # Cd_base = Dq_base / Sref # fuselage base drag
 
-Ss = d_LG*w_LG # reference area landing gear
-C_Ds = 0.05328*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
+Ssm = 2* d_mLG*w_mLG # reference area main landing gear
+ssn = d_nLG * d_nLG # reference area nose landing gear
+ss = Ssm +ssn
+SA_LG = SA_NLG + SA_MLG * 2
+C_Ds = 0.04955*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
 Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
 
 
