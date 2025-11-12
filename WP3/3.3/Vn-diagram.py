@@ -1,4 +1,4 @@
-from parameters import *
+from parameters_weight import *
 import matplotlib.pyplot as plt
 import numpy as np
 
