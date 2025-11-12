@@ -43,7 +43,7 @@ FFnac = (1+(0.35/fnac))
 
 IFnac = 1.5 #directly under fuselage nacelle
 IFwing = 1.2 #low wing config
-IFfuselage = 1 #?
+IFfuselage = 1 #fuselage doesn't interfere with itself
 IFtail = 1.04 #T-tail accounts for vtail and htail
 
 totalwing = FFwing*Cf_wing*IFwing*Swet_wing
@@ -54,7 +54,6 @@ totalnac = FFnac*Cf_nac*IFnac*Swet_nac
 
 total = totalwing+ totalfus+ totalhtail +totalvtail +totalnac
 Sref = 46.919 #wing area
-
 
 # Miscellaneous drag
 Cd_wavedrag = 0 # no wave drag because M < Mcr
@@ -69,8 +68,8 @@ Ssm = 2* d_mLG*w_mLG # reference area main landing gear
 ssn = d_nLG * d_nLG # reference area nose landing gear
 ss = Ssm +ssn
 SA_LG = SA_NLG + SA_MLG * 2
-C_Ds = 0.04955*m.exp((5.615*SA_LG)/Ss) # for open wheel wells, for closed: 0.04955
-Cd_LG = C_Ds*Ss/Sref # landing gear miscellaneous drag
+C_Ds = 0.04955*m.exp((5.615*SA_LG)/ss) # for open wheel wells, for closed: 0.04955
+Cd_LG = C_Ds*ss/Sref # landing gear miscellaneous drag
 
 
 #flap constants

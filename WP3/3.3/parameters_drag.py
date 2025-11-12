@@ -35,18 +35,12 @@ u = 5*(pi/180) # upsweep angle [rad]
 Amax = 2.722 # maximum fuselage cross-sectional area [m^2]
 #Abase = 0 # fuselage base area [m^2]
 
-
 d_mLG = 0.777 # height main landing gear [m]
 w_mLG = 0.513 # width main landing gear [m]
 d_nLG = 0.665 # height nose landing gear [m]
 w_nLG = 0.456 # width nose landing gear
 SA_MLG = 0.8 # frontal area main landing gear [m^2]
 SA_NLG = 0.303  # frontal area main landing gear [m^2]
-
-
-
-
-
 
 # nose lg total area = 0.303
 # main lg total area = 0.8 
