@@ -5,5 +5,4 @@ from calc import *
 if __name__ == '__main__':
     Calc = Calc()
     
-    Calc.plotFE(0, 2e4, 50)
-
+    Calc.plotFE(0, 4e4, 50)

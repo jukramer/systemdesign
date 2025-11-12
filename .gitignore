@@ -1,3 +1,4 @@
 /.vscode,
 /WP2/__pycache__
 *.pyc
+*.png
