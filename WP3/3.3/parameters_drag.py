@@ -14,10 +14,9 @@ Sref = 46.919 #wing area
 # AMBIENT PROPERTIES
 rho = 0.287 # density [kg/m^3]
 V = 200.63 # velocity [m/s]
-l = 2.296 # length average root tip chord[m]
+l = 2.46 # length average root tip chord[m]
 mu = 1.8e-5 # viscosity [Pa*s]
-k = 0.052e-5 # Surface: smooth molded composite [m]
-M = 0.68 # Mach number [-]
+k = 0.634e-5 # Surface: smooth molded composite [m]
 
 xc = 0.413 #(x/c)m
 tc = 0.12 #thicknes chord airfoil
