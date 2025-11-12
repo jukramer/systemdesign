@@ -1,5 +1,5 @@
 import math as m
-from parameters import *
+from parameters_drag import *
 
 
 #Sw calulation

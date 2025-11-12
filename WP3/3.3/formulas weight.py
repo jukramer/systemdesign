@@ -1,4 +1,4 @@
-from parameters import *
+from parameters_weight import *
 import math
 
 # Wing weight estimation
