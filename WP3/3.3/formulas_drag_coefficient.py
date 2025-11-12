@@ -30,7 +30,6 @@ def calc_s_wet():
 
     return S_wet, Swet_wing, Swet_fus, Swet_hor, Swet_vert, Swet_nac
 
-
 # Cf calculations
 def calc_cf():
     Re_actual = rho*V*l/mu
