@@ -52,7 +52,7 @@ def calc_weight():
     W_ox = 40 + 2.4* N_pax
 
     #auxilary power unit
-    W_apu = 0.08 * W_TO
+    W_apu = 0.008 * W_TO
 
     #furnishing weight estimation
     W_fur = 0.211*(W_TO - W_F)**0.91
