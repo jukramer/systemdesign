@@ -60,7 +60,7 @@ def calc_FF():
     
     return FFwing, FFhort, FFvertc, FFfus, FFnac
 
-def calc_CD0(S_wet_vals, cf_vals, FF_vals):
+def calc_CD0(S_wet_vals, cf_vals, FF_vals, GRDWN):
     # MAIN DRAG FACTORS 
     S_wet, Swet_wing, Swet_fus, Swet_hor, Swet_vert, Swet_nac = S_wet_vals
     Cf_fuselage, Cf_wing, Cf_tail, Cf_nac = cf_vals
@@ -89,11 +89,11 @@ def calc_CD0(S_wet_vals, cf_vals, FF_vals):
     Delta_CDREF_TOT = 2*Delta_CDREF_M + Delta_CDREF_N
     
     Cd_flap = Fflap* (cfc)*(Sflap/Sref)*(deltaf-10) # flaps (misc drag)
-    Cdmisc = Cd_wavedrag + Cd_upsweep + Delta_CDREF_TOT + Cd_flap #cd_base, total miscellaneous drag
-    print(Cd_wavedrag, Cd_upsweep, Delta_CDREF_TOT, Cd_flap)
-
-    print(total)
-    print(Cdmisc)
+    Cdmisc = Cd_wavedrag + Cd_upsweep + Cd_flap #cd_base, total miscellaneous drag
+    
+    if GRDWN:
+        Cdmisc += Delta_CDREF_TOT
+    
     # CD0
     Cd0 = (1/Sref*total+Cdmisc)*1.03 # Total Cd0, with 3% of total Cd0 for excrescence and leakage
     
