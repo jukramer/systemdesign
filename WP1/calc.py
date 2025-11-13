@@ -27,7 +27,7 @@ class Calc:
             
         elif B >= 5:
             alphat = np.where(thetat < THETA_BREAK, deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE)), 
-                              deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE) - 3*(thetat-THETA_BREAK)/(1.5+MACH_CRUISE)))
+                            deltat*(1-(0.43+0.014*B)*np.sqrt(MACH_CRUISE) - 3*(thetat-THETA_BREAK)/(1.5+MACH_CRUISE)))
 
         return alphat
         

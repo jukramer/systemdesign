@@ -4,7 +4,7 @@ from calc import *
 if __name__ == '__main__':
     # DRAWING PARAMS
     WS_MIN = 0
-    WS_MAX = 4000 # program won't work if this is smaller than approach/landing constraints
+    WS_MAX = 4000 # program won't work if this is smaller than approach/landing constraints :(
     WS_INTRVL = 100
     
     calc = Calc()
