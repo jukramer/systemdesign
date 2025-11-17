@@ -1,7 +1,7 @@
 import math as m
 import numpy as np
 from parameters_drag import *
-
+# hello
 #IF constants
 IFnac = 1.5 #directly under fuselage nacelle
 IFwing = 1.2 #low wing config
@@ -12,7 +12,7 @@ IFtail = 1.04 #T-tail accounts for vtail and htail
 Fflap = 0.0074
 cfc =  0.25 #flap chord ratio
 Sflap = 20.135 #area flap
-deltaf = 40 #deflection flap
+deltaf = 0 #deflection flap
 
 # def calc_empennage(V_v):
 #     S_v=V_v*S_w*b_w/l_v # volume coeff, wing surf, wing span, moment arm = 6.741754
@@ -76,7 +76,6 @@ def calc_CD0(S_wet_vals, cf_vals, FF_vals, GRDWN):
 
     # MISCELLANEOUS DRAG
     Cd_wavedrag = 0 # no wave drag because M < Mcr
-
     Dq_upsweep = 3.83*u**2.5*Amax
     Cd_upsweep = Dq_upsweep / Sref # miscellaneous drag due to fuselage upsweep
     
@@ -88,14 +87,21 @@ def calc_CD0(S_wet_vals, cf_vals, FF_vals, GRDWN):
     
     Delta_CDREF_TOT = 2*Delta_CDREF_M + Delta_CDREF_N
     
-    Cd_flap = Fflap* (cfc)*(Sflap/Sref)*(deltaf-10) # flaps (misc drag)
+    if deltaf > 10:
+        Cd_flap = Fflap* (cfc)*(Sflap/Sref)*(deltaf-10) # flaps (misc drag)
+    else: 
+        Cd_flap = 0
+        
     Cdmisc = Cd_wavedrag + Cd_upsweep + Cd_flap #cd_base, total miscellaneous drag
+    print(Cd_flap)
     
     if GRDWN:
         Cdmisc += Delta_CDREF_TOT
     
     # CD0
     Cd0 = (1/Sref*total+Cdmisc)*1.03 # Total Cd0, with 3% of total Cd0 for excrescence and leakage
+    
+    print(total/Sref, Cdmisc)
     
     return Cd0
 
