@@ -4,7 +4,9 @@ import scipy as sp
 class Calc():
     def __init__(self, file):
         with open(file) as data:
+            dat = np.genfromtxt(data, skip_header=22, invalid_raise=False)
             
+        self.dat = dat
     
     # Load Distribution as function of x
     def distrib(self):
