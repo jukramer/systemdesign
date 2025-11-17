@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import colorsys as cs
 from parameters1 import *
+# hello
 
 class Calc:
     def __init__(self):
