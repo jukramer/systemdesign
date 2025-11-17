@@ -1,7 +1,7 @@
 import math as m
 import numpy as np
 from parameters_drag import *
-
+# hello
 #IF constants
 IFnac = 1.5 #directly under fuselage nacelle
 IFwing = 1.2 #low wing config
