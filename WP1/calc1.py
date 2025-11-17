@@ -4,6 +4,7 @@ import colorsys as cs
 from parameters1 import *
 # hello
 # hello
+#hello 2
 class Calc:
     def __init__(self):
         pass
