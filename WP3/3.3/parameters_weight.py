@@ -11,16 +11,18 @@ m_to_nm = 0.000539956803        # meters to nautical miles
 ms_to_KEAS = 1.94384
 
 # MASSES
-W_TO = 9907.7*kg_to_lbs         # maximum take off weight [lbs]
-W_F = 2960*kg_to_lbs            # fuel weight [lbs]
-W_E = 6012*kg_to_lbs            # empty weight in [lbs]
+W_TO = 7142.314593*kg_to_lbs         # maximum take off weight [lbs]
+W_F = 1252.158247*kg_to_lbs            # fuel weight [lbs]
+W_E = 4880.156346*kg_to_lbs            # empty weight in [lbs]
 W_MZF = W_TO - W_F              # maximum zero fuel weight [lbs]
 M_PROP = 2*551                  # mass of two engines [kg]
 
 # PLANFORM
-b = 20.435*m_to_ft              # span [ft]
+b = 17.29521525*m_to_ft              # span [ft]
 Lambda_12 = 7.627843029*(pi/180)  # wing semi-chord sweep angle [rad]
-S = 46.919*m_to_ft**2           # wing area [ft^2]
+S = 33.60949107*m_to_ft**2           # wing area [ft^2]
+T_TO = 31673.07352/lbs_to_N            # total required take-off thrust
+
 n_ult = 4.275                   # ultimate load factor [-]
 t_r = 3.368779881*0.179*m_to_ft # maximum root thickness [ft] root chord x max thickness %
 V_CR = 200.629*ms_to_KEAS
@@ -62,7 +64,6 @@ K_fc = 0.64         # constant for airplanes with powerd flight controls [-]
 
 R = 6100000*m_to_nm   # range in nautical miles
 N_pax = 6           # number of passengers
-T_TO = 42000/lbs_to_N            # total required take-off thrust
 
 
 # V-n diagram ??
