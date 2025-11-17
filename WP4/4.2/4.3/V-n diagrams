@@ -1,0 +1,5 @@
+import math
+
+V_s0 = 1
+V_s1 = 2
+V_a = V_s1 * math.sqrt(n)
