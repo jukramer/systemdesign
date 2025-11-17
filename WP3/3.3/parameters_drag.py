@@ -9,12 +9,12 @@ L3 = 8.712
 S_wexp = 38 # exposed wing surface area [m^2]
 S_hexp = 0 # exposed horizontal tail surface area [m^2]
 S_vexp = 0 # exposed vertical tail surface area [m^2]
-Sref = 46.919 #wing area
+Sref = 33.60949107 #wing area
 
 # AMBIENT PROPERTIES
 rho = 0.287 # density [kg/m^3]
 V = 200.63 # velocity [m/s]
-l = 2.46 # length average root tip chord[m]
+l = 2.084764832 # length average root tip chord[m]
 mu = 1.8e-5 # viscosity [Pa*s]
 k = 0.634e-5 # Surface: smooth molded composite [m]
 
