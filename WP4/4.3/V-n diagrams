@@ -3,3 +3,8 @@ import math
 V_s0 = 1
 V_s1 = 2
 V_a = V_s1 * math.sqrt(n)
+V_c = 3
+V_d = V_c / 0.8
+# M_d - M_c >= 0.5
+V_f_takeoff =
+V_f_approach = 
