@@ -100,7 +100,7 @@ class Calc:
         
         # line4, = ax.plot(WS_VALS, TS_VALS_ROC, color="#1E6E10", label='Rate of Climb', zorder=2)
         line5, = ax.plot(WS_VALS, TS_VALS_TAKEOFF, color="#FF3C3C", label='Takeoff Field', zorder=2)
-        line10, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_5, color="#FF8A1D", label='Climb Gradient REQ_6', zorder=2)
+        line10, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_5, color="#FF1DD6", label='Climb Gradient REQ_5', zorder=2)
         line6, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_6, color="#FF8A1D", label='Climb Gradient REQ_6', zorder=2)
         line7, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_7, color="#FFE100", label='Climb Gradient REQ_7', zorder=2)
         line8, = ax.plot(WS_VALS, TS_VALS_CLIMBGRAD_8, color="#B1FF14", label='Climb Gradient REQ_8', zorder=2)
