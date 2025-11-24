@@ -22,10 +22,14 @@ class Calc():
 
         x_vals = np.arange(-7, 7, 0.05)
 
-        # plt.plot(x_vals, self.Cl(x_vals))
-        # plt.plot(x_vals, self.Cd(x_vals))
-        # plt.plot(x_vals, self.Cm(x_vals))
-        # plt.show()
+        plt.plot(x_vals, self.Cl(x_vals))
+        plt.plot(x_vals, self.Cd(x_vals))
+        plt.plot(x_vals, self.Cm(x_vals))
+        plt.legend(["Lift coefficient", "Induced drag coefficient", "Moment coefficient"])
+        plt.xlabel("Span location [m]")
+        plt.ylabel("Coefficient [-]")
+        plt.title("Interpolation of Cl, Cd, Cm against the span (10°)")
+        plt.show()
 
 
 
@@ -63,22 +67,8 @@ class Calc():
     
 
 if __name__ == '__main__':
-    calc = Calc(r'WP4\4.1\dataa0.txt')
-    
-    x_vals = np.arange(0, 10, 0.01)
-    axial_vals = []
-    loading = np.sin
-    
-    for x in x_vals:
-        axial_vals.append(calc.axial(x, 10, loading, np.array([[2, 5],
-                                                              [4, -2]])))
-    
-    # print(axial_vals := calc.axial(5, 10, loading, np.array([[2, 5],
-    #                                                       [4, -2]])))
-    
-    plt.plot(x_vals, axial_vals)
-    plt.show()    
-    
+    calc1 = Calc(r'WP4\4.1\dataa0.txt')
+    calc2 = Calc(r'WP4\4.1\dataa10.txt')
 
     
 
