@@ -2,6 +2,11 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+#print(V_s0_approach)
+print(V_s0_landing)
+#print(V_s0_takeoff)
+
+
 def case1():
     # Weights / parameters
     W_payload = 1010 # kg
@@ -11,8 +16,8 @@ def case1():
     S = 33.609 # m^2
     C_L_max_cr = 1.663
     C_L_max_to = 2
-    C_L_max_a = 2
-    C_L_max_l = 2
+    C_L_max_a = 2.1
+    C_L_max_l = 2.1
     
     # Flight conditions
     M_cr = 0.68
