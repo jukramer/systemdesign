@@ -22,10 +22,10 @@ class Calc():
 
         x_vals = np.arange(-7, 7, 0.05)
 
-        plt.plot(x_vals, self.Cl(x_vals))
-        plt.plot(x_vals, self.Cd(x_vals))
-        plt.plot(x_vals, self.Cm(x_vals))
-        plt.show()
+        # plt.plot(x_vals, self.Cl(x_vals))
+        # plt.plot(x_vals, self.Cd(x_vals))
+        # plt.plot(x_vals, self.Cm(x_vals))
+        # plt.show()
 
 
 
@@ -39,12 +39,12 @@ class Calc():
     
     # Normal force as function of x
     def axial(self, x, L, loading, pointLoads):
-        N = sp.integrate.quad(loading, x, L) 
+        N = sp.integrate.quad(loading, x, L)[0]
         
         for i in range(len(pointLoads)):
             N += pointLoads[i,1] * (1-np.heaviside(x-pointLoads[i,0], 1))
         
-        return N(x)
+        return N
 
     # Shear force as function of x
     def shear(self, x, L, loading, pointLoads):
@@ -64,6 +64,21 @@ class Calc():
 
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt')
+    
+    x_vals = np.arange(0, 10, 0.01)
+    axial_vals = []
+    loading = np.sin
+    
+    for x in x_vals:
+        axial_vals.append(calc.axial(x, 10, loading, np.array([[2, 5],
+                                                              [4, -2]])))
+    
+    # print(axial_vals := calc.axial(5, 10, loading, np.array([[2, 5],
+    #                                                       [4, -2]])))
+    
+    plt.plot(x_vals, axial_vals)
+    plt.show()    
+    
 
     
 
