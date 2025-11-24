@@ -25,6 +25,10 @@ class Calc():
         plt.plot(x_vals, self.Cl(x_vals))
         plt.plot(x_vals, self.Cd(x_vals))
         plt.plot(x_vals, self.Cm(x_vals))
+        plt.legend(["Lift coefficient", "Induced drag coefficient", "Moment coefficient"])
+        plt.xlabel("Span location [m]")
+        plt.ylabel("Coefficient [-]")
+        plt.title("Interpolation of Cl, Cd, Cm against the span (10°)")
         plt.show()
 
 
@@ -63,7 +67,8 @@ class Calc():
     
 
 if __name__ == '__main__':
-    calc = Calc(r'WP4\4.1\dataa0.txt')
+    calc1 = Calc(r'WP4\4.1\dataa0.txt')
+    calc2 = Calc(r'WP4\4.1\dataa10.txt')
 
     
 
