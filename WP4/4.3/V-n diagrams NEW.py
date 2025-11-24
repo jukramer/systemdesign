@@ -32,7 +32,7 @@ def plot(k, i, W, rho_0, a):
     # Stall speeds
     #V_s0_takeoff = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_to))   # flaps down takeoff
     #V_s0_approach = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_a))   # flaps down approach
-    V_s0_landing = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_l))   # flaps down landing
+    V_s0_landing = np.sqrt(2*g*W/(rho_0*S*C_L_max_l))   # flaps down landing
     V_s1 = np.sqrt(2*g*W/(rho_0*S*C_L_max_cr)) / pressure_scaling   # flaps up
         
     # Limit load factors
