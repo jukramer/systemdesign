@@ -16,6 +16,7 @@ class Calc():
     # Load Distribution as function of x
     def distrib(self):
         distrib = None
+
         return distrib
     
     # Normal force as function of x
@@ -27,3 +28,4 @@ class Calc():
     def shear(self, x, L, distrib):
         V = sp.integrate.quad(distrib, x, L) 
         return V
+

@@ -10,7 +10,7 @@ C_L = 2*L/ (rho * V ** 2 * S_w) #Cl
 C_D = 2*D/ (rho * V ** 2 * S_w) #Cd
 
 page 80
-
+2 + 2
  Stall speed (Vs) or approach speed (Vapp)
 2. Landing field length (LFL, LLF)
 3. Cruise speed (VCR) or cruise Mach number (MCR)
