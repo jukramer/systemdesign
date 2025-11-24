@@ -15,7 +15,7 @@ def case1():
     W_mtom_lbs = 0.454 * W_mtom # lbs
     S = 33.609 # m^2
     C_L_max_cr = 1.663
-    C_L_max_to = 2
+    C_L_max_to = 2.1
     C_L_max_a = 2.1
     C_L_max_l = 2.1
     
@@ -23,26 +23,27 @@ def case1():
     M_cr = 0.68
     Altitude = 41000 # ft
     Altitude_metric = Altitude / 3.281 # m
-    rho_cr = 216.65 # kg/m3 or m/s conversion factor
+    rho_cr = 0.287407 # kg/m3 or m/s conversion factor
     g = 9.80665 # m/s^2
     rho = 1.225 # kg/m^3
+    pressure_scaling = math.sqrt(rho/rho_cr)
     
     # Stall speeds
     V_s0_takeoff = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_to))   # flaps down takeoff
     V_s0_approach = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_a))   # flaps down approach
     V_s0_landing = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_l))   # flaps down landing
-    V_s1 = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_cr))   # flaps up
+    V_s1 = np.sqrt(2*g*W_oem/(rho_cr*S*C_L_max_cr))  * pressure_scaling # flaps up
     
     # Limit load factors
     n_max_flaps = 2
-    n_max = 2.1 + 24000 / (W_mtom_lbs + 10000)
+    n_max = 3.192
     n_max = max(2.5, min(n_max, 3.8))
     n_min = -1
     
     # V-speeds
-    V_c = M_cr * rho_cr
-    V_d = V_c / 0.8
-    V_a = V_s1 * math.sqrt(n_max)
+    V_c = (M_cr * rho_cr) * pressure_scaling
+    V_d = (V_c / 0.8) * pressure_scaling
+    V_a = (V_s1 * math.sqrt(n_max)) * pressure_scaling
     
     # Flap speeds
     V_f_takeoff = 1.6 * V_s1
