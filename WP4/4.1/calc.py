@@ -25,3 +25,13 @@ class Calc():
         V = sp.integrate.quad(distrib, x, L) 
         return V
 
+    # Moment force as function of x
+    def moment(self, x, L, distrib, M_p, u):
+        u_p = u / L
+        M = -(sp.integrate.quad(distrib, x, L) + M_p * (1 - u_p))
+        return M
+
+    def torque(self, ):
+        T = sp.integrate.quad()
+        return T
+
