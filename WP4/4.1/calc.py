@@ -6,8 +6,12 @@ class Calc():
         with open(file) as data:
             dat = np.genfromtxt(data, skip_header=21, invalid_raise=False)
             
-        self.dat = dat
-        self.CL = self.dat[3,:]        
+        ylst = dat[0,:]
+        Cllst = dat[3,:]
+        Cdlst = dat[5,:]
+        Cmlst = dat[7,:]    
+        
+        self.Cl = sp.interpolate.interpld(ylst, Cllst, kind='linear', fill_value='extrapolate')
     
     # Load Distribution as function of x
     def distrib(self):
