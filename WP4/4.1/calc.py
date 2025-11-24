@@ -24,3 +24,4 @@ class Calc():
     def shear(self, x, L, distrib):
         V = sp.integrate.quad(distrib, x, L) 
         return V
+
