@@ -7,7 +7,7 @@ def moment_diagram(function):
     b_w = 20.4
     L = b_w / 2
 
-    # Moment diagram
+    # Diagram
 
     z_vals = np.arange(0, L, 0.1)
     y_vals = function(z_vals)
