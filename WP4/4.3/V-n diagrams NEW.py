@@ -115,6 +115,8 @@ def plot(k, i, W, rho_0, a):
     print(V_a)
     print(V_c)
     print(V_d)
+    print(V_s0_landing)
+    print(V_f_landing)
 
     # Plot
     axes[k, i].set_xlim(0, V_d + 10)
