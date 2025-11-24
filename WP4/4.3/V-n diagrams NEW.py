@@ -25,14 +25,14 @@ g = 9.80665 # m/s^2
 a_cr = 295.07
 a_SL = 343.29
     
-def plot(k, i, W, rho_0, a):
+def plot(k, i, W, rho_0, a, name):
 
     pressure_scaling = math.sqrt(rho/rho_0)
 
     # Stall speeds
     #V_s0_takeoff = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_to))   # flaps down takeoff
     #V_s0_approach = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_a))   # flaps down approach
-    V_s0_landing = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_l))   # flaps down landing
+    V_s0_landing = np.sqrt(2*g*W/(rho_0*S*C_L_max_l)) / pressure_scaling  # flaps down landing
     V_s1 = np.sqrt(2*g*W/(rho_0*S*C_L_max_cr)) / pressure_scaling   # flaps up
         
     # Limit load factors
@@ -115,6 +115,8 @@ def plot(k, i, W, rho_0, a):
     print(V_a)
     print(V_c)
     print(V_d)
+    print(V_s0_landing)
+    print(V_f_landing)
 
     # Plot
     axes[k, i].set_xlim(0, V_d + 10)
@@ -129,7 +131,7 @@ def plot(k, i, W, rho_0, a):
     axes[k, i].plot([0, V_d], [1, 1], 'k--', linewidth=1)
     axes[k, i].plot([0, V_d], [-1, -1], 'k--', linewidth=1)
     axes[k, i].plot([V_s1, V_s1], [0, 1], 'k--', linewidth=1)
-    axes[k, i].set_title('V_EAS vs n Diagram, Flaps for Take-off, MTOM')
+    axes[k, i].set_title(name)
     axes[k, i].set_xlabel('V_EAS')
     axes[k, i].set_ylabel('n')
     #axes[k, i].legend()
@@ -145,12 +147,12 @@ def plot(k, i, W, rho_0, a):
 
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 8))
-plot(0, 0, W_oem, rho_cr, a_cr)
-plot(0, 1, W_mtom, rho_cr, a_cr)
-plot(0, 2, W_oem + W_payload, rho_cr, a_cr)
-plot(1, 0, W_oem, rho, a_SL)
-plot(1, 1, W_mtom, rho, a_SL)
-plot(1, 2, W_oem + W_payload, rho, a_SL)
+plot(0, 0, W_oem, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, EOM')
+plot(0, 1, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, MTOM')
+plot(0, 2, W_oem + W_payload, rho_cr, a_cr,'V_EAS vs n Diagram, Cruise, EOM + Payload')
+plot(1, 0, W_oem, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM')
+plot(1, 1, W_mtom, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
+plot(1, 2, W_oem + W_payload, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + Payload')
 
 plt.tight_layout()
 plt.show()
