@@ -67,8 +67,8 @@ class Calc():
     
 
 if __name__ == '__main__':
-    calc1 = Calc(r'WP4\4.1\dataa0.txt')
-    calc2 = Calc(r'WP4\4.1\dataa10.txt')
+    calc1 = Calc(r'WP4\4.1\dataa10.txt')
+
 
     
 
