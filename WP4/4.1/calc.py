@@ -12,20 +12,18 @@ class Calc():
         Cmlst = dat[7,:]    
         
         self.Cl = sp.interpolate.interpld(ylst, Cllst, kind='linear', fill_value='extrapolate')
-    
-    # Load Distribution as function of x
-    def distrib(self):
-        distrib = None
-
-        return distrib
-    
+        
     # Normal force as function of x
-    def axial(self, x, L, distrib):
-        N = sp.integrate.quad(distrib, x, L) 
-        return N
+    def axial(self, x, L, loading, pointLoads):
+        N = sp.integrate.quad(loading, x, L) 
+        
+        for i in range(len(pointLoads)):
+            N += pointLoads[i,1] * (1-np.heaviside(x-pointLoads[i,0], 1))
+        
+        return N(x)
 
     # Shear force as function of x
-    def shear(self, x, L, distrib):
-        V = sp.integrate.quad(distrib, x, L) 
+    def shear(self, x, L, loading, pointLoads):
+        V = sp.integrate.quad(loading, x, L) 
         return V
 
