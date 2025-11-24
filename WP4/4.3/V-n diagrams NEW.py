@@ -23,8 +23,9 @@ rho = 1.225 # kg/m^3
 g = 9.80665 # m/s^2
 
 a_cr = 295.07
+a_SL = 343.29
     
-def plot(k, i, W, rho_0):
+def plot(k, i, W, rho_0, a):
 
     pressure_scaling = math.sqrt(rho/rho_0)
 
@@ -43,7 +44,7 @@ def plot(k, i, W, rho_0):
 
 
     # V-speeds
-    V_c = M_cr * a_cr / pressure_scaling
+    V_c = M_cr * a / pressure_scaling
     V_d = (V_c / 0.8)
     V_a = (V_s1 * math.sqrt(n_max))
         
@@ -144,12 +145,12 @@ def plot(k, i, W, rho_0):
 
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 8))
-plot(0, 0, W_oem, rho_cr)
-plot(0, 1, W_mtom, rho_cr)
-plot(0, 2, W_oem + W_payload, rho_cr)
-plot(1, 0, W_oem, rho)
-plot(1, 1, W_mtom, rho)
-plot(1, 2, W_oem + W_payload, rho)
+plot(0, 0, W_oem, rho_cr, a_cr)
+plot(0, 1, W_mtom, rho_cr, a_cr)
+plot(0, 2, W_oem + W_payload, rho_cr, a_cr)
+plot(1, 0, W_oem, rho, a_SL)
+plot(1, 1, W_mtom, rho, a_SL)
+plot(1, 2, W_oem + W_payload, rho, a_SL)
 
 plt.tight_layout()
 plt.show()
