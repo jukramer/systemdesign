@@ -147,12 +147,12 @@ def plot(k, i, W, rho_0, a, name):
 
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 8))
-plot(0, 0, W_oem, rho_cr, a_cr, 'V_EAS vs n Diagram, Flaps for Take-off, MTOM')
-plot(0, 1, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Flaps for Take-off, MTOM')
-plot(0, 2, W_oem + W_payload, rho_cr, a_cr,'V_EAS vs n Diagram, Flaps for Take-off, MTOM')
-plot(1, 0, W_oem, rho, a_SL, 'V_EAS vs n Diagram, Flaps for Take-off, MTOM')
-plot(1, 1, W_mtom, rho, a_SL, 'V_EAS vs n Diagram, Flaps for Take-off, MTOM')
-plot(1, 2, W_oem + W_payload, rho, a_SL, 'V_EAS vs n Diagram, Flaps for Take-off, MTOM')
+plot(0, 0, W_oem, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, EOM')
+plot(0, 1, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, MTOM')
+plot(0, 2, W_oem + W_payload, rho_cr, a_cr,'V_EAS vs n Diagram, Cruise, EOM + Payload')
+plot(1, 0, W_oem, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM')
+plot(1, 1, W_mtom, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
+plot(1, 2, W_oem + W_payload, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + Payload')
 
 plt.tight_layout()
 plt.show()
