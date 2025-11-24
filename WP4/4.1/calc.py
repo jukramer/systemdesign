@@ -43,12 +43,12 @@ class Calc():
     
     # Normal force as function of x
     def axial(self, x, L, loading, pointLoads):
-        N = sp.integrate.quad(loading, x, L) 
+        N = sp.integrate.quad(loading, x, L)[0]
         
         for i in range(len(pointLoads)):
             N += pointLoads[i,1] * (1-np.heaviside(x-pointLoads[i,0], 1))
         
-        return N(x)
+        return N
 
     # Shear force as function of x
     def shear(self, x, L, loading, pointLoads):
