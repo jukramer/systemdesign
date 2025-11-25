@@ -77,10 +77,20 @@ class Calc():
         
         return T
         
-    def plot(self, subplots = True):
-        pass
-    
-
+    def plot(self, loading, lims, plots, subplots = True, step=0.01):
+        # Ensure lims are of correct dimension
+        assert len(lims) == 2
+        
+        x_vals = np.arange(lims[0], lims[1], step)
+        
+        axial_vals = []
+        shear_vals = []
+        moment_vals = []
+        torsion_vals = []
+        
+        # ... 
+        
+        
 # For testing
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt')
@@ -97,6 +107,8 @@ if __name__ == '__main__':
     # for x in x_vals:  
     #     moment_vals.append(calc.moment(x, np.pi, calc.shear, NULL_ARRAY_2, 
     #                                    (np.pi, loading, NULL_ARRAY_2)))   
+        
+
         
     for x in x_vals:  
         torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x : -1, lambda x : 0, NULL_ARRAY_3, NULL_ARRAY_2))
