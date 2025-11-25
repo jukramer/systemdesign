@@ -38,8 +38,8 @@ class Calc():
     # loading must be a python function.
     def shear(self, x, L, loading, pointLoads):
         # These asserts ensure that the point load arrays have the correct dimensions
-        print(pointLoads.shape)
         assert pointLoads.shape[0] == 2
+        
         V = sp.integrate.quad(loading, x, L)[0]
 
         for i in range(pointLoads.shape[1]):
@@ -101,17 +101,16 @@ if __name__ == '__main__':
     torsion_vals = []
     loading = lambda x : x
     
-    # for x in x_vals:
-    #     shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
+    for x in x_vals:
+        shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
       
-    # for x in x_vals:  
-    #     moment_vals.append(calc.moment(x, np.pi, calc.shear, NULL_ARRAY_2, 
-    #                                    (np.pi, loading, NULL_ARRAY_2)))   
-        
-
+    for x in x_vals:  
+        moment_vals.append(calc.moment(x, np.pi, calc.shear, NULL_ARRAY_2, 
+                                       (np.pi, loading, NULL_ARRAY_2)))   
         
     for x in x_vals:  
         torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x : -1, lambda x : 0, NULL_ARRAY_3, NULL_ARRAY_2))
         
     plt.plot(x_vals, torsion_vals)
     plt.show()
+    
