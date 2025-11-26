@@ -99,7 +99,7 @@ if __name__ == '__main__':
     shear_vals = []
     moment_vals = []
     torsion_vals = []
-    loading = lambda x : x
+    loading = lambda x: x
     
     for x in x_vals:
         shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
