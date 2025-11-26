@@ -9,20 +9,33 @@ NULL_ARRAY_3 = np.zeros((3,1)) # 0-load araray (for 3-row point loads)
 
 
 class Calc():
-    def __init__(self, file):
-        with open(file) as data:
-            dat = np.genfromtxt(data, skip_header=21, invalid_raise=False)
+    def __init__(self, file0, file10):
+        with open(file0) as data0:
+            dat0 = np.genfromtxt(data0, skip_header=21, invalid_raise=False)
 
-        ylst = dat[:,0]
-        Cllst = dat[:,3]
-        Cdlst = dat[:,5]
-        Cmlst = dat[:,7]    
-        clst = dat[:,1]
+        with open(file10) as data10:
+            dat10 = np.genfromtxt(data10, skip_header=21, invalid_raise=False)
+
+        ylst0 = dat0[:,0]
+        Cllst0 = dat0[:,3]
+        Cdlst0 = dat0[:,5]
+        Cmlst0 = dat0[:,7]    
+        clst0 = dat0[:,1]
+
+        ylst10 = dat10[:,0]
+        Cllst10 = dat10[:,3]
+        Cdlst10 = dat10[:,5]
+        Cmlst10 = dat10[:,7]    
+        clst10 = dat10[:,1]
 
         # Interpolate datapoints from XFLR5 data to obtain python functions
-        self.Cl = sp.interpolate.interp1d(ylst, Cllst, kind='cubic', fill_value='extrapolate')
-        self.Cd = sp.interpolate.interp1d(ylst, Cdlst, kind='cubic', fill_value='extrapolate')
-        self.Cm = sp.interpolate.interp1d(ylst, Cmlst, kind='cubic', fill_value='extrapolate')
+        self.Cl0 = sp.interpolate.interp1d(ylst0, Cllst0, kind='cubic', fill_value='extrapolate')
+        self.Cd0 = sp.interpolate.interp1d(ylst0, Cdlst0, kind='cubic', fill_value='extrapolate')
+        self.Cm0 = sp.interpolate.interp1d(ylst0, Cmlst0, kind='cubic', fill_value='extrapolate')
+
+        self.Cl10 = sp.interpolate.interp1d(ylst10, Cllst10, kind='cubic', fill_value='extrapolate')
+        self.Cd10 = sp.interpolate.interp1d(ylst10, Cdlst10, kind='cubic', fill_value='extrapolate')
+        self.Cm10 = sp.interpolate.interp1d(ylst10, Cmlst10, kind='cubic', fill_value='extrapolate')
     
     def chord(self, y):
         c = C_ROOT+(C_TIP-C_ROOT)*2*y/b
@@ -41,7 +54,9 @@ class Calc():
         return M
     
 
-
+    
+    def inertialLoading(self, a=g)
+        
     # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
     # loading must be a python function.
     def axial(self, x, L, loading, pointLoads):
@@ -109,8 +124,7 @@ class Calc():
         torsion_vals = []
         
         # ... 
-        
-        
+
 # For testing
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt')
@@ -120,6 +134,8 @@ if __name__ == '__main__':
     moment_vals = []
     torsion_vals = []
     loading = lambda x: x
+    lambda x: x**2
+    
     
     for x in x_vals:
         shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
@@ -129,7 +145,7 @@ if __name__ == '__main__':
                                        (np.pi, loading, NULL_ARRAY_2)))   
         
     for x in x_vals:  
-        torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x : -1, lambda x : 0, NULL_ARRAY_3, NULL_ARRAY_2))
+        torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x: -1, lambda x: 0, NULL_ARRAY_3, NULL_ARRAY_2))
         
     plt.plot(x_vals, torsion_vals)
     plt.show()
