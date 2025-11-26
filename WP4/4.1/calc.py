@@ -36,7 +36,17 @@ class Calc():
         self.Cl10 = sp.interpolate.interp1d(ylst10, Cllst10, kind='cubic', fill_value='extrapolate')
         self.Cd10 = sp.interpolate.interp1d(ylst10, Cdlst10, kind='cubic', fill_value='extrapolate')
         self.Cm10 = sp.interpolate.interp1d(ylst10, Cmlst10, kind='cubic', fill_value='extrapolate')
+
+        self.lifttest()
     
+    def lifttest(self):
+        L =W_MTOW*n_ult
+        C_L = L/(q*S)
+        print(C_L)
+
+    
+
+
     def chord(self, y):
         c = C_ROOT+(C_TIP-C_ROOT)*2*y/b
         return c
@@ -130,7 +140,9 @@ class Calc():
 
 # For testing
 if __name__ == '__main__':
-    calc = Calc(r'WP4\4.1\dataa0.txt')
+    calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
+
+    calc.lifttest()
     
     x_vals = np.arange(0, np.pi, 0.01)
     shear_vals = []
@@ -152,4 +164,3 @@ if __name__ == '__main__':
         
     plt.plot(x_vals, torsion_vals)
     plt.show()
-    
