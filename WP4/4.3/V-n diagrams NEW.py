@@ -133,6 +133,17 @@ def plot(k, i, W, rho_0, a, name):
     axes[k, i].plot([0, V_d], [1, 1], 'k--', linewidth=1)
     axes[k, i].plot([0, V_d], [-1, -1], 'k--', linewidth=1)
     axes[k, i].plot([V_s1, V_s1], [0, 1], 'k--', linewidth=1)
+
+    axes[k, i].text(V_s1 + 5, 0.1, '$V_S$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_a + 7, 0.1, '$V_S\\sqrt{n_{max}}$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_c + 5, 0.1, '$V_C$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_d + 5, 0.1, '$V_D$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_c - 20, -1.3, '$n_{min}$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_d - 20, n_max + 0.1, '$n_{max}$', ha='center', va='bottom', fontsize=8)
+    if W == W_mtom:
+        axes[k, i].text(V_f_takeoff - 22, n_max_flaps + 0.1, '$n_{max_{flaps}}$', ha='center', va='bottom', fontsize=8)
+
+
     axes[k, i].set_title(name)
     axes[k, i].set_xlabel('V_EAS')
     axes[k, i].set_ylabel('n')
