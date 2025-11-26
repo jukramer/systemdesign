@@ -30,8 +30,8 @@ def plot(k, i, W, rho_0, a, name):
     pressure_scaling = math.sqrt(rho/rho_0)
 
     # Stall speeds
-    #V_s0_takeoff = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_to))   # flaps down takeoff
-    #V_s0_approach = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_a))   # flaps down approach
+    V_s0_takeoff = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_to)) / pressure_scaling  # flaps down takeoff
+    V_s0_approach = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_a)) / pressure_scaling  # flaps down approach
     V_s0_landing = np.sqrt(2*g*W/(rho_0*S*C_L_max_l)) / pressure_scaling  # flaps down landing
     V_s1 = np.sqrt(2*g*W/(rho_0*S*C_L_max_cr)) / pressure_scaling   # flaps up
         
@@ -71,8 +71,8 @@ def plot(k, i, W, rho_0, a, name):
         else:
             n_pos = n_max
             
-        if V <= V_f_landing:
-            n_flaps_calc = (V / V_s0_landing)**2
+        if V <= V_f_takeoff:
+            n_flaps_calc = (V / V_s0_takeoff)**2
             if n_flaps_calc <= n_max_flaps:
                 n_flaps = n_flaps_calc
             else:
@@ -124,8 +124,9 @@ def plot(k, i, W, rho_0, a, name):
     axes[k, i].set_ylim(n_min - 0.5, n_max + 0.5)
     axes[k, i].plot([0, V_d + 10], [0, 0], 'k-', linewidth=1.5)
     axes[k, i].plot(V_values, n_pos_values, 'b-', linewidth=2)
-    axes[k, i].plot(V_values, n_neg_values, 'b-', linewidth=2) 
-    axes[k, i].plot(V_values, n_flaps_values, 'b-', linewidth=2)
+    axes[k, i].plot(V_values, n_neg_values, 'b-', linewidth=2)
+    if W == W_mtom:
+        axes[k, i].plot(V_values, n_flaps_values, 'b-', linewidth=2)
     axes[k, i].plot([V_d, V_d], [0, n_max], 'b-', linewidth=2)
     axes[k, i].plot([V_a, V_a], [0, n_max], 'k--', linewidth=1)
     axes[k, i].plot([V_c, V_c], [n_min, n_max], 'k--', linewidth=1)
