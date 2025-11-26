@@ -30,8 +30,8 @@ def plot(k, i, W, rho_0, a, name):
     pressure_scaling = math.sqrt(rho/rho_0)
 
     # Stall speeds
-    #V_s0_takeoff = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_to))   # flaps down takeoff
-    #V_s0_approach = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_a))   # flaps down approach
+    V_s0_takeoff = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_to)) / pressure_scaling  # flaps down takeoff
+    V_s0_approach = np.sqrt(2*g*W_mtom/(rho*S*C_L_max_a)) / pressure_scaling  # flaps down approach
     V_s0_landing = np.sqrt(2*g*W/(rho_0*S*C_L_max_l)) / pressure_scaling  # flaps down landing
     V_s1 = np.sqrt(2*g*W/(rho_0*S*C_L_max_cr)) / pressure_scaling   # flaps up
         
@@ -71,8 +71,8 @@ def plot(k, i, W, rho_0, a, name):
         else:
             n_pos = n_max
             
-        if V <= V_f_landing:
-            n_flaps_calc = (V / V_s0_landing)**2
+        if V <= V_f_takeoff:
+            n_flaps_calc = (V / V_s0_takeoff)**2
             if n_flaps_calc <= n_max_flaps:
                 n_flaps = n_flaps_calc
             else:
@@ -111,26 +111,39 @@ def plot(k, i, W, rho_0, a, name):
         n_flaps_values.append(n_flaps_val)
 
     ########## PLOTTING #############
-    
+    '''
     print(V_a)
     print(V_c)
     print(V_d)
     print(V_s0_landing)
     print(V_f_landing)
+    '''
 
     # Plot
     axes[k, i].set_xlim(0, V_d + 10)
     axes[k, i].set_ylim(n_min - 0.5, n_max + 0.5)
     axes[k, i].plot([0, V_d + 10], [0, 0], 'k-', linewidth=1.5)
     axes[k, i].plot(V_values, n_pos_values, 'b-', linewidth=2)
-    axes[k, i].plot(V_values, n_neg_values, 'b-', linewidth=2) 
-    axes[k, i].plot(V_values, n_flaps_values, 'b-', linewidth=2)
+    axes[k, i].plot(V_values, n_neg_values, 'b-', linewidth=2)
+    if W == W_mtom:
+        axes[k, i].plot(V_values, n_flaps_values, 'b-', linewidth=2)
     axes[k, i].plot([V_d, V_d], [0, n_max], 'b-', linewidth=2)
     axes[k, i].plot([V_a, V_a], [0, n_max], 'k--', linewidth=1)
     axes[k, i].plot([V_c, V_c], [n_min, n_max], 'k--', linewidth=1)
     axes[k, i].plot([0, V_d], [1, 1], 'k--', linewidth=1)
     axes[k, i].plot([0, V_d], [-1, -1], 'k--', linewidth=1)
     axes[k, i].plot([V_s1, V_s1], [0, 1], 'k--', linewidth=1)
+
+    axes[k, i].text(V_s1 + 5, 0.1, '$V_S$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_a + 7, 0.1, '$V_S\\sqrt{n_{max}}$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_c + 5, 0.1, '$V_C$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_d + 5, 0.1, '$V_D$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_c - 20, -1.3, '$n_{min}$', ha='center', va='bottom', fontsize=8)
+    axes[k, i].text(V_d - 20, n_max + 0.1, '$n_{max}$', ha='center', va='bottom', fontsize=8)
+    if W == W_mtom:
+        axes[k, i].text(V_f_takeoff - 22, n_max_flaps + 0.1, '$n_{max_{flaps}}$', ha='center', va='bottom', fontsize=8)
+
+
     axes[k, i].set_title(name)
     axes[k, i].set_xlabel('V_EAS')
     axes[k, i].set_ylabel('n')
@@ -143,7 +156,14 @@ def plot(k, i, W, rho_0, a, name):
             ax.plot([0, V_d + 10], [0, 0], 'k-', linewidth=1.5)
             ax.set_xlabel('V_EAS')
             ax.set_ylabel('n')
+    
+    if W == W_mtom and a == a_cr:
+        print("Cruise: V_C = ", V_c, "n = -1" )
+        print("Cruise: V_D = ", V_d, "n = " , n_max)
 
+    if W == W_mtom and a == a_SL:
+        print("Sea Level: V_C = ", V_c, "n = -1" )
+        print("Sea Level: V_D = ", V_d, "n = " , n_max)
 
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 8))
@@ -156,5 +176,6 @@ plot(1, 2, W_oem + W_payload, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + P
 
 plt.tight_layout()
 plt.show()
+
 
 
