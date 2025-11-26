@@ -1,6 +1,7 @@
+from parameters import *
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
-import matplotlib.pyplot as plt
 
 # CONSTANTS
 NULL_ARRAY_2 = np.zeros((2,1)) # 0-load array (for 2-row point loads)
@@ -16,13 +17,31 @@ class Calc():
         Cllst = dat[:,3]
         Cdlst = dat[:,5]
         Cmlst = dat[:,7]    
-        clist = dat[:,1]
+        clst = dat[:,1]
 
         # Interpolate datapoints from XFLR5 data to obtain python functions
         self.Cl = sp.interpolate.interp1d(ylst, Cllst, kind='cubic', fill_value='extrapolate')
         self.Cd = sp.interpolate.interp1d(ylst, Cdlst, kind='cubic', fill_value='extrapolate')
         self.Cm = sp.interpolate.interp1d(ylst, Cmlst, kind='cubic', fill_value='extrapolate')
     
+    def chord(self, y):
+        c = C_ROOT+(C_TIP-C_ROOT)*2*y/b
+        return c
+
+    def lift_perunitspan(self, y):
+        L = self.Cl(y)*q*self.chord(y)
+        return L
+    
+    def drag_perunitspan(self, y):
+        D = self.Cd(y)*q*self.chord(y)
+        return D
+    
+    def moment_perunitspan(self, y):
+        M = self.Cm(y)*q*self.chord(y)**2
+        return M
+    
+
+
     # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
     # loading must be a python function.
     def axial(self, x, L, loading, pointLoads):
