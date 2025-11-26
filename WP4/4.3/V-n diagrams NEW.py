@@ -111,12 +111,13 @@ def plot(k, i, W, rho_0, a, name):
         n_flaps_values.append(n_flaps_val)
 
     ########## PLOTTING #############
-    
+    '''
     print(V_a)
     print(V_c)
     print(V_d)
     print(V_s0_landing)
     print(V_f_landing)
+    '''
 
     # Plot
     axes[k, i].set_xlim(0, V_d + 10)
@@ -143,7 +144,14 @@ def plot(k, i, W, rho_0, a, name):
             ax.plot([0, V_d + 10], [0, 0], 'k-', linewidth=1.5)
             ax.set_xlabel('V_EAS')
             ax.set_ylabel('n')
+    
+    if W == W_mtom and a == a_cr:
+        print("Cruise: V_C = ", V_c, "n = -1" )
+        print("Cruise: V_D = ", V_d, "n = " , n_max)
 
+    if W == W_mtom and a == a_SL:
+        print("Sea Level: V_C = ", V_c, "n = -1" )
+        print("Sea Level: V_D = ", V_d, "n = " , n_max)
 
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 8))
@@ -156,5 +164,6 @@ plot(1, 2, W_oem + W_payload, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + P
 
 plt.tight_layout()
 plt.show()
+
 
 
