@@ -16,6 +16,7 @@ class Calc():
         Cllst = dat[:,3]
         Cdlst = dat[:,5]
         Cmlst = dat[:,7]    
+        clist = dat[:,1]
 
         # Interpolate datapoints from XFLR5 data to obtain python functions
         self.Cl = sp.interpolate.interp1d(ylst, Cllst, kind='cubic', fill_value='extrapolate')
