@@ -2,6 +2,10 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
+# CONSTANTS
+NULL_ARRAY_2 = np.zeros((2,1)) # 0-load array (for 2-row point loads)
+NULL_ARRAY_3 = np.zeros((3,1)) # 0-load araray (for 3-row point loads)
+
 
 class Calc():
     def __init__(self, file):
@@ -13,72 +17,100 @@ class Calc():
         Cdlst = dat[:,5]
         Cmlst = dat[:,7]    
 
-        print(ylst)
-        print(Cllst)
-
+        # Interpolate datapoints from XFLR5 data to obtain python functions
         self.Cl = sp.interpolate.interp1d(ylst, Cllst, kind='cubic', fill_value='extrapolate')
         self.Cd = sp.interpolate.interp1d(ylst, Cdlst, kind='cubic', fill_value='extrapolate')
         self.Cm = sp.interpolate.interp1d(ylst, Cmlst, kind='cubic', fill_value='extrapolate')
-
-        x_vals = np.arange(-7, 7, 0.05)
-
-        # plt.plot(x_vals, self.Cl(x_vals))
-        # plt.plot(x_vals, self.Cd(x_vals))
-        # plt.plot(x_vals, self.Cm(x_vals))
-        # plt.show()
-
-
-
-
     
-    # Load Distribution as function of x
-    def distrib(self):
-        distrib = None
-
-        return distrib
-    
-    # Normal force as function of x
+    # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
+    # loading must be a python function.
     def axial(self, x, L, loading, pointLoads):
+        # These asserts ensure that the point load arrays have the correct dimensions
+        assert pointLoads.shape[0] == 2
         N = sp.integrate.quad(loading, x, L)[0]
         
-        for i in range(len(pointLoads)):
-            N += pointLoads[i,1] * (1-np.heaviside(x-pointLoads[i,0], 1))
+        for i in range(pointLoads.shape[1]):
+            N += pointLoads[1,i] * (1-np.heaviside(x-pointLoads[0,i], 1))
         
         return N
 
-    # Shear force as function of x
+    # Shear force as function of x. pointLoads must have cols (position, load) (shape 2xn)
+    # loading must be a python function.
     def shear(self, x, L, loading, pointLoads):
-        V = sp.integrate.quad(loading, x, L) 
+        # These asserts ensure that the point load arrays have the correct dimensions
+        assert pointLoads.shape[0] == 2
+        
+        V = sp.integrate.quad(loading, x, L)[0]
+
+        for i in range(pointLoads.shape[1]):
+            V += pointLoads[1,i] * (1-np.heaviside(x-pointLoads[0,i], 1))
+        
         return V
 
-    # Moment force as function of x
-    def moment(self, x, L, distrib, M_p, u):
-        u_p = u / L
-        M = -(sp.integrate.quad(distrib, x, L) + M_p * (1 - u_p))
-        return M
+    # Moment force as function of x. pointLoads must have cols (position, load) (shape 2xn)
+    # loading must be a python function.
+    def moment(self, x, L, loading, pointLoads, args):
+        # These asserts ensure that the point load arrays have the correct dimensions
+        assert pointLoads.shape[0] == 2
+        M = sp.integrate.quad(loading, x, L, args)[0]
+        
+        for i in range(pointLoads.shape[1]):
+            M += pointLoads[1,i] * (1-np.heaviside(x-pointLoads[0,i], 1))
+            
+        return -M
 
-    def torque(self, ):
-        T = sp.integrate.quad()
+    # Torsion as function of x. forcePointLoads must have cols (position, load, dist) (shape 3xn);
+    # torquePointLoads must have cols (position, load) (shape 2xn)
+    # forceloading, torsionLoading, and loadingDist must be a python function.
+    def torsion(self, x, L, forceLoading, loadingDist, torsionLoading, forcePointLoads, torquePointLoads):
+        # These asserts ensure that the point load arrays have the correct dimensions
+        assert forcePointLoads.shape[0] == 3
+        assert torquePointLoads.shape[0] == 2
+       
+        T = sp.integrate.quad(lambda x : forceLoading(x)*loadingDist(x) + torsionLoading(x), x, L)[0]
+        
+        for i in range(forcePointLoads.shape[1]):
+            T += forcePointLoads[1,i] * forcePointLoads[2,i] * (1-np.heaviside(x-forcePointLoads[0,i], 1))
+            
+        for i in range(torquePointLoads.shape[1]):
+            T += torquePointLoads[1,i] * (1-np.heaviside(x-torquePointLoads[0,i], 1))
+        
         return T
-    
-
+        
+    def plot(self, loading, lims, plots, subplots = True, step=0.01):
+        # Ensure lims are of correct dimension
+        assert len(lims) == 2
+        
+        x_vals = np.arange(lims[0], lims[1], step)
+        
+        axial_vals = []
+        shear_vals = []
+        moment_vals = []
+        torsion_vals = []
+        
+        # ... 
+        
+        
+# For testing
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt')
     
-    x_vals = np.arange(0, 10, 0.01)
-    axial_vals = []
-    loading = np.sin
+    x_vals = np.arange(0, np.pi, 0.01)
+    shear_vals = []
+    moment_vals = []
+    torsion_vals = []
+    loading = lambda x : x
     
     for x in x_vals:
-        axial_vals.append(calc.axial(x, 10, loading, np.array([[2, 5],
-                                                              [4, -2]])))
+        shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
+      
+    for x in x_vals:  
+        moment_vals.append(calc.moment(x, np.pi, calc.shear, NULL_ARRAY_2, 
+                                       (np.pi, loading, NULL_ARRAY_2)))   
+        
+    for x in x_vals:  
+        torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x : -1, lambda x : 0, NULL_ARRAY_3, NULL_ARRAY_2))
+        
+    plt.plot(x_vals, torsion_vals)
+    plt.show()
     
-    # print(axial_vals := calc.axial(5, 10, loading, np.array([[2, 5],
-    #                                                       [4, -2]])))
-    
-    plt.plot(x_vals, axial_vals)
-    plt.show()    
-    
-
-    
-
