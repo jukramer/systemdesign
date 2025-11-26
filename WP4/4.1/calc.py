@@ -7,7 +7,6 @@ import scipy as sp
 NULL_ARRAY_2 = np.zeros((2,1)) # 0-load array (for 2-row point loads)
 NULL_ARRAY_3 = np.zeros((3,1)) # 0-load araray (for 3-row point loads)
 
-
 class Calc():
     def __init__(self, file0, file10):
         with open(file0) as data0:
@@ -65,16 +64,15 @@ class Calc():
     
     def inertialLoading(self, y, massWing, n=1):
         weightDens = n*g*massWing/S
-        
-        w = weightDens*self.c(y)
-        
-        return w   
+        w = weightDens*self.chord(y)
+        return w
+    
+    
+    ############ INTERNAL LOADING ##############
         
     # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
     # loading must be a python function.
     def axial(self, x, L, loading, pointLoads):
-        # These asserts ensure that the point load arrays have the correct dimensions
-        assert pointLoads.shape[0] == 2
         N = sp.integrate.quad(loading, x, L)[0]
         
         for i in range(pointLoads.shape[1]):
@@ -85,9 +83,6 @@ class Calc():
     # Shear force as function of x. pointLoads must have cols (position, load) (shape 2xn)
     # loading must be a python function.
     def shear(self, x, L, loading, pointLoads):
-        # These asserts ensure that the point load arrays have the correct dimensions
-        assert pointLoads.shape[0] == 2
-        
         V = sp.integrate.quad(loading, x, L)[0]
 
         for i in range(pointLoads.shape[1]):
@@ -124,21 +119,78 @@ class Calc():
             T += torquePointLoads[1,i] * (1-np.heaviside(x-torquePointLoads[0,i], 1))
         
         return T
-        
-    def plot(self, loading, lims, plots, subplots = True, step=0.01):
-        # Ensure lims are of correct dimension
+    
+    
+    ############ PLOTTING ##############
+
+    def plot(self, forceLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, step=0.01):
+        # Ensure arrays of correct dimension
+        assert pointLoads.shape[0] == 3
+        assert pointMoments.shape[0] == 2
+        assert pointTorques.shape[0] == 2
         assert len(lims) == 2
         
-        x_vals = np.arange(lims[0], lims[1], step)
+        xMin, xMax = lims
         
-        axial_vals = []
-        shear_vals = []
-        moment_vals = []
-        torsion_vals = []
+        xVals = np.arange(xMin, xMax, step)
         
-        # ... 
-
-# For testing
+        shearVals = []
+        momentVals = []
+        torsionVals = []
+        
+        for x in xVals:
+            shearVals.append(calc.shear(x, xMax, forceLoading, pointLoads))
+            momentVals.append(calc.moment(x, xMax, calc.shear, pointMoments, (xMax, forceLoading, pointLoads)))   
+            torsionVals.append(calc.torsion(x, xMax, forceLoading, loadingDist, torsionLoading, pointLoads, pointTorques))
+            
+        # Plot with subplots
+        if subplots:
+            fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+            
+            ax1.plot(xVals, shearVals)
+            ax1.set_title('Shear Force Diagram')
+            ax1.xlabel('y [m]')
+            ax1.ylabel('Shear Force [m]')
+            
+            ax2.plot(xVals, momentVals)
+            ax2.set_title('Bending Moment Diagram')
+            ax2.xlabel('y [m]')
+            ax2.ylabel('Bending Moment [Nm]')
+            
+            ax3.plot(xVals, torsionVals)
+            ax3.set_title('Torsion Diagram')
+            ax3.xlabel('y [m]')
+            ax3.ylabel('Torsion [Nm]')
+            
+            plt.show()
+        
+        # Plot in sequential plots
+        else:
+            plt.plot(xVals, shearVals)
+            plt.title('Shear Force Diagram')
+            plt.xlabel('y [m]')
+            plt.ylabel('Shear Force [m]')
+            
+            plt.show()
+            plt.clf()
+            
+            plt.plot(xVals, momentVals)
+            plt.title('Bending Moment Diagram')
+            plt.xlabel('y [m]')
+            plt.ylabel('Bending Moment [Nm]')
+            
+            plt.show()
+            plt.clf()
+            
+            plt.plot(xVals, torsionVals)
+            plt.title('Torsion Diagram')
+            plt.xlabel('y [m]')
+            plt.ylabel('Torsion [Nm]')
+            
+            plt.show()
+            plt.clf()
+            
+        
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
 

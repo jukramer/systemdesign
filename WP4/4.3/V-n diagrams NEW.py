@@ -37,7 +37,7 @@ def plot(k, i, W, rho_0, a, name):
         
     # Limit load factors
     n_max_flaps = 2
-    n_max = 3.192
+    n_max = 2.1 + 24000/(W_mtom_lbs + 10000) #3.192
     n_max = max(2.5, min(n_max, 3.8))
     n_min = -1
 
