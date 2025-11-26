@@ -28,21 +28,24 @@ class Calc():
         c = C_ROOT+(C_TIP-C_ROOT)*2*y/b
         return c
 
-    def lift_perunitspan(self, y):
+    def liftUnitSpan(self, y):
         L = self.Cl(y)*q*self.chord(y)
         return L
     
-    def drag_perunitspan(self, y):
+    def dragUnitSpan(self, y):
         D = self.Cd(y)*q*self.chord(y)
         return D
     
-    def moment_perunitspan(self, y):
+    def momentUnitSpan(self, y):
         M = self.Cm(y)*q*self.chord(y)**2
         return M
     
-
-    
-    def inertialLoading(self, a=g)
+    def inertialLoading(self, y, massWing, n=1):
+        weightDens = n*g*massWing/S
+        
+        w = weightDens*self.c(y)
+        
+        return w   
         
     # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
     # loading must be a python function.
