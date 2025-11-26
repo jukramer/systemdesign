@@ -21,7 +21,9 @@ class Calc():
         self.Cl = sp.interpolate.interp1d(ylst, Cllst, kind='cubic', fill_value='extrapolate')
         self.Cd = sp.interpolate.interp1d(ylst, Cdlst, kind='cubic', fill_value='extrapolate')
         self.Cm = sp.interpolate.interp1d(ylst, Cmlst, kind='cubic', fill_value='extrapolate')
-    
+        
+    def inertialLoading(self, a=g)
+        
     # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
     # loading must be a python function.
     def axial(self, x, L, loading, pointLoads):
@@ -89,8 +91,7 @@ class Calc():
         torsion_vals = []
         
         # ... 
-        
-        
+
 # For testing
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt')
@@ -100,6 +101,8 @@ if __name__ == '__main__':
     moment_vals = []
     torsion_vals = []
     loading = lambda x: x
+    lambda x: x**2
+    
     
     for x in x_vals:
         shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
@@ -109,7 +112,7 @@ if __name__ == '__main__':
                                        (np.pi, loading, NULL_ARRAY_2)))   
         
     for x in x_vals:  
-        torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x : -1, lambda x : 0, NULL_ARRAY_3, NULL_ARRAY_2))
+        torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x: -1, lambda x: 0, NULL_ARRAY_3, NULL_ARRAY_2))
         
     plt.plot(x_vals, torsion_vals)
     plt.show()

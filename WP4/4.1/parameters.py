@@ -1,3 +1,4 @@
 # AIRCRAFT PROPERTIES
 b = 20.4
 HALF_SPAN = b/2
+
