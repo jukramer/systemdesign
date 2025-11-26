@@ -145,8 +145,8 @@ def plot(k, i, W, rho_0, a, name):
 
 
     axes[k, i].set_title(name)
-    axes[k, i].set_xlabel('V_EAS')
-    axes[k, i].set_ylabel('n')
+    axes[k, i].set_xlabel('V_EAS (m/s)')
+    axes[k, i].set_ylabel('n (-)')
     #axes[k, i].legend()
     axes[k, i].grid(True)
     print(axes)
@@ -154,8 +154,8 @@ def plot(k, i, W, rho_0, a, name):
     for row in axes:
         for ax in row:
             ax.plot([0, V_d + 10], [0, 0], 'k-', linewidth=1.5)
-            ax.set_xlabel('V_EAS')
-            ax.set_ylabel('n')
+            ax.set_xlabel('V_EAS (m/s)')
+            ax.set_ylabel('n (-)')
     
     if W == W_mtom and a == a_cr:
         print("Cruise: V_C = ", V_c, "n = -1" )
