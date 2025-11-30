@@ -28,6 +28,7 @@ class Calc():
         clst10 = dat10[:,1]
 
         # Interpolate datapoints from XFLR5 data to obtain python functions
+        
         self.Cl0 = sp.interpolate.interp1d(ylst0, Cllst0, kind='cubic', fill_value='extrapolate')
         self.Cd0 = sp.interpolate.interp1d(ylst0, Cdlst0, kind='cubic', fill_value='extrapolate')
         self.Cm0 = sp.interpolate.interp1d(ylst0, Cmlst0, kind='cubic', fill_value='extrapolate')
@@ -35,6 +36,40 @@ class Calc():
         self.Cl10 = sp.interpolate.interp1d(ylst10, Cllst10, kind='cubic', fill_value='extrapolate')
         self.Cd10 = sp.interpolate.interp1d(ylst10, Cdlst10, kind='cubic', fill_value='extrapolate')
         self.Cm10 = sp.interpolate.interp1d(ylst10, Cmlst10, kind='cubic', fill_value='extrapolate')
+
+        # Global wing CL values and alpha
+        self.CL0 = C_L0
+        self.CL10 = C_L10
+        self.alpha0 = 0.0
+        self.alpha10 = 10.0
+
+        # Placeholders for current load cases
+        self.Cl = None
+        self.Cd = None
+        self.Cm = None
+        self.alpha = None
+
+        #self.lifttest()
+    
+    def set_load_case_CL(self, CLd):
+        t = (CLd - self.CL0)/ (self.CL10 - self.CL0)
+
+        self.Cl = lambda y: self.Cl0(y) + t * (self.Cl10(y) - self.Cl0(y))
+        self.Cd = lambda y: self.Cd0(y) + t * (self.Cd10(y) - self.Cd0(y))
+        self.Cm = lambda y: self.Cm0(y) + t * (self.Cm10(y) - self.Cm0(y))
+
+        self.alpha = self.alpha0 + t * (self.alpha10 - self.alpha0)
+    
+    def set_load_case_from_flight(self, n, W, V=V_CR, rho=RHO, Sref=S):
+        q_here = 0.5*rho*V**2
+        CLd = n*W/(q_here*Sref)
+        self.set_load_case_CL(CLd)
+    
+    # def lifttest(self):
+    #     L =W_MTOW*n_ult
+    #     C_L = L/(q*S)
+    #     print(C_L)
+
     
     def chord(self, y):
         c = C_ROOT+(C_TIP-C_ROOT)*2*y/b
@@ -184,17 +219,27 @@ class Calc():
             
         
 if __name__ == '__main__':
-    pointLoads = np.array([[2, 4, 7],
-                           [10e2, -70, 10],
-                           [2, 3, -1]])
-    
-    pointMoments = np.array([[3],
-                             [10e3]])
-    
-    pointTorques = np.array([[3.5, 8.5],
-                             [-5e3, 1e2]])
-        
-    
-
     calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
-    calc.plot(lambda x:np.exp(x), lambda x:np.sin(x), lambda x:np.sin(x), pointLoads, pointMoments, pointTorques, (0, 10), True)
+
+    calc.lifttest()
+    
+    x_vals = np.arange(0, np.pi, 0.01)
+    shear_vals = []
+    moment_vals = []
+    torsion_vals = []
+    loading = lambda x: x
+    lambda x: x**2
+    
+    
+    for x in x_vals:
+        shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
+      
+    for x in x_vals:  
+        moment_vals.append(calc.moment(x, np.pi, calc.shear, NULL_ARRAY_2, 
+                                       (np.pi, loading, NULL_ARRAY_2)))   
+        
+    for x in x_vals:  
+        torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x: -1, lambda x: 0, NULL_ARRAY_3, NULL_ARRAY_2))
+        
+    plt.plot(x_vals, torsion_vals)
+    plt.show()

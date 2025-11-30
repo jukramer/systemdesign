@@ -8,4 +8,4 @@ beam.load_wing_box(points=points, thickness=0.00001)
 beam.get_I_of_cross_section()
 print(beam.Ixx, beam.Izz)
 
-u a bitch micah
+#u a bitch micah
