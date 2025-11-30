@@ -28,6 +28,7 @@ class Calc():
         clst10 = dat10[:,1]
 
         # Interpolate datapoints from XFLR5 data to obtain python functions
+        
         self.Cl0 = sp.interpolate.interp1d(ylst0, Cllst0, kind='cubic', fill_value='extrapolate')
         self.Cd0 = sp.interpolate.interp1d(ylst0, Cdlst0, kind='cubic', fill_value='extrapolate')
         self.Cm0 = sp.interpolate.interp1d(ylst0, Cmlst0, kind='cubic', fill_value='extrapolate')
@@ -36,16 +37,40 @@ class Calc():
         self.Cd10 = sp.interpolate.interp1d(ylst10, Cdlst10, kind='cubic', fill_value='extrapolate')
         self.Cm10 = sp.interpolate.interp1d(ylst10, Cmlst10, kind='cubic', fill_value='extrapolate')
 
-        self.lifttest()
+        # Global wing CL values and alpha
+        self.CL0 = C_L0
+        self.CL10 = C_L10
+        self.alpha0 = 0.0
+        self.alpha10 = 10.0
+
+        # Placeholders for current load cases
+        self.Cl = None
+        self.Cd = None
+        self.Cm = None
+        self.alpha = None
+
+        #self.lifttest()
     
-    def lifttest(self):
-        L =W_MTOW*n_ult
-        C_L = L/(q*S)
-        print(C_L)
+    def set_load_case_CL(self, CLd):
+        t = (CLd - self.CL0)/ (self.CL10 - self.CL0)
+
+        self.Cl = lambda y: self.Cl0(y) + t * (self.Cl10(y) - self.Cl0(y))
+        self.Cd = lambda y: self.Cd0(y) + t * (self.Cd10(y) - self.Cd0(y))
+        self.Cm = lambda y: self.Cm0(y) + t * (self.Cm10(y) - self.Cm0(y))
+
+        self.alpha = self.alpha0 + t * (self.alpha10 - self.alpha0)
+    
+    def set_load_case_from_flight(self, n, W, V=V_CR, rho=RHO, Sref=S):
+        q_here = 0.5*rho*V**2
+        CLd = n*W/(q_here*Sref)
+        self.set_load_case_CL(CLd)
+    
+    # def lifttest(self):
+    #     L =W_MTOW*n_ult
+    #     C_L = L/(q*S)
+    #     print(C_L)
 
     
-
-
     def chord(self, y):
         c = C_ROOT+(C_TIP-C_ROOT)*2*y/b
         return c
