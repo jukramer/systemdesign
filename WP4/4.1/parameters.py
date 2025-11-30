@@ -1,5 +1,5 @@
 # AIRCRAFT PROPERTIES
-b = 20.4
+b = 17.29
 HALF_SPAN = b/2
 C_ROOT = 2.85
 C_TIP = 1.03
@@ -7,6 +7,8 @@ C_TIP = 1.03
 C_L0 = 0.264333
 C_L10 = 1.123905
 
+n_lim = 3.8
+n_ult = 1.5*n_lim
 
 
 n_ult = 4.38
