@@ -57,7 +57,9 @@ class Calc():
         w = weightDens*self.chord(y)
         return w
     
-    
+    def pointLoading(self, thetaT, T):
+        return T/2*np.sin(thetaT)
+        
     ############ INTERNAL LOADING ##############
         
     # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
@@ -139,18 +141,18 @@ class Calc():
             
             ax1.plot(xVals, shearVals)
             ax1.set_title('Shear Force Diagram')
-            ax1.xlabel('y [m]')
-            ax1.ylabel('Shear Force [m]')
+            ax1.set_xlabel('y [m]')
+            ax1.set_ylabel('Shear Force [m]')
             
             ax2.plot(xVals, momentVals)
             ax2.set_title('Bending Moment Diagram')
-            ax2.xlabel('y [m]')
-            ax2.ylabel('Bending Moment [Nm]')
+            ax2.set_xlabel('y [m]')
+            ax2.set_ylabel('Bending Moment [Nm]')
             
             ax3.plot(xVals, torsionVals)
             ax3.set_title('Torsion Diagram')
-            ax3.xlabel('y [m]')
-            ax3.ylabel('Torsion [Nm]')
+            ax3.set_xlabel('y [m]')
+            ax3.set_ylabel('Torsion [Nm]')
             
             plt.show()
         
@@ -182,5 +184,17 @@ class Calc():
             
         
 if __name__ == '__main__':
-    calc = Calc(r'WP4\4.1\dataa0.txt')
+    pointLoads = np.array([[2, 4, 7],
+                           [10e2, -70, 10],
+                           [2, 3, -1]])
     
+    pointMoments = np.array([[3],
+                             [10e3]])
+    
+    pointTorques = np.array([[3.5, 8.5],
+                             [-5e3, 1e2]])
+        
+    
+
+    calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
+    calc.plot(lambda x:np.exp(x), lambda x:np.sin(x), lambda x:np.sin(x), pointLoads, pointMoments, pointTorques, (0, 10), True)
