@@ -89,8 +89,10 @@ class Calc():
         weightDens = n*g*massWing/S
         w = weightDens*self.chord(y)
         return w
-
-
+    
+    def pointLoading(self, thetaT, T):
+        return T/2*np.sin(thetaT)
+        
     ############ INTERNAL LOADING ##############
 
     # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
@@ -172,19 +174,19 @@ class Calc():
 
             ax1.plot(xVals, shearVals)
             ax1.set_title('Shear Force Diagram')
-            ax1.xlabel('y [m]')
-            ax1.ylabel('Shear Force [m]')
-
+            ax1.set_xlabel('y [m]')
+            ax1.set_ylabel('Shear Force [m]')
+            
             ax2.plot(xVals, momentVals)
             ax2.set_title('Bending Moment Diagram')
-            ax2.xlabel('y [m]')
-            ax2.ylabel('Bending Moment [Nm]')
-
+            ax2.set_xlabel('y [m]')
+            ax2.set_ylabel('Bending Moment [Nm]')
+            
             ax3.plot(xVals, torsionVals)
             ax3.set_title('Torsion Diagram')
-            ax3.xlabel('y [m]')
-            ax3.ylabel('Torsion [Nm]')
-
+            ax3.set_xlabel('y [m]')
+            ax3.set_ylabel('Torsion [Nm]')
+            
             plt.show()
 
         # Plot in sequential plots
