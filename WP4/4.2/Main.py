@@ -34,3 +34,5 @@ stringers = np.array([[0.05, 0.05**2], [0.015, 0.05**2]]) # [[z, A], [z, A]]
 anything.get_displacement(data, E=73.1e9, stringers=stringers)
 anything.get_twist(data, G=28e9)
 anything.plot()
+
+u a bitch micah
