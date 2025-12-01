@@ -51,6 +51,22 @@ class Calc():
 
         #self.lifttest()
 
+    def alpha_load_case(self, V, w, rho):
+        L = w*n_ult
+        C_L_d = L / (0.5*RHO*V**2*S)
+
+        wlst = [W_MTOW, W_minusfuel, W_OEM]
+        Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
+        RHOlst = [RHO, RHO_SL]
+        for V in Vlst:
+            for w in wlst:
+                for rho in RHOlst:
+                    print(self.alpha_load_case(V, w, rho))
+
+        return C_L_d
+    
+
+
     def set_load_case_CL(self, CLd):
         t = (CLd - self.CL0)/ (self.CL10 - self.CL0)
 
