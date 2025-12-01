@@ -78,15 +78,19 @@ def plot(k, i, W, rho_0, a, name):
             n_flaps_calc = (V / V_s0_takeoff)**2
             if n_flaps_calc <= n_max_flaps:
                 n_flaps = n_flaps_calc
+                V_flaps_max1 = 0
             else:
                 n_flaps = n_max_flaps
+                V_flaps_max1 = 0
         else:
             n_flaps = float('nan')
+            V_flaps_max1 = 0
             
         if n_flaps <= n_pos:
             n_flaps = float('nan')
+            V_flaps_max1 = V
         
-        return n_flaps
+        return n_flaps, V_flaps_max1
 
     def line_n_neg(V):
         n_neg_calc = -(V / V_s1)**2
@@ -105,10 +109,15 @@ def plot(k, i, W, rho_0, a, name):
     n_neg_values = [] 
     n_flaps_values = []
 
+    Y = 0
+
     for V_val in V_values:
         n_pos = line_n_pos(V_val)
         n_neg_val = line_n_neg(V_val)
-        n_flaps_val = line_n_flaps(V_val)
+        n_flaps_val, V_flaps_max1 = line_n_flaps(V_val)
+        if Y == 0 and V_flaps_max1 > 0:
+            V_f_max = V_flaps_max1
+            Y = 1
         n_pos_values.append(n_pos)
         n_neg_values.append(n_neg_val)
         n_flaps_values.append(n_flaps_val)
@@ -168,6 +177,10 @@ def plot(k, i, W, rho_0, a, name):
     #     print("Sea Level: V_C = ", V_c, "n = -1" )
     #     print("Sea Level: V_D = ", V_d, "n = " , n_max)
     print(k, "  ", i)
+    print("Cruise: V_S = ", V_s1, "n = -1")
+    if W == W_mtom:
+        print("Cruise: V_flaps = ", V_f_max, "n = ", n_max_flaps)
+    print("Cruise: V_S_n = ", V_a, "n = ", n_max)
     print("Cruise: V_C = ", V_c, "n = -1" )
     print("Cruise: V_D = ", V_d, "n = " , n_max)
 
