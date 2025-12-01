@@ -93,8 +93,11 @@ class Calc():
         w = weightDens*self.chord(y)
         return w
     
-    def pointLoading(self, thetaT, T):
+    def propulsiveLoading(self, thetaT, T):
         return T/2*np.sin(thetaT)
+    
+    def propulsiveMoment(self, thetaT, T, d):
+        return T/2*np.sin(thetaT)*d
         
     ############ INTERNAL LOADING ##############
 

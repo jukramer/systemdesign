@@ -3,6 +3,7 @@ b = 17.29
 HALF_SPAN = b/2
 C_ROOT = 2.85
 C_TIP = 1.03
+d_prop = 
 
 C_L0 = 0.264333
 C_L10 = 1.123905
