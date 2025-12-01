@@ -28,7 +28,6 @@ class Calc():
         clst10 = dat10[:,1]
 
         # Interpolate datapoints from XFLR5 data to obtain python functions
-
         self.Cl0 = sp.interpolate.interp1d(self.ylst0, self.Cllst0, kind='cubic', fill_value='extrapolate')
         self.Cd0 = sp.interpolate.interp1d(self.ylst0, Cdlst0, kind='cubic', fill_value='extrapolate')
         self.Cm0 = sp.interpolate.interp1d(self.ylst0, Cmlst0, kind='cubic', fill_value='extrapolate')
@@ -59,7 +58,6 @@ class Calc():
         self.Cm = lambda y: self.Cm0(y) + t * (self.Cm10(y) - self.Cm0(y))
 
         self.alpha = self.alpha0 + t * (self.alpha10 - self.alpha0)
-        print(self.alpha)
 
     def set_load_case_from_flight(self, n, W, V=V_CR, rho=RHO, Sref=S):
         q_here = 0.5*rho*V**2
@@ -82,19 +80,24 @@ class Calc():
         M = self.Cm(y)*q*self.chord(y)**2
         return M
 
-    def calcNormal(self, y):
+    def calcNormal(self, y, alphaA):
         L = self.liftUnitSpan(y)
         D = self.dragUnitSpan(y)
         
         N = np.cos(alphaA)*L + np.sin(alphaA)*D
+        
+        return N
 
     def inertialLoading(self, y, massWing, n=1):
         weightDens = n*g*massWing/S
         w = weightDens*self.chord(y)
         return w
     
-    def pointLoading(self, thetaT, T):
+    def propulsiveLoading(self, thetaT, T):
         return T/2*np.sin(thetaT)
+    
+    def propulsiveMoment(self, thetaT, T, d):
+        return T/2*np.sin(thetaT)*d
         
     ############ INTERNAL LOADING ##############
 
@@ -147,6 +150,13 @@ class Calc():
             T += torquePointLoads[1,i] * (1-np.heaviside(x-torquePointLoads[0,i], 1))
 
         return T
+    
+    def totalLoading(self, x, n, W, mWing,):
+        self.set_load_case_from_flight(n, W)
+        
+        return self.calcNormal(x) + self.inertialLoading(x, mWing, n) + self.
+        
+        
 
 
     ############ PLOTTING ##############
@@ -164,7 +174,7 @@ class Calc():
 
         shearVals = []
         momentVals = []
-        torsionVals = []
+        torsionVals = []        
 
         for x in xVals:
             shearVals.append(calc.shear(x, xMax, forceLoading, pointLoads))
@@ -222,13 +232,9 @@ class Calc():
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
 
-    xVals = np.arange(0, 8, 1e-2)
-    clVals = calc.Cl0(xVals)
-
     # calc.lifttest()
     calc.set_load_case_from_flight(n_ult, W_MTOW)
 
-    y = np.arange(0, HALF_SPAN, 1e-4)
     # L = calc.liftUnitSpan(y)
     # D = calc.dragUnitSpan(y)
     # M = calc.momentUnitSpan(y)
