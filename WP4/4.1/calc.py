@@ -82,8 +82,11 @@ class Calc():
         M = self.Cm(y)*q*self.chord(y)**2
         return M
 
-    def calcNormal(self, alphaA):
-        print('je moeder poept je moooooooooooooooooooooooeder - Larua')
+    def calcNormal(self, y):
+        L = self.liftUnitSpan(y)
+        D = self.dragUnitSpan(y)
+        
+        N = np.cos(alphaA)*L + np.sin(alphaA)*D
 
     def inertialLoading(self, y, massWing, n=1):
         weightDens = n*g*massWing/S
