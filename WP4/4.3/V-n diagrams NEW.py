@@ -14,6 +14,9 @@ C_L_max_to = 2
 C_L_max_a = 2.1
 C_L_max_l = 2.1
 
+
+print(2.1+24000/(W_mtom_lbs + 10000))
+
 # Flight conditions
 M_cr = 0.68
 Altitude = 41000 # ft
@@ -157,13 +160,16 @@ def plot(k, i, W, rho_0, a, name):
             ax.set_xlabel('V_EAS (m/s)')
             ax.set_ylabel('n (-)')
     
-    if W == W_mtom and a == a_cr:
-        print("Cruise: V_C = ", V_c, "n = -1" )
-        print("Cruise: V_D = ", V_d, "n = " , n_max)
+    # if W == W_mtom and a == a_cr:
+    #     print("Cruise: V_C = ", V_c, "n = -1" )
+    #     print("Cruise: V_D = ", V_d, "n = " , n_max)
 
-    if W == W_mtom and a == a_SL:
-        print("Sea Level: V_C = ", V_c, "n = -1" )
-        print("Sea Level: V_D = ", V_d, "n = " , n_max)
+    # if W == W_mtom and a == a_SL:
+    #     print("Sea Level: V_C = ", V_c, "n = -1" )
+    #     print("Sea Level: V_D = ", V_d, "n = " , n_max)
+    print(k, "  ", i)
+    print("Cruise: V_C = ", V_c, "n = -1" )
+    print("Cruise: V_D = ", V_d, "n = " , n_max)
 
 
 fig, axes = plt.subplots(2, 3, figsize=(18, 8))
