@@ -3,7 +3,10 @@ b = 17.29
 HALF_SPAN = b/2
 C_ROOT = 2.85
 C_TIP = 1.03
-d_prop = 
+d_prop = 1.617
+WING_TRIM = 0.18 # [deg]
+
+T_TO = 31673.07352
 
 C_L0 = 0.264333
 C_L10 = 1.123905
@@ -11,9 +14,9 @@ C_L10 = 1.123905
 n_lim = 3.8
 n_ult = 1.5*n_lim
 
-
 n_ult = 4.38
 W_MTOW = 7142.31*9.80665
+M_WING = (1275.260140713509 + 1251.441374)/2
 
 # AMBIENT PROPERTIES
 RHO = 0.287
