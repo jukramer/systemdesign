@@ -58,6 +58,22 @@ class Calc():
     def chord(self, y):
         return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
 
+    def alpha_load_case(self, V, w, rho):
+        L = w*n_ult
+        C_L_d = L / (0.5*RHO*V**2*S)
+
+        wlst = [W_MTOW, W_minusfuel, W_OEM]
+        Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
+        RHOlst = [RHO, RHO_SL]
+        for V in Vlst:
+            for w in wlst:
+                for rho in RHOlst:
+                    print(self.alpha_load_case(V, w, rho))
+
+        return C_L_d
+    
+
+
     def set_load_case_from_flight(self, n, W, V=V_CR, rho=RHO, Sref=S):
         q_here = 0.5*rho*V**2
         CLd = n*W/(q_here*Sref)
