@@ -117,7 +117,7 @@ class Beam():
 
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
-        plt.plot(y, self.v/(np.max(np.abs(self.v))), label=f'v | max {np.max(np.abs(self.v)):.4f} m')
+        plt.plot(y, self.v/(np.max(np.abs(self.v))), label=f'v | max {self.v[-1]:.4f} m / {17.29*0.15:.4f} m')
         plt.plot(y, self.theta/(np.max(np.abs(self.theta))), label=f'theta | max {np.max(np.abs(self.theta))*180/np.pi*np.sign(self.theta[-1]):.4f} deg')
         plt.plot(y, self.J/(np.max(np.abs(self.J))), label=f'J | max {np.max(np.abs(self.J)):.4g} m$^4$')
         plt.plot(y, self.Ixx_list/(np.max(np.abs(self.Ixx_list))), label=f'I$_x$$_x$ | max {np.max(np.abs(self.Ixx_list)):.4g} m$^4$', linestyle='--')
