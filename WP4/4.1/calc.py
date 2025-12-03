@@ -176,10 +176,7 @@ class Calc():
         torsionLoadVals = torsionLoading(xVals) + forceLoading(xVals)*loadingDist(xVals)
         torsionVals = self.torsionVec(xVals, torsionLoadVals, pointLoads, pointTorques)
         
-        np.savez('shearVals', x=xVals, y=shearVals)
-        np.savez('momentvals', x=xVals, y=momentVals)
-        np.savez('torsionVals', x=xVals, y=torsionVals)
-
+        np.savez('loadingVals', xVals, momentVals, torsionVals)
         print('Plotting!')
         # Plot with subplots
         if subplots:
