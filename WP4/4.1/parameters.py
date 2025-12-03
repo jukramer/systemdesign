@@ -34,9 +34,9 @@ W_OEM = 4876.784*g
 
 RHO = 1.225
 
-# V_CR = 45.2 # Case 1
-# LOAD_FACTOR = -1 # Case 1
-# ARRAY_PATH = 'case1'
+V_CR = 45.2 # Case 1
+LOAD_FACTOR = -1 # Case 1
+ARRAY_PATH = 'case1'
 
 # V_CR = 64.5 # Case 2
 # LOAD_FACTOR = 2  # Case 2
@@ -54,9 +54,9 @@ RHO = 1.225
 # LOAD_FACTOR = 3.8 # Case 5
 # ARRAY_PATH = 'case5'
 
-V_CR = 200.6 # Case 5
-LOAD_FACTOR = 1 # Case 5
-ARRAY_PATH = 'caseTest'
+# V_CR = 200.6 # Case 5
+# LOAD_FACTOR = 1 # Case 5
+# ARRAY_PATH = 'caseTest'
 
 q = 0.5*RHO*V_CR**2
 

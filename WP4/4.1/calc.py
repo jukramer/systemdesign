@@ -8,6 +8,11 @@ import scipy as sp
 NULL_ARRAY_2 = np.zeros((2,1)) # 0-load array (for 2-row point loads)
 NULL_ARRAY_3 = np.zeros((3,1)) # 0-load araray (for 3-row point loads)
 
+            
+class DimensionError(Exception):
+    pass
+
+
 class Calc():
     def __init__(self, file0, file10):
         with open(file0) as data0:
@@ -73,11 +78,12 @@ class Calc():
         t = (CLd - self.CL0) / (self.CL10 - self.CL0)
 
         self.Cl = lambda y: self.Cl0(y) + t*(self.Cl10(y) - self.Cl0(y))
+        print(self.Cl(0))
         self.Cd = lambda y: self.Cd0(y) + t*(self.Cd10(y) - self.Cd0(y))
         self.Cm = lambda y: self.Cm0(y) + t*(self.Cm10(y) - self.Cm0(y))
 
         self.alpha = self.alpha0 + t*(self.alpha10 - self.alpha0)
-        
+    
 
     ######### EXTERNAL LOADING ##############
     # AERODYNAMIC LOADING
@@ -153,14 +159,13 @@ class Calc():
     ############ PLOTTING ##############
     def plot(self, aeroLoading, inertialLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, step=0.01):
         # Ensure arrays of correct dimension
-        assert pointLoads.shape[0] == 3
-        assert pointMoments.shape[0] == 2
-        assert pointTorques.shape[0] == 2
-        assert len(lims) == 2
+        if not (pointLoads.shape[0] == 3 and pointMoments.shape[0] == 2 and pointTorques.shape[0] == 2 and len(lims) == 2):
+            raise DimensionError('Loading arrays must be of correct dimension.')
 
         self.xMin, self.xMax = lims
         self.step = step
-        xVals = np.arange(self.xMin, self.xMax, step)        
+        xVals = np.arange(self.xMin, self.xMax, step)
+        loadingVals = aeroLoading(xVals)     
 
         self.shearVec = np.vectorize(self.shear, signature='(),(),(3,1)->()')
         shearVals = self.shearVec(xVals, lambda x: aeroLoading(x)+inertialLoading(x), pointLoads)
@@ -173,11 +178,11 @@ class Calc():
         torsionVals = self.torsionVec(xVals, torsionLoadVals, pointLoads, pointTorques)
         
         np.savez(ARRAY_PATH, xVals, momentVals, torsionVals)
+        return
         print('Plotting!')
-        
         # Plot with subplots
         if subplots:
-            fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
+            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
 
             ax1.plot(xVals, shearVals)
             ax1.set_title('Shear Force Diagram')
@@ -193,6 +198,11 @@ class Calc():
             ax3.set_title('Torsion Diagram')
             ax3.set_xlabel('y [m]')
             ax3.set_ylabel('Torsion [Nm]')
+                
+            ax4.plot(xVals, loadingVals)
+            ax4.set_title('Aerodynamic Loading Diagram')
+            ax4.set_xlabel('y [m]')
+            ax4.set_ylabel('Lift [Nm]')
             
             plt.show()
             
@@ -215,17 +225,16 @@ class Calc():
             plt.clf()
 
             plt.plot(xVals, torsionVals)
-            plt.title('Torsion Diagram')
+            plt.title('Aerodynamic Loading Diagram')
             plt.xlabel('y [m]')
             plt.ylabel('Torsion [Nm]')
 
             plt.show()
             plt.clf()
-
+            
 
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
-
         
     # wlst = [W_MTOW, W_minusfuel, W_OEM]
     # # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
@@ -242,7 +251,7 @@ if __name__ == '__main__':
     #             )
                 
     # External Loading    
-    calc.set_load_case_from_flight(n_ult, W_MTOW)
+    calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
 
     aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
     loadingDist = lambda x: calc.findLoadingDist(x)
@@ -258,5 +267,3 @@ if __name__ == '__main__':
               NULL_ARRAY_2, 
               pointTorques, 
               (0, HALF_SPAN))
-    
-    
