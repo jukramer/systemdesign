@@ -4,17 +4,16 @@ import math
 def calc_weight():
     # Wing weight estimation
     W_W = 0.0017*W_MZF*(b/math.cos(Lambda_12))**0.75*(1 + (6.3*math.cos(Lambda_12)/b)**(1/2))*n_ult**0.55*(b*S/(t_r*W_MZF*math.cos(Lambda_12)))**0.30
-    print(W_W)
+    print(f'Wing weight: {W_W}')
+    
     # Empennage weight estimation
     W_h = k_h*S_h*(3.81*(S_h**0.2*V_D)/(1000*(math.cos(Lambda_12_h))**(1/2))-0.287)
     W_v = k_v*S_v*(3.81*(S_v**0.2*V_D)/(1000*(math.cos(Lambda_12_v))**(1/2))-0.287)
     
     W_emp = W_h + W_v
-    print(W_emp)
     # Fuselage weight
     W_f = 0.021*k_f*(V_D*l_h/(w_f + h_f))**(1/2)*S_fgs**1.2
     
-    print(W_f)
 
     # Nacelle weight estimation (high bypass ratio turbofan)
     W_n = 0.065*T_TO
@@ -28,7 +27,6 @@ def calc_weight():
 
     W_g = W_g_main + W_g_nose
     
-    print(W_g)
 
     # Total structure weight
     W_struc = W_W + W_emp + W_f + W_n + W_g     # [lbs]

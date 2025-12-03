@@ -1,4 +1,5 @@
 from parameters import *
+from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
@@ -15,6 +16,10 @@ class Calc():
         with open(file10) as data10:
             dat10 = np.genfromtxt(data10, skip_header=21, invalid_raise=False)
 
+        # Min and max x vals for plotting
+        self.xMin, self.xMax = (0, 0)
+        self.step = 1e-2
+        
         self.ylst0 = dat0[:,0]
         self.Cllst0 = dat0[:,3]
         Cdlst0 = dat0[:,5]
@@ -48,17 +53,21 @@ class Calc():
         self.Cm = None
         self.alpha = None
 
-        #self.lifttest()
+        #self.lifttest()      
+
+    def chord(self, y):
+        return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
 
     def alpha_load_case(self, V, w, rho):
         L = w*n_ult
         C_L_d = L / (0.5*rho*(V**2)*S)
 
         return C_L_d
-    
 
-
-    def set_load_case_CL(self, CLd):
+    def set_load_case_from_flight(self, n, W, V=V_CR, rho=RHO, Sref=S):
+        q_here = 0.5*rho*V**2
+        CLd = n*W/(q_here*Sref)
+        
         t = (CLd - self.CL0)/ (self.CL10 - self.CL0)
 
         self.Cl = lambda y: self.Cl0(y) + t * (self.Cl10(y) - self.Cl0(y))
@@ -67,63 +76,43 @@ class Calc():
 
         self.alpha = self.alpha0 + t * (self.alpha10 - self.alpha0)
 
-    def set_load_case_from_flight(self, n, W, V=V_CR, rho=RHO, Sref=S):
-        q_here = 0.5*rho*V**2
-        CLd = n*W/(q_here*Sref)
-        self.set_load_case_CL(CLd)
-        
-
-    def chord(self, y):
-        c = C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
-        return c
-
-    def liftUnitSpan(self, y):
-        L = self.Cl(y)*q*self.chord(y)
-        return L
-
-    def dragUnitSpan(self, y):
-        D = self.Cd(y)*q*self.chord(y)
-        return D
-
-    def momentUnitSpan(self, y):
-        M = self.Cm(y)*q*self.chord(y)**2
-        return M
-
+    ######### EXTERNAL LOADING ##############
+    # AERODYNAMIC LOADING
     def calcNormal(self, y, alphaA):
-        L = self.liftUnitSpan(y)
-        D = self.dragUnitSpan(y)
+        c = self.chord(y)
+        alphaA = np.deg2rad(alphaA)
+        L = self.Cl(y)*q*c
+        D = self.Cd(y)*q*c
         
-        N = np.cos(alphaA)*L + np.sin(alphaA)*D
-        
-        return N
+        return np.cos(alphaA)*L + np.sin(alphaA)*D
+    
+    def momentUnitSpan(self, y):
+        return self.Cm(y)*q*self.chord(y)**2
 
+    # INERTIAL LOADING
     def inertialLoading(self, y, massWing, n=1):
         weightDens = n*g*massWing/S
-        w = weightDens*self.chord(y)
-        return w
-    
+        return -weightDens*self.chord(y)
+        
+    # PROPULSIVE LOADING
     def propulsiveLoading(self, thetaT, T):
-        return T/2*np.sin(thetaT)
+        return np.array(([0], [T/2*np.sin(thetaT)], [0.25*C_ROOT]))
     
     def propulsiveMoment(self, thetaT, T, d):
-        return T/2*np.sin(thetaT)*d
+        return np.array(([0], [T/2*np.sin(thetaT)*d]))
+    
+    # TOTAL LOADING
+    def totalLoading(self, x, n, mWing):
+        return self.calcNormal(x, self.alpha-WING_TRIM) + self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
         
     ############ INTERNAL LOADING ##############
-
-    # Normal force as function of x. pointLoads must have cols (position, load) (shape 2xn).
-    # loading must be a python function.
-    def axial(self, x, L, loading, pointLoads):
-        N = sp.integrate.quad(loading, x, L)[0]
-
-        for i in range(pointLoads.shape[1]):
-            N += pointLoads[1,i] * (1-np.heaviside(x-pointLoads[0,i], 1))
-
-        return N
-
     # Shear force as function of x. pointLoads must have cols (position, load) (shape 2xn)
     # loading must be a python function.
-    def shear(self, x, L, loading, pointLoads):
-        V = sp.integrate.quad(loading, x, L)[0]
+    def shear(self, x, loading: Callable, pointLoads):
+        xValsInt = np.arange(x, self.xMax, self.step)
+        yValsInt = loading(xValsInt)
+        
+        V = sp.integrate.simpson(x=xValsInt, y=yValsInt)
 
         for i in range(pointLoads.shape[1]):
             V += pointLoads[1,i] * (1-np.heaviside(x-pointLoads[0,i], 1))
@@ -132,44 +121,32 @@ class Calc():
 
     # Moment force as function of x. pointLoads must have cols (position, load) (shape 2xn)
     # loading must be a python function.
-    def moment(self, x, L, loading, pointLoads, args):
-        # These asserts ensure that the point load arrays have the correct dimensions
-        assert pointLoads.shape[0] == 2
-        M = sp.integrate.quad(loading, x, L, args)[0]
+    def moment(self, x, shearVals, pointMoments):
+        xValsInt = np.arange(x, self.xMax, self.step)
+        i = shearVals.shape[0] - xValsInt.shape[0]
+        M = sp.integrate.simpson(x=xValsInt, y=shearVals[i:])
 
-        for i in range(pointLoads.shape[1]):
-            M += pointLoads[1,i] * (1-np.heaviside(x-pointLoads[0,i], 1))
+        for i in range(pointMoments.shape[1]):
+            M += pointMoments[1,i] * (1-np.heaviside(x-pointMoments[0,i], 1))
 
         return -M
 
     # Torsion as function of x. forcePointLoads must have cols (position, load, dist) (shape 3xn);
     # torquePointLoads must have cols (position, load) (shape 2xn)
     # forceloading, torsionLoading, and loadingDist must be a python function.
-    def torsion(self, x, L, forceLoading, loadingDist, torsionLoading, forcePointLoads, torquePointLoads):
-        # These asserts ensure that the point load arrays have the correct dimensions
-        assert forcePointLoads.shape[0] == 3
-        assert torquePointLoads.shape[0] == 2
-
-        T = sp.integrate.quad(lambda x : forceLoading(x)*loadingDist(x) + torsionLoading(x), x, L)[0]
-
+    def torsion(self, x, loadingVals, forcePointLoads, torquePointLoads):
+        xValsInt = np.arange(x, self.xMax, self.step)
+        i = loadingVals.shape[0] - xValsInt.shape[0]
+        T = sp.integrate.simpson(x=xValsInt, y=loadingVals[i:])
+        
         for i in range(forcePointLoads.shape[1]):
             T += forcePointLoads[1,i] * forcePointLoads[2,i] * (1-np.heaviside(x-forcePointLoads[0,i], 1))
 
         for i in range(torquePointLoads.shape[1]):
             T += torquePointLoads[1,i] * (1-np.heaviside(x-torquePointLoads[0,i], 1))
-
         return T
     
-    # def totalLoading(self, x, n, W, mWing,):
-    #     self.set_load_case_from_flight(n, W)
-        
-    #     return self.calcNormal(x) + self.inertialLoading(x, mWing, n) + self.
-        
-        
-
-
     ############ PLOTTING ##############
-
     def plot(self, forceLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, step=0.01):
         # Ensure arrays of correct dimension
         assert pointLoads.shape[0] == 3
@@ -177,19 +154,25 @@ class Calc():
         assert pointTorques.shape[0] == 2
         assert len(lims) == 2
 
-        xMin, xMax = lims
+        self.xMin, self.xMax = lims
+        self.step = step
+        xVals = np.arange(self.xMin, self.xMax, step)        
 
-        xVals = np.arange(xMin, xMax, step)
+        self.shearVec = np.vectorize(self.shear, signature='(),(),(3,1)->()')
+        shearVals = self.shearVec(xVals, forceLoading, pointLoads)
+        
+        self.momentVec = np.vectorize(self.moment, signature='(),(n),(m,l)->()')
+        momentVals = self.momentVec(xVals, shearVals, pointMoments)
+        
+        self.torsionVec = np.vectorize(self.torsion, signature='(),(m),(3,1),(2,1)->()')
+        torsionLoadVals = torsionLoading(xVals) + forceLoading(xVals)*loadingDist(xVals)
+        torsionVals = self.torsionVec(xVals, torsionLoadVals, pointLoads, pointTorques)
+        
+        np.savez('shearVals', x=xVals, y=shearVals)
+        np.savez('momentvals', x=xVals, y=momentVals)
+        np.savez('torsionVals', x=xVals, y=torsionVals)
 
-        shearVals = []
-        momentVals = []
-        torsionVals = []        
-
-        for x in xVals:
-            shearVals.append(calc.shear(x, xMax, forceLoading, pointLoads))
-            momentVals.append(calc.moment(x, xMax, calc.shear, pointMoments, (xMax, forceLoading, pointLoads)))
-            torsionVals.append(calc.torsion(x, xMax, forceLoading, loadingDist, torsionLoading, pointLoads, pointTorques))
-
+        print('Plotting!')
         # Plot with subplots
         if subplots:
             fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
@@ -210,6 +193,8 @@ class Calc():
             ax3.set_ylabel('Torsion [Nm]')
             
             plt.show()
+            
+            
 
         # Plot in sequential plots
         else:
@@ -221,29 +206,28 @@ class Calc():
             plt.show()
             plt.clf()
 
-            plt.plot(xVals, momentVals)
-            plt.title('Bending Moment Diagram')
-            plt.xlabel('y [m]')
-            plt.ylabel('Bending Moment [Nm]')
+            # plt.plot(xVals, momentVals)
+            # plt.title('Bending Moment Diagram')
+            # plt.xlabel('y [m]')
+            # plt.ylabel('Bending Moment [Nm]')
 
-            plt.show()
-            plt.clf()
+            # plt.show()
+            # plt.clf()
 
-            plt.plot(xVals, torsionVals)
-            plt.title('Torsion Diagram')
-            plt.xlabel('y [m]')
-            plt.ylabel('Torsion [Nm]')
+            # plt.plot(xVals, torsionVals)
+            # plt.title('Torsion Diagram')
+            # plt.xlabel('y [m]')
+            # plt.ylabel('Torsion [Nm]')
 
-            plt.show()
-            plt.clf()
+            # plt.show()
+            # plt.clf()
 
 
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
 
-    # calc.lifttest()
     calc.set_load_case_from_flight(n_ult, W_MTOW)
-    
+        
 
     wlst = [W_MTOW, W_minusfuel, W_OEM]
     Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
@@ -259,36 +243,18 @@ if __name__ == '__main__':
                 f"CLd = {CLd:8.3f}"
                 )
 
-    # L = calc.liftUnitSpan(y)
-    # D = calc.dragUnitSpan(y)
-    # M = calc.momentUnitSpan(y)
-
-    # plt.plot(y, L)
-    # plt.show()
-    # plt.plot(y, D)
-    # plt.show()
-    # plt.plot(y, M)
-    # plt.xlabel("y [m]")
-    # plt.ylabel("Lift per unit span L'(y) [N/m]")
-    # plt.grid(True)
-    # plt.show()
-
-    x_vals = np.arange(0, np.pi, 0.01)
-    shear_vals = []
-    moment_vals = []
-    torsion_vals = []
-    loading = lambda x: x
-    lambda x: x**2
-
-    for x in x_vals:
-        shear_vals.append(calc.shear(x, np.pi, loading, NULL_ARRAY_2))
-
-    for x in x_vals:
-        moment_vals.append(calc.moment(x, np.pi, calc.shear, NULL_ARRAY_2,
-                                       (np.pi, loading, NULL_ARRAY_2)))
-
-    for x in x_vals:
-        torsion_vals.append(calc.torsion(x, np.pi, lambda x: -1, lambda x: -1, lambda x: 0, NULL_ARRAY_3, NULL_ARRAY_2))
-
-    # plt.plot(x_vals, torsion_vals)
-    # plt.show()
+    forceLoading, torsionLoading = lambda x: calc.totalLoading(x, 1, M_WING)[0], lambda x: calc.totalLoading(x, 1, 1000)[2]
+    loadingDist = lambda x: calc.chord(x)
+    pointLoads, pointTorques = (lambda x: calc.totalLoading(x, 1, M_WING)[1])(0), (lambda x: calc.totalLoading(x, 1, 1000)[3])(0)
+    
+    print(pointLoads)
+    
+    calc.plot(forceLoading, 
+              torsionLoading, 
+              loadingDist, 
+              pointLoads, 
+              NULL_ARRAY_2, 
+              pointTorques, 
+              (0, HALF_SPAN))
+    
+    
