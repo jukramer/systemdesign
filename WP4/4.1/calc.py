@@ -78,7 +78,6 @@ class Calc():
         t = (CLd - self.CL0) / (self.CL10 - self.CL0)
 
         self.Cl = lambda y: self.Cl0(y) + t*(self.Cl10(y) - self.Cl0(y))
-        print(self.Cl(0))
         self.Cd = lambda y: self.Cd0(y) + t*(self.Cd10(y) - self.Cd0(y))
         self.Cm = lambda y: self.Cm0(y) + t*(self.Cm10(y) - self.Cm0(y))
 
@@ -157,7 +156,7 @@ class Calc():
         return T
     
     ############ PLOTTING ##############
-    def plot(self, aeroLoading, inertialLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, step=0.01):
+    def plot(self, aeroLoading, inertialLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, plot = True, step=0.01):
         # Ensure arrays of correct dimension
         if not (pointLoads.shape[0] == 3 and pointMoments.shape[0] == 2 and pointTorques.shape[0] == 2 and len(lims) == 2):
             raise DimensionError('Loading arrays must be of correct dimension.')
@@ -178,7 +177,7 @@ class Calc():
         torsionVals = self.torsionVec(xVals, torsionLoadVals, pointLoads, pointTorques)
         
         np.savez(ARRAY_PATH, xVals, momentVals, torsionVals)
-        return
+        # return
         print('Plotting!')
         # Plot with subplots
         if subplots:

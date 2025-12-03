@@ -4,8 +4,8 @@ Plane Name
 T1-200.6 m/s-Panel-Inviscid
 QInf  =  200.630000 m/s
 Alpha =    0.000000
-Beta  =    0.000°
-Phi   =    0.000°
+Beta  =    0.000ï¿½
+Phi   =    0.000ï¿½
 Ctrl  =    0.000
 CL    =    0.264333
 Cy    =   -0.000000

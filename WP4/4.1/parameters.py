@@ -10,7 +10,7 @@ C_ROOT = 2.85
 C_TIP = 1.03
 CG_POS_CHORDWISE = 0.42246943
 
-WING_TRIM = 0.18 # [deg]
+WING_TRIM = 0 # [deg]
 
 # PROPULSION
 d_prop = 1.617
