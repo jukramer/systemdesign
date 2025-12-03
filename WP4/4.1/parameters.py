@@ -16,7 +16,6 @@ n_ult = 1.5*n_lim
 
 g = 9.80665
 
-n_ult = 4.38
 W_MTOW = 7142.31*9.80665
 M_WING = (1275.260140713509 + 1251.441374)/2
 
@@ -25,13 +24,11 @@ W_OEM = 4876.784*g
 
 # AMBIENT PROPERTIES
 RHO = 0.287
-V_CR = 270
+V_CR = 200.63
 S = 33.609
 
 RHO_SL = 1.225
 
 q = 0.5*RHO*V_CR**2
-
-g = 9.80665
 
 V_stallwflaps = 33.27
