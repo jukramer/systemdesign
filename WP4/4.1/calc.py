@@ -245,9 +245,10 @@ if __name__ == '__main__':
                 
     # Internal Loading
 
-    forceLoading, torsionLoading = lambda x: calc.totalLoading(x, 1, M_WING)[0], lambda x: calc.totalLoading(x, 1, 1000)[2]
+    # 
+    forceLoading, torsionLoading = lambda x: calc.totalLoading(x, 1, M_WING)[0], lambda x: calc.totalLoading(x, 1, M_WING)[2]
     loadingDist = lambda x: calc.chord(x)
-    pointLoads, pointTorques = (lambda x: calc.totalLoading(x, 1, M_WING)[1])(0), (lambda x: calc.totalLoading(x, 1, 1000)[3])(0)
+    pointLoads, pointTorques = (lambda x: calc.totalLoading(x, 1, M_WING)[1])(0), (lambda x: calc.totalLoading(x, 1, M_WING)[3])(0)
     
     print(pointLoads)
     
