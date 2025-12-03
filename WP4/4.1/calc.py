@@ -53,8 +53,6 @@ class Calc():
         self.Cm = None
         self.alpha = None
 
-        #self.lifttest()      
-
     def chord(self, y):
         return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
 
@@ -68,13 +66,13 @@ class Calc():
         q_here = 0.5*rho*V**2
         CLd = n*W/(q_here*Sref)
         
-        t = (CLd - self.CL0)/ (self.CL10 - self.CL0)
+        t = (CLd - self.CL0) / (self.CL10 - self.CL0)
 
-        self.Cl = lambda y: self.Cl0(y) + t * (self.Cl10(y) - self.Cl0(y))
-        self.Cd = lambda y: self.Cd0(y) + t * (self.Cd10(y) - self.Cd0(y))
-        self.Cm = lambda y: self.Cm0(y) + t * (self.Cm10(y) - self.Cm0(y))
+        self.Cl = lambda y: self.Cl0(y) + t*(self.Cl10(y) - self.Cl0(y))
+        self.Cd = lambda y: self.Cd0(y) + t*(self.Cd10(y) - self.Cd0(y))
+        self.Cm = lambda y: self.Cm0(y) + t*(self.Cm10(y) - self.Cm0(y))
 
-        self.alpha = self.alpha0 + t * (self.alpha10 - self.alpha0)
+        self.alpha = self.alpha0 + t*(self.alpha10 - self.alpha0)
 
     ######### EXTERNAL LOADING ##############
     # AERODYNAMIC LOADING
@@ -191,8 +189,6 @@ class Calc():
             
             plt.show()
             
-            
-
         # Plot in sequential plots
         else:
             plt.plot(xVals, shearVals)
@@ -203,21 +199,21 @@ class Calc():
             plt.show()
             plt.clf()
 
-            # plt.plot(xVals, momentVals)
-            # plt.title('Bending Moment Diagram')
-            # plt.xlabel('y [m]')
-            # plt.ylabel('Bending Moment [Nm]')
+            plt.plot(xVals, momentVals)
+            plt.title('Bending Moment Diagram')
+            plt.xlabel('y [m]')
+            plt.ylabel('Bending Moment [Nm]')
 
-            # plt.show()
-            # plt.clf()
+            plt.show()
+            plt.clf()
 
-            # plt.plot(xVals, torsionVals)
-            # plt.title('Torsion Diagram')
-            # plt.xlabel('y [m]')
-            # plt.ylabel('Torsion [Nm]')
+            plt.plot(xVals, torsionVals)
+            plt.title('Torsion Diagram')
+            plt.xlabel('y [m]')
+            plt.ylabel('Torsion [Nm]')
 
-            # plt.show()
-            # plt.clf()
+            plt.show()
+            plt.clf()
 
 
 if __name__ == '__main__':
@@ -225,7 +221,6 @@ if __name__ == '__main__':
 
     calc.set_load_case_from_flight(n_ult, W_MTOW)
         
-
     wlst = [W_MTOW, W_minusfuel, W_OEM]
     Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
     RHOlst = [RHO, RHO_SL]
@@ -239,6 +234,8 @@ if __name__ == '__main__':
                 f"rho = {rho:5.3f} kg/m³ | "
                 f"CLd = {CLd:8.3f}"
                 )
+                
+    # Internal Loading
 
     forceLoading, torsionLoading = lambda x: calc.totalLoading(x, 1, M_WING)[0], lambda x: calc.totalLoading(x, 1, 1000)[2]
     loadingDist = lambda x: calc.chord(x)
