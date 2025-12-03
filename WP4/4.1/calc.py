@@ -56,9 +56,10 @@ class Calc():
     def chord(self, y):
         return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
     
-    def findLoadingDist(self):
-        return         
-
+    def findLoadingDist(self, y, posAero=0.25, posInertial=CG_POS_CHORDWISE): 
+        # By necessity, posInertial is 0, as weight acts through the centroid
+        return self.chord(y)*(CG_POS_CHORDWISE-posAero)
+             
     def alpha_load_case(self, V, w, rho):
         L = w*n_ult
         C_L_d = L / (0.5*rho*(V**2)*S)
@@ -77,7 +78,6 @@ class Calc():
 
         self.alpha = self.alpha0 + t*(self.alpha10 - self.alpha0)
         
-    
 
     ######### EXTERNAL LOADING ##############
     # AERODYNAMIC LOADING
@@ -106,7 +106,7 @@ class Calc():
     
     # TOTAL LOADING
     def totalLoading(self, x, n, mWing):
-        return self.calcNormal(x, self.alpha-WING_TRIM) + self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
+        return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
         
     ############ INTERNAL LOADING ##############
     # Shear force as function of x. pointLoads must have cols (position, load) (shape 2xn)
@@ -147,10 +147,11 @@ class Calc():
 
         for i in range(torquePointLoads.shape[1]):
             T += torquePointLoads[1,i] * (1-np.heaviside(x-torquePointLoads[0,i], 1))
+            
         return T
     
     ############ PLOTTING ##############
-    def plot(self, forceLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, step=0.01):
+    def plot(self, aeroLoading, inertialLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, step=0.01):
         # Ensure arrays of correct dimension
         assert pointLoads.shape[0] == 3
         assert pointMoments.shape[0] == 2
@@ -162,20 +163,18 @@ class Calc():
         xVals = np.arange(self.xMin, self.xMax, step)        
 
         self.shearVec = np.vectorize(self.shear, signature='(),(),(3,1)->()')
-        shearVals = self.shearVec(xVals, forceLoading, pointLoads)
+        shearVals = self.shearVec(xVals, lambda x: aeroLoading(x)+inertialLoading(x), pointLoads)
         
         self.momentVec = np.vectorize(self.moment, signature='(),(n),(m,l)->()')
         momentVals = self.momentVec(xVals, shearVals, pointMoments)
         
         self.torsionVec = np.vectorize(self.torsion, signature='(),(m),(3,1),(2,1)->()')
-        torsionLoadVals = torsionLoading(xVals) + forceLoading(xVals)*loadingDist(xVals)
+        torsionLoadVals = torsionLoading(xVals) + aeroLoading(xVals)*loadingDist(xVals)
         torsionVals = self.torsionVec(xVals, torsionLoadVals, pointLoads, pointTorques)
         
-        np.savez('case1', xVals, momentVals, torsionVals)
+        np.savez(ARRAY_PATH, xVals, momentVals, torsionVals)
         print('Plotting!')
         
-        return 
-    
         # Plot with subplots
         if subplots:
             fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
@@ -227,32 +226,32 @@ class Calc():
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
 
-    calc.set_load_case_from_flight(n_ult, W_MTOW)
         
-    wlst = [W_MTOW, W_minusfuel, W_OEM]
-    Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
-    RHOlst = [RHO, RHO_SL]
-    for V in Vlst:
-        for w in wlst:
-            for rho in RHOlst:
-                CLd = calc.alpha_load_case(V, w, rho)
-                print(
-                f"V = {V:6.2f} m/s | "
-                f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
-                f"rho = {rho:5.3f} kg/m³ | "
-                f"CLd = {CLd:8.3f}"
-                )
+    # wlst = [W_MTOW, W_minusfuel, W_OEM]
+    # # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
+    # RHOlst = [RHO, RHO_SL]
+    # for V in Vlst:
+    #     for w in wlst:
+    #         for rho in RHOlst:
+    #             CLd = calc.alpha_load_case(V, w, rho)
+    #             print(
+    #             f"V = {V:6.2f} m/s | "
+    #             f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
+    #             f"rho = {rho:5.3f} kg/m³ | "
+    #             f"CLd = {CLd:8.3f}"
+    #             )
                 
-    # Internal Loading
+    # External Loading    
+    calc.set_load_case_from_flight(n_ult, W_MTOW)
 
-    # 
-    forceLoading, torsionLoading = lambda x: calc.totalLoading(x, 1, M_WING)[0], lambda x: calc.totalLoading(x, 1, M_WING)[2]
-    loadingDist = lambda x: calc.chord(x)
-    pointLoads, pointTorques = (lambda x: calc.totalLoading(x, 1, M_WING)[1])(0), (lambda x: calc.totalLoading(x, 1, M_WING)[3])(0)
+    aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
+    loadingDist = lambda x: calc.findLoadingDist(x)
+    pointLoads, pointTorques = (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[2])(0), (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[4])(0)
     
     print(pointLoads)
     
-    calc.plot(forceLoading, 
+    calc.plot(aeroLoading,
+              inertialLoading, 
               torsionLoading, 
               loadingDist, 
               pointLoads, 

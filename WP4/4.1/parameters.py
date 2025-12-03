@@ -1,34 +1,65 @@
-# AIRCRAFT PROPERTIES
+# PHYSICAL CONSTANTS
+g = 9.80665
+
+# PLANFORM
 b = 17.29
 HALF_SPAN = b/2
+S = 33.609
+
 C_ROOT = 2.85
 C_TIP = 1.03
-d_prop = 1.617
+CG_POS_CHORDWISE = 0.42246943
+
 WING_TRIM = 0.18 # [deg]
 
+# PROPULSION
+d_prop = 1.617
 T_TO = 31673.07352
 
+# LIFT COEFFICIENTS
 C_L0 = 0.264333
 C_L10 = 1.123905
 
+# LOAD FACTORS
 n_lim = 3.8
 n_ult = 1.5*n_lim
 
-g = 9.80665
-
+# MASSES/WEIGHTS
 W_MTOW = 7142.31*9.80665
-M_WING = (1275.260140713509 + 1251.441374)/2
-
+M_WING = (1275.260140713509 + 1251.441374)/2 # Fuel mass plus wing mass / 2 (mass of half wing)
 W_minusfuel = 5886.78*g
 W_OEM = 4876.784*g
 
 # AMBIENT PROPERTIES
-RHO = 0.287
-V_CR = 200.63
-S = 33.609
 
-RHO_SL = 1.225
+RHO = 1.225
+
+# V_CR = 45.2 # Case 1
+# LOAD_FACTOR = -1 # Case 1
+# ARRAY_PATH = 'case1'
+
+# V_CR = 64.5 # Case 2
+# LOAD_FACTOR = 2  # Case 2
+# ARRAY_PATH = 'case2'
+
+# V_CR = 88.2 # Case 3
+# LOAD_FACTOR = 3.8 # Case 3
+# ARRAY_PATH = 'case3'
+
+# V_CR = 233.4 # Case 4 
+# LOAD_FACTOR = -1 # Case 4
+# ARRAY_PATH = 'case4'
+
+# V_CR = 291.8 # Case 5
+# LOAD_FACTOR = 3.8 # Case 5
+# ARRAY_PATH = 'case5'
+
+V_CR = 200.6 # Case 5
+LOAD_FACTOR = 1 # Case 5
+ARRAY_PATH = 'caseTest'
 
 q = 0.5*RHO*V_CR**2
 
-V_stallwflaps = 33.27
+
+# SL
+RHO_SL = 1.225
