@@ -52,15 +52,7 @@ class Calc():
 
     def alpha_load_case(self, V, w, rho):
         L = w*n_ult
-        C_L_d = L / (0.5*RHO*V**2*S)
-
-        wlst = [W_MTOW, W_minusfuel, W_OEM]
-        Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
-        RHOlst = [RHO, RHO_SL]
-        for V in Vlst:
-            for w in wlst:
-                for rho in RHOlst:
-                    print(self.alpha_load_case(V, w, rho))
+        C_L_d = L / (0.5*rho*(V**2)*S)
 
         return C_L_d
     
@@ -79,6 +71,7 @@ class Calc():
         q_here = 0.5*rho*V**2
         CLd = n*W/(q_here*Sref)
         self.set_load_case_CL(CLd)
+        
 
     def chord(self, y):
         c = C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
@@ -167,10 +160,10 @@ class Calc():
 
         return T
     
-    def totalLoading(self, x, n, W, mWing,):
-        self.set_load_case_from_flight(n, W)
+    # def totalLoading(self, x, n, W, mWing,):
+    #     self.set_load_case_from_flight(n, W)
         
-        return self.calcNormal(x) + self.inertialLoading(x, mWing, n) + self.
+    #     return self.calcNormal(x) + self.inertialLoading(x, mWing, n) + self.
         
         
 
@@ -250,6 +243,21 @@ if __name__ == '__main__':
 
     # calc.lifttest()
     calc.set_load_case_from_flight(n_ult, W_MTOW)
+    
+
+    wlst = [W_MTOW, W_minusfuel, W_OEM]
+    Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
+    RHOlst = [RHO, RHO_SL]
+    for V in Vlst:
+        for w in wlst:
+            for rho in RHOlst:
+                CLd = calc.alpha_load_case(V, w, rho)
+                print(
+                f"V = {V:6.2f} m/s | "
+                f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
+                f"rho = {rho:5.3f} kg/m³ | "
+                f"CLd = {CLd:8.3f}"
+                )
 
     # L = calc.liftUnitSpan(y)
     # D = calc.dragUnitSpan(y)
