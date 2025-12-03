@@ -55,6 +55,9 @@ class Calc():
 
     def chord(self, y):
         return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
+    
+    def findLoadingDist(self):
+        return         
 
     def alpha_load_case(self, V, w, rho):
         L = w*n_ult
@@ -73,6 +76,8 @@ class Calc():
         self.Cm = lambda y: self.Cm0(y) + t*(self.Cm10(y) - self.Cm0(y))
 
         self.alpha = self.alpha0 + t*(self.alpha10 - self.alpha0)
+        
+    
 
     ######### EXTERNAL LOADING ##############
     # AERODYNAMIC LOADING
@@ -166,8 +171,11 @@ class Calc():
         torsionLoadVals = torsionLoading(xVals) + forceLoading(xVals)*loadingDist(xVals)
         torsionVals = self.torsionVec(xVals, torsionLoadVals, pointLoads, pointTorques)
         
-        np.savez('loadingVals', xVals, momentVals, torsionVals)
+        np.savez('case1', xVals, momentVals, torsionVals)
         print('Plotting!')
+        
+        return 
+    
         # Plot with subplots
         if subplots:
             fig, (ax1, ax2, ax3) = plt.subplots(1, 3)

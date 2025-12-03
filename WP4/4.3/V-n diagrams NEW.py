@@ -14,7 +14,6 @@ C_L_max_to = 2
 C_L_max_a = 2.1
 C_L_max_l = 2.1
 
-
 print(2.1+24000/(W_mtom_lbs + 10000))
 
 # Flight conditions
