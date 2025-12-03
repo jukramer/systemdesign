@@ -71,8 +71,6 @@ class Calc():
                     print(self.alpha_load_case(V, w, rho))
 
         return C_L_d
-    
-
 
     def set_load_case_from_flight(self, n, W, V=V_CR, rho=RHO, Sref=S):
         q_here = 0.5*rho*V**2
@@ -102,7 +100,7 @@ class Calc():
     # INERTIAL LOADING
     def inertialLoading(self, y, massWing, n=1):
         weightDens = n*g*massWing/S
-        return weightDens*self.chord(y)
+        return -weightDens*self.chord(y)
         
     # PROPULSIVE LOADING
     def propulsiveLoading(self, thetaT, T):
@@ -177,6 +175,10 @@ class Calc():
         self.torsionVec = np.vectorize(self.torsion, signature='(),(m),(3,1),(2,1)->()')
         torsionLoadVals = torsionLoading(xVals) + forceLoading(xVals)*loadingDist(xVals)
         torsionVals = self.torsionVec(xVals, torsionLoadVals, pointLoads, pointTorques)
+        
+        np.savez('shearVals', x=xVals, y=shearVals)
+        np.savez('momentvals', x=xVals, y=momentVals)
+        np.savez('torsionVals', x=xVals, y=torsionVals)
 
         print('Plotting!')
         # Plot with subplots
@@ -199,6 +201,8 @@ class Calc():
             ax3.set_ylabel('Torsion [Nm]')
             
             plt.show()
+            
+            
 
         # Plot in sequential plots
         else:
@@ -245,3 +249,5 @@ if __name__ == '__main__':
               NULL_ARRAY_2, 
               pointTorques, 
               (0, HALF_SPAN))
+    
+    
