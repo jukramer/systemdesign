@@ -1,4 +1,4 @@
-from parameters import *
+from WP4_1.parameters import *
 from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
@@ -180,7 +180,7 @@ class Calc():
         # return
         print('Plotting!')
         # Plot with subplots
-        if subplots:
+        if subplots and plot:
             fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
 
             ax1.plot(xVals, shearVals)
@@ -206,7 +206,7 @@ class Calc():
             plt.show()
             
         # Plot in sequential plots
-        else:
+        if plot:
             plt.plot(xVals, shearVals)
             plt.title('Shear Force Diagram')
             plt.xlabel('y [m]')
@@ -230,6 +230,8 @@ class Calc():
 
             plt.show()
             plt.clf()
+            
+        return np.vstack((xVals, momentVals, torsionVals))
             
 
 if __name__ == '__main__':
