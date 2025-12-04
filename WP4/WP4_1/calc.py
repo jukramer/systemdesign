@@ -3,6 +3,7 @@ from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
+import warnings
 
 # CONSTANTS
 NULL_ARRAY_2 = np.zeros((2,1)) # 0-load array (for 2-row point loads)
@@ -156,7 +157,10 @@ class Calc():
         return T
     
     ############ PLOTTING ##############
-    def plot(self, aeroLoading, inertialLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, plot = True, step=0.01):
+    def plot(self, aeroLoading, inertialLoading, torsionLoading, loadingDist, pointLoads, pointMoments, pointTorques, lims, subplots = True, plot = True, step=0.01, debug=False):
+        if not debug:
+            warnings.simplefilter('ignore', category = UserWarning)
+        
         # Ensure arrays of correct dimension
         if not (pointLoads.shape[0] == 3 and pointMoments.shape[0] == 2 and pointTorques.shape[0] == 2 and len(lims) == 2):
             raise DimensionError('Loading arrays must be of correct dimension.')
@@ -181,32 +185,32 @@ class Calc():
         print('Plotting!')
         # Plot with subplots
         if subplots and plot:
-            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
+            fig, (ax1, ax2, ax3) = plt.subplots(1,3)
 
-            ax1.plot(xVals, shearVals)
+            ax1.plot(xVals, shearVals/1000)
             ax1.set_title('Shear Force Diagram')
             ax1.set_xlabel('y [m]')
-            ax1.set_ylabel('Shear Force [m]')
+            ax1.set_ylabel('Shear Force [kN]')
             
-            ax2.plot(xVals, momentVals)
+            ax2.plot(xVals, momentVals/1000)
             ax2.set_title('Bending Moment Diagram')
             ax2.set_xlabel('y [m]')
-            ax2.set_ylabel('Bending Moment [Nm]')
+            ax2.set_ylabel('Bending Moment [kNm]')
             
-            ax3.plot(xVals, torsionVals)
+            ax3.plot(xVals, torsionVals/1000)
             ax3.set_title('Torsion Diagram')
             ax3.set_xlabel('y [m]')
-            ax3.set_ylabel('Torsion [Nm]')
+            ax3.set_ylabel('Torsion [kNm]')
                 
-            ax4.plot(xVals, loadingVals)
-            ax4.set_title('Aerodynamic Loading Diagram')
-            ax4.set_xlabel('y [m]')
-            ax4.set_ylabel('Lift [Nm]')
+            # ax4.plot(xVals, loadingVals)
+            # ax4.set_title('Aerodynamic Loading Diagram')
+            # ax4.set_xlabel('y [m]')
+            # ax4.set_ylabel('Lift [Nm]')
             
             plt.show()
             
         # Plot in sequential plots
-        if plot:
+        if plot and not subplots:
             plt.plot(xVals, shearVals)
             plt.title('Shear Force Diagram')
             plt.xlabel('y [m]')

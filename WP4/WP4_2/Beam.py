@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import scipy as sp
 from scipy import interpolate
 
-if True: # dark mode
+if False: # dark mode
     plt.style.use('dark_background')
     plt.rcParams.update({
         'figure.facecolor': '#1a1a1a',   

@@ -2,9 +2,12 @@ from WP4_1.calc import *
 from WP4_2.Beam import *
 import matplotlib.pyplot as plt
 import numpy as np
+import warnings
 
-
-if __name__ == '__main__':
+def main(debug=False):
+    if not debug:
+        warnings.simplefilter('ignore', category=UserWarning)
+    
     # EXTERNAL LOADING
     calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
     calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
@@ -22,7 +25,9 @@ if __name__ == '__main__':
                                        NULL_ARRAY_2, 
                                        pointTorques, 
                                        (0, HALF_SPAN),
-                                       plot=False)
+                                       plot=True)
+    
+    return
     
     # DEFLECTION CALCULATIONS
     np.set_printoptions(suppress=True)
@@ -37,3 +42,7 @@ if __name__ == '__main__':
     zis_is_ze_beam.get_displacement(np.column_stack((y_data, M_data)), E=72.4e9, stringers=stringers)
     zis_is_ze_beam.get_twist(np.column_stack((y_data, T_data)), G=28e9)
     zis_is_ze_beam.plot()
+
+
+if __name__ == '__main__':
+    main()
