@@ -171,7 +171,7 @@ class Calc():
         loadingVals = aeroLoading(xVals)     
 
         self.shearVec = np.vectorize(self.shear, signature='(),(),(3,1)->()')
-        shearVals = self.shearVec(xVals, lambda x: aeroLoading(x)+inertialLoading(x), pointLoads)
+        shearVals = self.shearVec(xVals, lambda x: aeroLoading(x) + inertialLoading(x), pointLoads)
         
         self.momentVec = np.vectorize(self.moment, signature='(),(n),(m,l)->()')
         momentVals = self.momentVec(xVals, shearVals, pointMoments)
@@ -187,52 +187,66 @@ class Calc():
         if subplots and plot:
             fig, (ax1, ax2, ax3) = plt.subplots(1,3)
 
-            ax1.plot(xVals, shearVals/1000)
+            ax1.plot(xVals, shearVals/1000, color='blue')
             ax1.set_title('Shear Force Diagram')
             ax1.set_xlabel('y [m]')
             ax1.set_ylabel('Shear Force [kN]')
+            ax1.grid()
             
-            ax2.plot(xVals, momentVals/1000)
+            ax2.plot(xVals, momentVals/1000, color='red')
             ax2.set_title('Bending Moment Diagram')
             ax2.set_xlabel('y [m]')
             ax2.set_ylabel('Bending Moment [kNm]')
+            ax2.grid()
             
-            ax3.plot(xVals, torsionVals/1000)
+            ax3.plot(xVals, torsionVals/1000, color='purple')
             ax3.set_title('Torsion Diagram')
             ax3.set_xlabel('y [m]')
             ax3.set_ylabel('Torsion [kNm]')
+            ax3.grid()
                 
             # ax4.plot(xVals, loadingVals)
             # ax4.set_title('Aerodynamic Loading Diagram')
             # ax4.set_xlabel('y [m]')
             # ax4.set_ylabel('Lift [Nm]')
             
-            plt.show()
+            fig.set_size_inches(15,5)
+            fig.suptitle(fr'{ARRAY_PATH} Internal Loading Diagrams', size='16', weight='semibold')
+            fig.tight_layout()
+            fig.savefig(fr'diagrams\totalDiagram{ARRAY_PATH}')
             
         # Plot in sequential plots
         if plot and not subplots:
-            plt.plot(xVals, shearVals)
+            plt.grid()
+            
+            plt.plot(xVals, shearVals/1000, color='blue')
             plt.title('Shear Force Diagram')
             plt.xlabel('y [m]')
-            plt.ylabel('Shear Force [m]')
-
-            plt.show()
+            plt.ylabel('Shear Force [kN]')
+            plt.tight_layout()
+            
+            plt.savefig(f'diagrams/shearForceDiagram{ARRAY_PATH}.png')
             plt.clf()
+            plt.grid()
 
-            plt.plot(xVals, momentVals)
+            plt.plot(xVals, momentVals/1000, color='red')
             plt.title('Bending Moment Diagram')
             plt.xlabel('y [m]')
-            plt.ylabel('Bending Moment [Nm]')
+            plt.ylabel('Bending Moment [kNm]')
+            plt.tight_layout()
 
-            plt.show()
+            plt.savefig(f'diagrams/bendingMomentDiagram{ARRAY_PATH}.png')
             plt.clf()
+            plt.grid()
+            plt.tight_layout()
 
-            plt.plot(xVals, torsionVals)
-            plt.title('Aerodynamic Loading Diagram')
+            plt.plot(xVals, torsionVals/1000, color='purple')
+            plt.title('Torsion Diagram')
             plt.xlabel('y [m]')
-            plt.ylabel('Torsion [Nm]')
+            plt.ylabel('Torsion [kNm]')
+            plt.tight_layout()
 
-            plt.show()
+            plt.savefig(f'diagrams/torsionDiagram{ARRAY_PATH}.png')
             plt.clf()
             
         return np.vstack((xVals, momentVals, torsionVals))

@@ -34,25 +34,25 @@ W_OEM = 4876.784*g
 
 RHO = 1.225
 
-V_CR = 45.2 # Case 1
-LOAD_FACTOR = -1 # Case 1
-ARRAY_PATH = 'case1'
+# V_CR = 45.2 # Case 1
+# LOAD_FACTOR = -1 # Case 1
+# ARRAY_PATH = 'Case1'
 
 # V_CR = 64.5 # Case 2
 # LOAD_FACTOR = 2  # Case 2
-# ARRAY_PATH = 'case2'
+# ARRAY_PATH = 'Case2'
 
 # V_CR = 88.2 # Case 3
 # LOAD_FACTOR = 3.8 # Case 3
-# ARRAY_PATH = 'case3'
+# ARRAY_PATH = 'Case3'
 
-# V_CR = 233.4 # Case 4 
-# LOAD_FACTOR = -1 # Case 4
-# ARRAY_PATH = 'case4'
+V_CR = 233.4 # Case 4 
+LOAD_FACTOR = -1 # Case 4
+ARRAY_PATH = 'Case 4'
 
-# V_CR = 291.8 # Case 5
-# LOAD_FACTOR = 3.8 # Case 5
-# ARRAY_PATH = 'case5'
+V_CR = 291.8 # Case 5
+LOAD_FACTOR = 3.8 # Case 5
+ARRAY_PATH = 'Case 5'
 
 # V_CR = 200.6 # Case 5
 # LOAD_FACTOR = 1 # Case 5
