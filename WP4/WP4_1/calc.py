@@ -1,4 +1,7 @@
-from WP4_1.parameters import *
+try:
+    from WP4_1.parameters import *
+except ModuleNotFoundError:
+    from parameters import *
 from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
@@ -253,7 +256,7 @@ class Calc():
             
 
 if __name__ == '__main__':
-    calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
+    calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
         
     # wlst = [W_MTOW, W_minusfuel, W_OEM]
     # # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
