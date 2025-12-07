@@ -255,19 +255,19 @@ class Calc():
 if __name__ == '__main__':
     calc = Calc(r'WP4\4.1\dataa0.txt', r'WP4\4.1\dataa10.txt')
         
-    # wlst = [W_MTOW, W_minusfuel, W_OEM]
-    # # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
-    # RHOlst = [RHO, RHO_SL]
-    # for V in Vlst:
-    #     for w in wlst:
-    #         for rho in RHOlst:
-    #             CLd = calc.alpha_load_case(V, w, rho)
-    #             print(
-    #             f"V = {V:6.2f} m/s | "
-    #             f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
-    #             f"rho = {rho:5.3f} kg/m³ | "
-    #             f"CLd = {CLd:8.3f}"
-    #             )
+    wlst = [W_MTOW, W_minusfuel, W_OEM]
+    # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
+    RHOlst = [RHO, RHO_SL]
+    for V in Vlst:
+        for w in wlst:
+            for rho in RHOlst:
+                CLd = calc.alpha_load_case(V, w, rho)
+                print(
+                f"V = {V:6.2f} m/s | "
+                f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
+                f"rho = {rho:5.3f} kg/m³ | "
+                f"CLd = {CLd:8.3f}"
+                )
                 
     # External Loading    
     calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
