@@ -33,18 +33,19 @@ def main(debug=False):
                                        pointTorques, 
                                        (0, HALF_SPAN),
                                        subplots=True,
-                                       plot=True)
+                                       plot=False)
     
-    return
+    # return
     
     # DEFLECTION CALCULATIONS
     np.set_printoptions(suppress=True)
 
     plt.plot(y_data, M_data/np.abs(M_data[0]), label=f'M | max {M_data[0]:.0f} Nm')
-    points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)]
+    points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
+    aux_spar_endpoints = [((0.65+0.2)/2, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
 
     zis_is_ze_beam = Beam(y_data.size)
-    zis_is_ze_beam.load_wing_box(points=points, thickness=1/1000, root_chord=2.85, tip_chord=1.03, span=17.29)
+    zis_is_ze_beam.load_wing_box(points=points, aux_spar_endpoints=aux_spar_endpoints, thickness=1/1000, aux_spart_thickness=2/1000, root_chord=2.85, tip_chord=1.03, span=17.29)
     zis_is_ze_beam.get_I_of_cross_section()
     stringers = np.array([[0.05, 0.05**2], [0.015, 0.05**2]])*0 # [[z, A], [z, A]]
     zis_is_ze_beam.get_displacement(np.column_stack((y_data, M_data)), E=72.4e9, stringers=stringers)

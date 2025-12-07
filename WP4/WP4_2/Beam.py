@@ -24,12 +24,26 @@ class Beam():
         self.theta = []
         self.intg_points = intg_points
 
-    def load_wing_box(self, points, thickness, root_chord, tip_chord, span):
-        self.points = points
+    def load_wing_box(self, points, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span):
+        self.points = points # [(x/c,z/c), ...] 
+        self.aux_spar_endpoints = aux_spar_endpoints # [(x/c_start, y_start), (x/c_end, y_end)]
         self.thickness = thickness
+        self.aux_spar_thickness = aux_spart_thickness
         self.root_chord = root_chord
         self.tip_chord = tip_chord
         self.span = span
+
+        # points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
+
+        chord_at_aux_spar_start = self.get_chord(aux_spar_endpoints[0][1])
+        self.height_aux_spar_start = chord_at_aux_spar_start*(
+            np.interp(aux_spar_endpoints[0][0], [points[0][0], points[1][0]], [points[0][1], points[1][1]]) # top
+            - np.interp(aux_spar_endpoints[0][0], [points[3][0], points[2][0]], [points[3][1], points[2][1]])) # bottom
+        
+        chord_at_aux_spar_end = self.get_chord(aux_spar_endpoints[1][1])
+        self.height_aux_spar_end = chord_at_aux_spar_end*(
+            np.interp(aux_spar_endpoints[1][0], [points[0][0], points[1][0]], [points[0][1], points[1][1]]) # top
+            - np.interp(aux_spar_endpoints[1][0], [points[3][0], points[2][0]], [points[3][1], points[2][1]])) # bottom
 
     def get_I_of_cross_section(self):
         self.edge_centroids_list = []
@@ -67,10 +81,6 @@ class Beam():
             
         self.Ixz = 0
 
-        y = np.linspace(0.0, self.span/2, self.intg_points)
-        chord = self.get_chord(y)
-        self.Ixx_list = self.Ixx*chord**3
-
     def get_chord(self, y):
         frac = 2*np.abs(y)/self.span
         return (1-frac)*self.root_chord + (frac)*self.tip_chord
@@ -80,7 +90,13 @@ class Beam():
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
-        d2v_dy2 = - M / (E * (self.Ixx*c**3 + np.sum(stringers[:, 1]*stringers[:, 0]**2, axis=0)*c**2 ))
+        I = (self.Ixx*c**3 
+            + np.sum(stringers[:, 1]*stringers[:, 0]**2, axis=0)*c**2 
+            + np.where(y<=self.aux_spar_endpoints[1][1], 1/12*self.aux_spar_thickness*np.interp(y, [self.aux_spar_endpoints[0][1], self.aux_spar_endpoints[1][1]], [self.height_aux_spar_start, self.height_aux_spar_end])**3, 0)
+            )
+        self.Ixx_list = I
+        
+        d2v_dy2 = - M / (E * I)
 
         integrand_1 = sp.interpolate.interp1d(y, d2v_dy2, kind='cubic', fill_value="extrapolate")
         dv_dy = np.empty(s)
@@ -98,8 +114,8 @@ class Beam():
     
     def get_twist(self, data, G):
         a, b, c, d = self.points # Order matters
-        self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * self.get_chord(data[:, 0])**2
         chord = self.get_chord(data[:, 0])
+        self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * chord**2
         integral = chord*sum(self.edge_lengths_list)/self.thickness
         self.J = 4*self.Areas**2 / (integral)
         
