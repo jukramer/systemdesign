@@ -62,8 +62,14 @@ class Calc():
         self.Cm = None
         self.alpha = None
 
+        self.D = 0
+
     def chord(self, y):
         return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
+    
+    def findSweep(self, n, m, mSweepAngle):
+        result = np.tan(np.deg2rad(mSweepAngle)) - 4/ASPECT_RATIO*(n-m)*(1-TAPER_RATIO)/(1+TAPER_RATIO)
+        return np.rad2deg(np.atan(result))
     
     def findLoadingDist(self, y, posAero=0.25, posInertial=CG_POS_CHORDWISE): 
         # By necessity, posInertial is 0, as weight acts through the centroid
@@ -104,17 +110,18 @@ class Calc():
     # INERTIAL LOADING
     def inertialLoading(self, y, massWing, n=1):
         weightDens = n*g*massWing/S
-        return -weightDens*self.chord(y)
+        return -weightDens*self.chord(y)*np.cos(np.deg2rad(self.alpha))
         
     # PROPULSIVE LOADING
     def propulsiveLoading(self, thetaT, T):
-        return np.array(([0], [T/2*np.sin(thetaT)], [0.25*C_ROOT]))
+        return np.array(([0], [T/2*np.sin(thetaT)*np.cos(self.findSweep(CG_POS_CHORDWISE, 0.25, 10.56))], [0.25*C_ROOT]))
     
     def propulsiveMoment(self, thetaT, T, d):
-        return np.array(([0], [T/2*np.sin(thetaT)*d]))
+        return np.array(([0], [T/2*np.sin(thetaT)*d*np.cos(self.findSweep(CG_POS_CHORDWISE, 0.25, 10.56))]))
     
     # TOTAL LOADING
     def totalLoading(self, x, n, mWing):
+        # print(self.D)
         return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
         
     ############ INTERNAL LOADING ##############
@@ -253,27 +260,69 @@ class Calc():
             plt.clf()
             
         return np.vstack((xVals, momentVals, torsionVals))
+    
+    def plot_coeffs_half_span(self):
+
+        # span van 0 tot halfspan
+        y = np.arange(0, HALF_SPAN + self.step, self.step)
+
+        # interpolaties evalueren
+        Cl0_vals  = self.Cl0(y)
+        Cd0_vals  = self.Cd0(y)
+        Cm0_vals  = self.Cm0(y)
+
+        Cl10_vals = self.Cl10(y)
+        Cd10_vals = self.Cd10(y)
+        Cm10_vals = self.Cm10(y)
+
+        # twee subplots naast elkaar
+        fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
+
+        # ---------- 0° ----------
+        ax = axes[0]
+        ax.plot(y, Cl0_vals, label="Lift coefficient")
+        ax.plot(y, Cd0_vals, label="Induced drag coefficient")
+        ax.plot(y, Cm0_vals, label="Moment coefficient")
+        ax.set_title("Interpolation of Cl, Cd, Cm against the span (0°)")
+        ax.set_xlabel("Span location [m]")
+        ax.set_ylabel("Coefficient [-]")
+        ax.grid(True)
+        ax.legend()
+
+        # ---------- 10° ----------
+        ax = axes[1]
+        ax.plot(y, Cl10_vals, label="Lift coefficient")
+        ax.plot(y, Cd10_vals, label="Induced drag coefficient")
+        ax.plot(y, Cm10_vals, label="Moment coefficient")
+        ax.set_title("Interpolation of Cl, Cd, Cm against the span (10°)")
+        ax.set_xlabel("Span location [m]")
+        ax.grid(True)
+        ax.legend()
+
+        fig.tight_layout()
+        plt.show()
+
             
 
 if __name__ == '__main__':
     calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
         
-    wlst = [W_MTOW, W_minusfuel, W_OEM]
-    Vlst = [1.5*V_CR, V_CR]
-    RHOlst = [ RHO_SL]
-    for V in Vlst:
-        for w in wlst:
-            for rho in RHOlst:
-                CLd = calc.alpha_load_case(V, w, rho)
-                print(
-                f"V = {V:6.2f} m/s | "
-                f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
-                f"rho = {rho:5.3f} kg/m³ | "
-                f"CLd = {CLd:8.3f}"
-                )
+    # wlst = [W_MTOW, W_minusfuel, W_OEM]
+    # # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
+    # RHOlst = [RHO, RHO_SL]
+    # for V in Vlst:
+    #     for w in wlst:
+    #         for rho in RHOlst:
+    #             CLd = calc.alpha_load_case(V, w, rho)
+    #             print(
+    #             f"V = {V:6.2f} m/s | "
+    #             f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
+    #             f"rho = {rho:5.3f} kg/m³ | "
+    #             f"CLd = {CLd:8.3f}"
+    #             )
                 
     # External Loading    
-    calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
+    calc.set_load_case_from_flight(n_ult, W_MTOW)
 
     aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
     loadingDist = lambda x: calc.findLoadingDist(x)
@@ -289,3 +338,5 @@ if __name__ == '__main__':
               NULL_ARRAY_2, 
               pointTorques, 
               (0, HALF_SPAN))
+    
+    calc.plot_coeffs_half_span()

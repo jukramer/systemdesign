@@ -5,12 +5,14 @@ g = 9.80665
 b = 17.29
 HALF_SPAN = b/2
 S = 33.609
+ASPECT_RATIO = 8.9
 
 C_ROOT = 2.85
 C_TIP = 1.03
+TAPER_RATIO = C_TIP/C_ROOT
 CG_POS_CHORDWISE = 0.42246943
 
-WING_TRIM = 0 # [deg]
+WING_TRIM = 0.8902570116290437 # [deg]
 
 # PROPULSION
 d_prop = 1.617
@@ -46,12 +48,12 @@ RHO = 1.225
 # LOAD_FACTOR = 3.8 # Case 3
 # ARRAY_PATH = 'Case3'
 
-V_CR = 233.4 # Case 4 
-LOAD_FACTOR = -1 # Case 4
+V_CR = 200.6 # Case 4 
+LOAD_FACTOR = -1*1.5 # Case 4
 ARRAY_PATH = 'Case 4'
 
 # V_CR = 291.8 # Case 5
-# LOAD_FACTOR = 3.8 # Case 5
+# LOAD_FACTOR = 3.8*1.5 # Case 5
 # ARRAY_PATH = 'Case 5'
 
 # V_CR = 200.6 # Case 5

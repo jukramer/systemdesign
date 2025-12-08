@@ -14,7 +14,6 @@ C_L_max_to = 2
 C_L_max_a = 2.1
 C_L_max_l = 2.1
 
-
 print(2.1+24000/(W_mtom_lbs + 10000))
 
 # Flight conditions
@@ -48,6 +47,8 @@ def plot(k, i, W, rho_0, a, name):
     V_c = M_cr * a / pressure_scaling
     V_d = (V_c / 0.8)
     V_a = (V_s1 * math.sqrt(n_max))
+
+    print("pressure scaling: ", pressure_scaling)
         
     # Flap speeds
     V_f_takeoff = 1.6 * V_s1
@@ -76,15 +77,19 @@ def plot(k, i, W, rho_0, a, name):
             n_flaps_calc = (V / V_s0_takeoff)**2
             if n_flaps_calc <= n_max_flaps:
                 n_flaps = n_flaps_calc
+                V_flaps_max1 = 0
             else:
                 n_flaps = n_max_flaps
+                V_flaps_max1 = 0
         else:
             n_flaps = float('nan')
+            V_flaps_max1 = 0
             
         if n_flaps <= n_pos:
             n_flaps = float('nan')
+            V_flaps_max1 = V
         
-        return n_flaps
+        return n_flaps, V_flaps_max1
 
     def line_n_neg(V):
         n_neg_calc = -(V / V_s1)**2
@@ -103,10 +108,15 @@ def plot(k, i, W, rho_0, a, name):
     n_neg_values = [] 
     n_flaps_values = []
 
+    Y = 0
+
     for V_val in V_values:
         n_pos = line_n_pos(V_val)
         n_neg_val = line_n_neg(V_val)
-        n_flaps_val = line_n_flaps(V_val)
+        n_flaps_val, V_flaps_max1 = line_n_flaps(V_val)
+        if Y == 0 and V_flaps_max1 > 0:
+            V_f_max = V_flaps_max1
+            Y = 1
         n_pos_values.append(n_pos)
         n_neg_values.append(n_neg_val)
         n_flaps_values.append(n_flaps_val)
@@ -166,6 +176,10 @@ def plot(k, i, W, rho_0, a, name):
     #     print("Sea Level: V_C = ", V_c, "n = -1" )
     #     print("Sea Level: V_D = ", V_d, "n = " , n_max)
     print(k, "  ", i)
+    print("Cruise: V_S = ", V_s1, "n = -1")
+    if W == W_mtom:
+        print("Cruise: V_flaps = ", V_f_max, "n = ", n_max_flaps)
+    print("Cruise: V_S_n = ", V_a, "n = ", n_max)
     print("Cruise: V_C = ", V_c, "n = -1" )
     print("Cruise: V_D = ", V_d, "n = " , n_max)
 
@@ -174,9 +188,16 @@ fig, axes = plt.subplots(2, 3, figsize=(18, 8))
 plot(0, 0, W_oem, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, EOM')
 plot(0, 1, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, MTOM')
 plot(0, 2, W_oem + W_payload, rho_cr, a_cr,'V_EAS vs n Diagram, Cruise, EOM + Payload')
-plot(1, 0, W_oem, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM')
-plot(1, 1, W_mtom, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
-plot(1, 2, W_oem + W_payload, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + Payload')
+plot(1, 0, W_oem, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM')
+plot(1, 1, W_mtom, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
+plot(1, 2, W_oem + W_payload, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + Payload')
+
+plt.tight_layout()
+plt.show()
+
+fig, axes = plt.subplots(2, 2, figsize=(18, 8))
+plot(0, 0, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, MTOM')
+plot(0, 1, W_mtom, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
 
 plt.tight_layout()
 plt.show()

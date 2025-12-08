@@ -4,8 +4,6 @@ import colorsys as cs
 from parameters import *
 
 
-
-
 CD_0 = C_f * S_wet_to_S_ratio
 
 e = 1/(np.pi * aspect_ratio * psi + 1/phi)
