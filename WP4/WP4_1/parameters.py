@@ -16,7 +16,8 @@ WING_TRIM = 0.8902570116290437 # [deg]
 
 # PROPULSION
 d_prop = 1.617
-T_TO = 31673.07352
+# T_TO = 31673.07352
+T_TO = 4948.90970012397
 
 # LIFT COEFFICIENTS
 C_L0 = 0.264333
@@ -34,7 +35,7 @@ W_OEM = 4876.784*g
 
 # AMBIENT PROPERTIES
 
-RHO = 1.225
+RHO = 0.287
 
 # V_CR = 45.2 # Case 1
 # LOAD_FACTOR = -1 # Case 1
@@ -48,20 +49,19 @@ RHO = 1.225
 # LOAD_FACTOR = 3.8 # Case 3
 # ARRAY_PATH = 'Case3'
 
-V_CR = 200.6 # Case 4 
-LOAD_FACTOR = -1*1.5 # Case 4
-ARRAY_PATH = 'Case 4'
+# V_CR = 200.6 # Case 4 
+# LOAD_FACTOR = -1*1.5 # Case 4
+# ARRAY_PATH = 'Case 4'
 
-# V_CR = 291.8 # Case 5
-# LOAD_FACTOR = 3.8*1.5 # Case 5
-# ARRAY_PATH = 'Case 5'
+V_CR = 291.8 # Case 5
+LOAD_FACTOR = 3.8*1.5 # Case 5
+ARRAY_PATH = 'Case 5'
 
 # V_CR = 200.6 # Case 5
 # LOAD_FACTOR = 1 # Case 5
 # ARRAY_PATH = 'caseTest'
 
 q = 0.5*RHO*V_CR**2
-
 
 # SL
 RHO_SL = 1.225
