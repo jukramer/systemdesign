@@ -14,7 +14,6 @@ C_L_max_to = 2
 C_L_max_a = 2.1
 C_L_max_l = 2.1
 
-
 print(2.1+24000/(W_mtom_lbs + 10000))
 
 # Flight conditions
@@ -43,8 +42,6 @@ def plot(k, i, W, rho_0, a, name):
     n_max = 2.1 + 24000/(W_mtom_lbs + 10000) #3.192
     n_max = max(2.5, min(n_max, 3.8))
     n_min = -1
-
-
 
     # V-speeds
     V_c = M_cr * a / pressure_scaling
