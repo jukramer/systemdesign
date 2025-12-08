@@ -195,7 +195,6 @@ plot(1, 2, W_oem + W_payload, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM 
 plt.tight_layout()
 plt.show()
 
-
 fig, axes = plt.subplots(2, 2, figsize=(18, 8))
 plot(0, 0, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, MTOM')
 plot(0, 1, W_mtom, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
