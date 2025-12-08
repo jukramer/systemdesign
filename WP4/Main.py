@@ -8,7 +8,7 @@ import warnings
 def main(debug=False):   
     if not debug:
         warnings.simplefilter('ignore', category=UserWarning)
-    
+
     # EXTERNAL LOADING
     calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
     calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
@@ -36,8 +36,8 @@ def main(debug=False):
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
 
     stringer_area = 0.06 * 1/1000 # m²
-    stringer_count_top = 2
-    stringer_count_bottom = 2
+    stringer_count_top = 11
+    stringer_count_bottom = 11
     skin_thickness = 1/1000
 
     zis_is_ze_beam = Beam(y_data.size)
@@ -45,6 +45,7 @@ def main(debug=False):
     zis_is_ze_beam.get_displacement(np.column_stack((y_data, M_data)), E=72.4e9)
     zis_is_ze_beam.get_twist(np.column_stack((y_data, T_data)), G=28e9)
     print(f'Deflected {zis_is_ze_beam.v[-1]:.4g}m | Allowed {0.15*zis_is_ze_beam.span:.4g}m')
+    print(f'Twisted {zis_is_ze_beam.theta[-1]*180/np.pi:.4g}° | Allowed {10.0:.4g}°')
     zis_is_ze_beam.get_volume()
     zis_is_ze_beam.plot()
 
