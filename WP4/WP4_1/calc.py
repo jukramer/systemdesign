@@ -223,7 +223,7 @@ class Calc():
             fig.set_size_inches(15,5)
             fig.suptitle(fr'{ARRAY_PATH} Internal Loading Diagrams', size='16', weight='semibold')
             fig.tight_layout()
-            # fig.savefig(fr'diagrams\totalDiagram{ARRAY_PATH}')
+            fig.savefig(fr'diagrams\totalDiagram{ARRAY_PATH}')
             
         # Plot in sequential plots
         if plot and not subplots:
@@ -280,7 +280,7 @@ if __name__ == '__main__':
     #             )
                 
     # External Loading    
-    calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
+    calc.set_load_case_from_flight(n_ult, W_MTOW)
 
     aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
     loadingDist = lambda x: calc.findLoadingDist(x)

@@ -29,8 +29,8 @@ def main(debug=False):
                                        subplots=True,
                                        plot=True)
         
+    return
     # DEFLECTION CALCULATIONS
-
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
