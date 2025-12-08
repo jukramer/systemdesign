@@ -257,6 +257,48 @@ class Calc():
             plt.clf()
             
         return np.vstack((xVals, momentVals, torsionVals))
+    
+    def plot_coeffs_half_span(self):
+
+        # span van 0 tot halfspan
+        y = np.arange(0, HALF_SPAN + self.step, self.step)
+
+        # interpolaties evalueren
+        Cl0_vals  = self.Cl0(y)
+        Cd0_vals  = self.Cd0(y)
+        Cm0_vals  = self.Cm0(y)
+
+        Cl10_vals = self.Cl10(y)
+        Cd10_vals = self.Cd10(y)
+        Cm10_vals = self.Cm10(y)
+
+        # twee subplots naast elkaar
+        fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
+
+        # ---------- 0° ----------
+        ax = axes[0]
+        ax.plot(y, Cl0_vals, label="Lift coefficient")
+        ax.plot(y, Cd0_vals, label="Induced drag coefficient")
+        ax.plot(y, Cm0_vals, label="Moment coefficient")
+        ax.set_title("Interpolation of Cl, Cd, Cm against the span (0°)")
+        ax.set_xlabel("Span location [m]")
+        ax.set_ylabel("Coefficient [-]")
+        ax.grid(True)
+        ax.legend()
+
+        # ---------- 10° ----------
+        ax = axes[1]
+        ax.plot(y, Cl10_vals, label="Lift coefficient")
+        ax.plot(y, Cd10_vals, label="Induced drag coefficient")
+        ax.plot(y, Cm10_vals, label="Moment coefficient")
+        ax.set_title("Interpolation of Cl, Cd, Cm against the span (10°)")
+        ax.set_xlabel("Span location [m]")
+        ax.grid(True)
+        ax.legend()
+
+        fig.tight_layout()
+        plt.show()
+
             
 
 if __name__ == '__main__':
@@ -293,3 +335,5 @@ if __name__ == '__main__':
               NULL_ARRAY_2, 
               pointTorques, 
               (0, HALF_SPAN))
+    
+    calc.plot_coeffs_half_span()
