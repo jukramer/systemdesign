@@ -259,8 +259,8 @@ if __name__ == '__main__':
     calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
         
     wlst = [W_MTOW, W_minusfuel, W_OEM]
-    # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
-    RHOlst = [RHO, RHO_SL]
+    Vlst = [1.5*V_CR, V_CR]
+    RHOlst = [ RHO_SL]
     for V in Vlst:
         for w in wlst:
             for rho in RHOlst:
