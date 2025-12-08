@@ -46,12 +46,12 @@ RHO = 1.225
 # LOAD_FACTOR = 3.8 # Case 3
 # ARRAY_PATH = 'Case3'
 
-V_CR = 233.4 # Case 4 
-LOAD_FACTOR = -1 # Case 4
-ARRAY_PATH = 'Case 4'
+# V_CR = 233.4 # Case 4 
+# LOAD_FACTOR = -1*1.5 # Case 4
+# ARRAY_PATH = 'Case 4'
 
 V_CR = 291.8 # Case 5
-LOAD_FACTOR = 3.8 # Case 5
+LOAD_FACTOR = 3.8*1.5 # Case 5
 ARRAY_PATH = 'Case 5'
 
 # V_CR = 200.6 # Case 5
