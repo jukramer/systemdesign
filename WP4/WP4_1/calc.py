@@ -273,7 +273,7 @@ if __name__ == '__main__':
                 )
                 
     # External Loading    
-    calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
+    calc.set_load_case_from_flight(n_ult, W_MTOW)
 
     aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
     loadingDist = lambda x: calc.findLoadingDist(x)
