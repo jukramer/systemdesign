@@ -220,7 +220,7 @@ class Calc():
             fig.set_size_inches(15,5)
             fig.suptitle(fr'{ARRAY_PATH} Internal Loading Diagrams', size='16', weight='semibold')
             fig.tight_layout()
-            # fig.savefig(fr'diagrams\totalDiagram{ARRAY_PATH}')
+            fig.savefig(fr'diagrams\totalDiagram{ARRAY_PATH}')
             
         # Plot in sequential plots
         if plot and not subplots:
