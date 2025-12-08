@@ -5,13 +5,7 @@ import numpy as np
 import warnings
 
 
-def main(debug=False):
-    # global V_CR, LOAD_FACTOR, ARRAY_PATH
-    
-    # V_CR = 45.2 # Case 1
-    # LOAD_FACTOR =  # Case 1
-    # ARRAY_PATH = 'Case1'
-    
+def main(debug=False):   
     if not debug:
         warnings.simplefilter('ignore', category=UserWarning)
     

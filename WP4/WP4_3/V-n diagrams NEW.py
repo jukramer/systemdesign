@@ -43,8 +43,6 @@ def plot(k, i, W, rho_0, a, name):
     n_max = max(2.5, min(n_max, 3.8))
     n_min = -1
 
-
-
     # V-speeds
     V_c = M_cr * a / pressure_scaling
     V_d = (V_c / 0.8)
