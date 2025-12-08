@@ -33,25 +33,26 @@ def main(debug=False):
                                        pointTorques, 
                                        (0, HALF_SPAN),
                                        subplots=True,
-                                       plot=False)
-    
-    # return
-    
+                                       plot=True)
+        
     # DEFLECTION CALCULATIONS
-    np.set_printoptions(suppress=True)
 
-    plt.plot(y_data, M_data/np.abs(M_data[0]), label=f'M | max {M_data[0]:.0f} Nm')
-    points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
-    aux_spar_endpoints = [((0.65+0.2)/2, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
+    wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
+
+    aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
+
+    stringer_area = 0.06 * 1/1000 # m²
+    stringer_count_top = 2
+    stringer_count_bottom = 2
+    skin_thickness = 1/1000
 
     zis_is_ze_beam = Beam(y_data.size)
-    zis_is_ze_beam.load_wing_box(points=points, aux_spar_endpoints=aux_spar_endpoints, thickness=1/1000, aux_spart_thickness=2/1000, root_chord=2.85, tip_chord=1.03, span=17.29)
-    zis_is_ze_beam.get_I_of_cross_section()
-    stringers = np.array([[0.05, 0.05**2], [0.015, 0.05**2]])*0 # [[z, A], [z, A]]
-    zis_is_ze_beam.get_displacement(np.column_stack((y_data, M_data)), E=72.4e9, stringers=stringers)
+    zis_is_ze_beam.load_wing_box(points=wing_box_points, stringer_area=stringer_area, stringer_count_top=stringer_count_top, stringer_count_bottom=stringer_count_bottom, aux_spar_endpoints=aux_spar_endpoints, thickness=skin_thickness, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
+    zis_is_ze_beam.get_displacement(np.column_stack((y_data, M_data)), E=72.4e9)
     zis_is_ze_beam.get_twist(np.column_stack((y_data, T_data)), G=28e9)
+    print(f'Deflected {zis_is_ze_beam.v[-1]:.4g}m | Allowed {0.15*zis_is_ze_beam.span:.4g}m')
+    zis_is_ze_beam.get_volume()
     zis_is_ze_beam.plot()
-
 
 if __name__ == '__main__':
     main()
