@@ -62,6 +62,8 @@ class Calc():
         self.Cm = None
         self.alpha = None
 
+        self.D = 0
+
     def chord(self, y):
         return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
     
@@ -119,6 +121,7 @@ class Calc():
     
     # TOTAL LOADING
     def totalLoading(self, x, n, mWing):
+        # print(self.D)
         return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
         
     ############ INTERNAL LOADING ##############
