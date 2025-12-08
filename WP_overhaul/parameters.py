@@ -2,7 +2,7 @@
 
 # ????????
 range_diversion = 250e3 # [m] Estimated diversion range
-range_design = 6100e3 # [m] @ 1010kg        (originally 4482e3)
+range_design = 6745e3 # [m] @ 1010kg        (originally 4482e3)
 
 
 

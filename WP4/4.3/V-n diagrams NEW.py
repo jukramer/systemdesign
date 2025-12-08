@@ -50,6 +50,8 @@ def plot(k, i, W, rho_0, a, name):
     V_c = M_cr * a / pressure_scaling
     V_d = (V_c / 0.8)
     V_a = (V_s1 * math.sqrt(n_max))
+
+    print("pressure scaling: ", pressure_scaling)
         
     # Flap speeds
     V_f_takeoff = 1.6 * V_s1
@@ -189,9 +191,17 @@ fig, axes = plt.subplots(2, 3, figsize=(18, 8))
 plot(0, 0, W_oem, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, EOM')
 plot(0, 1, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, MTOM')
 plot(0, 2, W_oem + W_payload, rho_cr, a_cr,'V_EAS vs n Diagram, Cruise, EOM + Payload')
-plot(1, 0, W_oem, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM')
-plot(1, 1, W_mtom, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
-plot(1, 2, W_oem + W_payload, rho, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + Payload')
+plot(1, 0, W_oem, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM')
+plot(1, 1, W_mtom, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
+plot(1, 2, W_oem + W_payload, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, EOM + Payload')
+
+plt.tight_layout()
+plt.show()
+
+
+fig, axes = plt.subplots(2, 2, figsize=(18, 8))
+plot(0, 0, W_mtom, rho_cr, a_cr, 'V_EAS vs n Diagram, Cruise, MTOM')
+plot(0, 1, W_mtom, rho_cr, a_SL, 'V_EAS vs n Diagram, Sea Level, MTOM')
 
 plt.tight_layout()
 plt.show()
