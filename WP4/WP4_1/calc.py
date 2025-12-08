@@ -65,6 +65,10 @@ class Calc():
     def chord(self, y):
         return C_ROOT + (C_TIP-C_ROOT) * 2 * y/b
     
+    def findSweep(self, n, m, mSweepAngle):
+        result = np.tan(np.deg2rad(mSweepAngle)) - 4/ASPECT_RATIO*(n-m)*(1-TAPER_RATIO)/(1+TAPER_RATIO)
+        return np.rad2deg(np.atan(result))
+    
     def findLoadingDist(self, y, posAero=0.25, posInertial=CG_POS_CHORDWISE): 
         # By necessity, posInertial is 0, as weight acts through the centroid
         return self.chord(y)*(CG_POS_CHORDWISE-posAero)
@@ -104,14 +108,14 @@ class Calc():
     # INERTIAL LOADING
     def inertialLoading(self, y, massWing, n=1):
         weightDens = n*g*massWing/S
-        return -weightDens*self.chord(y)
+        return -weightDens*self.chord(y)*np.cos(np.deg2rad(self.alpha))
         
     # PROPULSIVE LOADING
     def propulsiveLoading(self, thetaT, T):
-        return np.array(([0], [T/2*np.sin(thetaT)], [0.25*C_ROOT]))
+        return np.array(([0], [T/2*np.sin(thetaT)*np.cos(self.findSweep(CG_POS_CHORDWISE, 0.25, 10.56))], [0.25*C_ROOT]))
     
     def propulsiveMoment(self, thetaT, T, d):
-        return np.array(([0], [T/2*np.sin(thetaT)*d]))
+        return np.array(([0], [T/2*np.sin(thetaT)*d*np.cos(self.findSweep(CG_POS_CHORDWISE, 0.25, 10.56))]))
     
     # TOTAL LOADING
     def totalLoading(self, x, n, mWing):
@@ -216,7 +220,7 @@ class Calc():
             fig.set_size_inches(15,5)
             fig.suptitle(fr'{ARRAY_PATH} Internal Loading Diagrams', size='16', weight='semibold')
             fig.tight_layout()
-            fig.savefig(fr'diagrams\totalDiagram{ARRAY_PATH}')
+            # fig.savefig(fr'diagrams\totalDiagram{ARRAY_PATH}')
             
         # Plot in sequential plots
         if plot and not subplots:
@@ -258,19 +262,19 @@ class Calc():
 if __name__ == '__main__':
     calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
         
-    wlst = [W_MTOW, W_minusfuel, W_OEM]
-    # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
-    RHOlst = [RHO, RHO_SL]
-    for V in Vlst:
-        for w in wlst:
-            for rho in RHOlst:
-                CLd = calc.alpha_load_case(V, w, rho)
-                print(
-                f"V = {V:6.2f} m/s | "
-                f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
-                f"rho = {rho:5.3f} kg/m³ | "
-                f"CLd = {CLd:8.3f}"
-                )
+    # wlst = [W_MTOW, W_minusfuel, W_OEM]
+    # # Vlst = [1.5*V_CR, V_CR, V_stallwflaps]
+    # RHOlst = [RHO, RHO_SL]
+    # for V in Vlst:
+    #     for w in wlst:
+    #         for rho in RHOlst:
+    #             CLd = calc.alpha_load_case(V, w, rho)
+    #             print(
+    #             f"V = {V:6.2f} m/s | "
+    #             f"W = {w:8.0f} N ({w/g:6.1f} kg) | "
+    #             f"rho = {rho:5.3f} kg/m³ | "
+    #             f"CLd = {CLd:8.3f}"
+    #             )
                 
     # External Loading    
     calc.set_load_case_from_flight(n_ult, W_MTOW)

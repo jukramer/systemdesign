@@ -156,7 +156,9 @@ class Beam():
 
         integrand = sp.interpolate.interp1d(y, skin_area+stringer_area, kind='cubic', fill_value="extrapolate")
         self.volume = sp.integrate.quad(integrand, 0, self.span/2)[0] # type: ignore
+
         print(f'Volume: {self.volume:.4g} m³')
+        return self.volume
 
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
@@ -186,8 +188,3 @@ class Beam():
         plt.legend()
         plt.tight_layout()
         plt.show(block=True)
-
-
-        
-
-        
