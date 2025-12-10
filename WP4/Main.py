@@ -13,9 +13,37 @@ def main(debug=False):
     calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
     calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
 
+    xVals = np.arange(0, HALF_SPAN, 0.01)
+    
     aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
     loadingDist = lambda x: calc.findLoadingDist(x)
     pointLoads, pointTorques = (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[2])(0), (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[4])(0)
+    
+    # aeroLoadingVals = aeroLoading(xVals)
+    # inertialLoadingVals = inertialLoading(xVals)
+    # torsionLoadingVals = torsionLoading(xVals)
+    
+    # figLoad, (axLoad1, axLoad2, axLoad3) = plt.subplots(1,3)
+    # axLoad1.plot(xVals, aeroLoadingVals, color='blue')
+    # axLoad1.set_title('Distributed Normal Force')
+    # axLoad1.set_xlabel('y [m]')
+    # axLoad1.set_ylabel('Distributed Normal Force [N]')
+    
+    # axLoad2.plot(xVals, torsionLoadingVals, color='green')
+    # axLoad2.set_title('Distributed Pitching Moment')
+    # axLoad2.set_xlabel('y [m]')
+    # axLoad2.set_ylabel('Distributed Pitching Moment [Nm]')
+    
+    # axLoad3.plot(xVals, inertialLoadingVals, color='red')
+    # axLoad3.set_title('Distributed Inertial Loading')
+    # axLoad3.set_xlabel('y [m]')
+    # axLoad3.set_ylabel('Distributed Inertial Loading [N]')
+    
+    # figLoad.set_size_inches(15,5)
+    # figLoad.suptitle(fr'External Loading', size='16', weight='semibold')
+    # figLoad.tight_layout()
+    # figLoad.savefig(fr'diagrams\Loading')
+    # plt.show()
 
     # INTERNAL LOADING
     y_data, M_data, T_data = calc.plot(aeroLoading,
