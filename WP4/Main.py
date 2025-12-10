@@ -19,6 +19,9 @@ def main(debug=False):
     loadingDist = lambda x: calc.findLoadingDist(x)
     pointLoads, pointTorques = (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[2])(0), (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[4])(0)
     
+    print(pointLoads)
+    print(pointTorques)
+    
     # aeroLoadingVals = aeroLoading(xVals)
     # inertialLoadingVals = inertialLoading(xVals)
     # torsionLoadingVals = torsionLoading(xVals)

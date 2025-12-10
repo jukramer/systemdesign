@@ -69,7 +69,6 @@ class Calc():
     
     def findSweep(self, n, m, mSweepAngle):
         result = np.tan(np.deg2rad(mSweepAngle)) - 4/ASPECT_RATIO*(n-m)*(1-TAPER_RATIO)/(1+TAPER_RATIO)
-        print(np.rad2deg(np.atan(result)))
         return np.rad2deg(np.atan(result))
     
     def findLoadingDist(self, y, posAero=0.25, posInertial=CG_POS_CHORDWISE): 
