@@ -122,6 +122,9 @@ class Calc():
     # TOTAL LOADING
     def totalLoading(self, x, n, mWing):
         # print(self.D)
+        # Aerodynamic: calcNormal, momentUnitSpan
+        # Inertial: inertialLoading
+        # Propulsive: propulsiveLoading & propulsiveMoment
         return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
         
     ############ INTERNAL LOADING ##############
