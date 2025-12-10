@@ -34,7 +34,7 @@ W_OEM = 4876.784*g
 
 # AMBIENT PROPERTIES
 
-RHO = 1.225
+RHO = 0.287
 
 # V_CR = 45.2 # Case 1
 # LOAD_FACTOR = -1 # Case 1
@@ -64,4 +64,4 @@ q = 0.5*RHO*V_CR**2
 
 
 # SL
-RHO_SL = 1.225
+# RHO_SL = 1.225
