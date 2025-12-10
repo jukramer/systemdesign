@@ -64,4 +64,4 @@ ARRAY_PATH = 'Case 5'
 q = 0.5*RHO*V_CR**2
 
 # SL
-RHO_SL = 1.225
+# RHO_SL = 1.225

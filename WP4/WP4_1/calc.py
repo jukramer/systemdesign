@@ -148,6 +148,7 @@ class Calc():
         for i in range(pointMoments.shape[1]):
             M += pointMoments[1,i] * (1-np.heaviside(x-pointMoments[0,i], 1))
 
+        
         return -M
 
     # Torsion as function of x. forcePointLoads must have cols (position, load, dist) (shape 3xn);
@@ -158,8 +159,8 @@ class Calc():
         i = loadingVals.shape[0] - xValsInt.shape[0]
         T = sp.integrate.simpson(x=xValsInt, y=loadingVals[i:])
         
-        for i in range(forcePointLoads.shape[1]):
-            T += forcePointLoads[1,i] * forcePointLoads[2,i] * (1-np.heaviside(x-forcePointLoads[0,i], 1))
+        # for i in range(forcePointLoads.shape[1]):
+        #     T += forcePointLoads[1,i] * forcePointLoads[2,i] * (1-np.heaviside(x-forcePointLoads[0,i], 1))
 
         for i in range(torquePointLoads.shape[1]):
             T += torquePointLoads[1,i] * (1-np.heaviside(x-torquePointLoads[0,i], 1))
