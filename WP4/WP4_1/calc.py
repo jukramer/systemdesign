@@ -123,12 +123,7 @@ class Calc():
     # TOTAL LOADING
     def totalLoading(self, x, n, mWing):
         # print(self.D)
-        # Aerodynamic: calcNormal, momentUnitSpan
-        # Inertial: inertialLoading
-        # Propulsive: propulsiveLoading & propulsiveMoment
-        print()
-        print()
-        return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
+        return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(WING_TRIM, T_TO, d_prop)
         
     ############ INTERNAL LOADING ##############
     # Shear force as function of x. pointLoads must have cols (position, load) (shape 2xn)
@@ -164,8 +159,8 @@ class Calc():
         i = loadingVals.shape[0] - xValsInt.shape[0]
         T = sp.integrate.simpson(x=xValsInt, y=loadingVals[i:])
         
-        for i in range(forcePointLoads.shape[1]):
-            T += forcePointLoads[1,i] * forcePointLoads[2,i] * (1-np.heaviside(x-forcePointLoads[0,i], 1))
+        # for i in range(forcePointLoads.shape[1]):
+        #     T += forcePointLoads[1,i] * forcePointLoads[2,i] * (1-np.heaviside(x-forcePointLoads[0,i], 1))
 
         for i in range(torquePointLoads.shape[1]):
             T += torquePointLoads[1,i] * (1-np.heaviside(x-torquePointLoads[0,i], 1))

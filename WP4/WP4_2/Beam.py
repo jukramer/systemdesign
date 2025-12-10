@@ -183,7 +183,7 @@ class Beam():
         plt.xlabel('y [$m$]')
         plt.ylabel('Normalised value')
         plt.xlim(0, self.span/2)
-        plt.ylim(-1, 1)
+        plt.ylim(-1, 0)
         plt.grid(which='both')
         plt.legend()
         plt.tight_layout()
