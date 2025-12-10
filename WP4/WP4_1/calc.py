@@ -149,6 +149,7 @@ class Calc():
         for i in range(pointMoments.shape[1]):
             M += pointMoments[1,i] * (1-np.heaviside(x-pointMoments[0,i], 1))
 
+        
         return -M
 
     # Torsion as function of x. forcePointLoads must have cols (position, load, dist) (shape 3xn);
