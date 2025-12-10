@@ -69,7 +69,6 @@ class Calc():
     
     def findSweep(self, n, m, mSweepAngle):
         result = np.tan(np.deg2rad(mSweepAngle)) - 4/ASPECT_RATIO*(n-m)*(1-TAPER_RATIO)/(1+TAPER_RATIO)
-        print(np.rad2deg(np.atan(result)))
         return np.rad2deg(np.atan(result))
     
     def findLoadingDist(self, y, posAero=0.25, posInertial=CG_POS_CHORDWISE): 
@@ -123,9 +122,7 @@ class Calc():
     # TOTAL LOADING
     def totalLoading(self, x, n, mWing):
         # print(self.D)
-        print()
-        print()
-        return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(self.alpha - WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(self.alpha - WING_TRIM, T_TO, d_prop)
+        return self.calcNormal(x, self.alpha-WING_TRIM), self.inertialLoading(x, mWing, n), self.propulsiveLoading(WING_TRIM, T_TO), self.momentUnitSpan(x), self.propulsiveMoment(WING_TRIM, T_TO, d_prop)
         
     ############ INTERNAL LOADING ##############
     # Shear force as function of x. pointLoads must have cols (position, load) (shape 2xn)
