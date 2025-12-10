@@ -5,7 +5,7 @@ K_one_pinned_one_fixed = (1/0.7)**2
 
 I = 1
 
-E = 1
+E = 72.40e9
 
 L = 1
 
