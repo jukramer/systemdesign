@@ -19,7 +19,9 @@ def calculate_all_stringer_length():
     # Between ribs / both fixed
     L_ribs_between = calculate_stringer_length(K_both_clamped)
 
-    return L_ribs_from_tip, L_ribs_between
+    number_of_ribs = np.ceil((b/2 - L_ribs_from_tip) / L_ribs_between).astype(int)
+
+    return L_ribs_from_tip, L_ribs_between, number_of_ribs
 
 def calculate_all_stringer_area():
 
@@ -29,12 +31,17 @@ def calculate_all_stringer_area():
     # Between ribs / both fixed
     A_ribs_between = calculate_stringer_area(K_both_clamped, L_ribs_between)
 
-    return A_ribs_from_tip, A_ribs_between 
+    return A_ribs_from_tip, A_ribs_between
 
 
-L_ribs_from_tip, L_ribs_between = calculate_all_stringer_length()
+L_ribs_from_tip, L_ribs_between, number_of_ribs = calculate_all_stringer_length()
+
+
+
 print("Stringer length at wing tip (one free, one fixed): ", L_ribs_from_tip, " m")
 print("Stringer length between ribs (both fixed): ", L_ribs_between, " m")
+print("Number of ribs needed per half wing: ", number_of_ribs)
+
 
 
 # sigma_crit = (K * np.pi**2 * E * I_stringer)/(L_between_ribs**2 * A_stringer)
