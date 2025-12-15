@@ -1,41 +1,13 @@
 import numpy as np
-import math
-import os, sys
 from parameters import *
 
-# SKIN SHEAR
 
-current_folder = sys.path[0]
-sys_design_folder = os.path.dirname(os.path.dirname(current_folder))
-sys.path.append(sys_design_folder)
-from WP5 import Beam
-
-def skin_shear_buckling(k_s, t, b):
-   return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
-
-
-# SKIN BUCKLING
-
-class Calc:
-    def __init__(self):
-        return
-    
-    def findkC(self):
-        return 0
-
-    def skinBucklingStress(self, t, b):
-        return np.pi**2*self.kC*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
-    
-    
-    
-# COLUMN BUCKLING
 ###
 
 # Need to use Micha's moment of inertia (I_zz for I_stringer)
 
 ###
 
-# Not needed
 def calculate_safety_factor(K, L_between_ribs):
     sigma_crit = (K * np.pi**2 * E * I_stringer)/(L_between_ribs**2 * A_stringer)
     print("Safety factor: ", sigma_crit/sigma_applied)
@@ -51,6 +23,8 @@ calculate_safety_factor(K_both_clamped, L_ribs_between)
 # For iteration purposes
 
 ###
+
+
 def calculate_stringer_length(K):
     L_between_ribs_new = np.sqrt((K * np.pi**2 * E * I_stringer)/(sigma * A_stringer))
     return L_between_ribs_new
@@ -84,8 +58,6 @@ def calculate_all_stringer_area():
 
 
 L_ribs_from_tip, L_ribs_between, number_of_ribs = calculate_all_stringer_length()
-
-
 
 print("Stringer length at wing tip (one free, one fixed): ", L_ribs_from_tip, " m")
 print("Stringer length between ribs (both fixed): ", L_ribs_between, " m")

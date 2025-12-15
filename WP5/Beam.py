@@ -89,7 +89,6 @@ class Beam():
         return (1-frac)*self.root_chord + (frac)*self.tip_chord
     
     def get_displacement(self, data, E):
-
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
@@ -189,10 +188,9 @@ class Beam():
     def calcStringerArea(self, sigma, K, I, L):
         return np.sqrt((K * np.pi**2 * E * I)/(sigma * L**2))
     
-    def calcStringerLenAll(self, K_CF, K_CC):
+    def calcStringerLenAll(self):
         # Wing tip / free end
-        L_ribs_from_tip = self.calcStringerLen(K_CF)
-
+        L_ribs_from_tip = self.calcStringerLen(K_FC)
         # Between ribs / both fixed
         L_ribs_between = self.calcStringerLen(K_CC)
 
@@ -200,7 +198,20 @@ class Beam():
 
         return L_ribs_from_tip, L_ribs_between, nRibs
     
-    
+    def calcStringerAreaAll(self):
+        LRibsFromTip, LRibsBetween, _ = self.calcStringerLenAll()
+        # Wing tip / free end
+        A_ribs_from_tip = self.calcStringerArea(K_FC, LRibsFromTip)
+
+        # Between ribs / both fixed
+        A_ribs_between = self.calcStringerArea(K_CC, LRibsBetween)
+
+        return A_ribs_from_tip, A_ribs_between
+
+    # Crack Propagation
+    def calcCCrit(self, sigma):
+        return K_1C ** 2 / (np.pi * SHAPE_FACTOR ** 2 * sigma ** 2) * 10 ** 3 # [mm]
+
     # PLOTTING
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)

@@ -2,6 +2,15 @@
 # MATERIAL PROPERTIES
 E = 72.4e9
 POISSON_RATIO = 1/3
+SHAPE_FACTOR = 1.1 # SHAPE FACTOR
+CRACK_LENGTH = 0.01 * 10 ** -3 #[m]
+K_1C = 26 * 10 ** 6
+
+# COLUMN BUCKLING
+K_SS = 1
+K_CC = 4
+K_FC = 1/4
+K_one_pinned_one_fixed = (1/0.7)**2
 
 
 ############## WP4 ##############

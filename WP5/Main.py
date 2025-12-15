@@ -1,6 +1,7 @@
-from calc import *
 from Beam import *
-from plot import plotFailureMargin
+from calc import *
+from globalParameters import *
+from WP5.plotSafetyMargin import plotFailureMargin
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
