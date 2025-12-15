@@ -43,9 +43,15 @@ print("Stringer length between ribs (both fixed): ", L_ribs_between, " m")
 print("Number of ribs needed per half wing: ", number_of_ribs)
 
 
+def calculate_safety_factor(K, L_between_ribs):
+    sigma_crit = (K * np.pi**2 * E * I_stringer)/(L_between_ribs**2 * A_stringer)
+    print("Safety factor: ", sigma_crit/sigma_applied)
 
-# sigma_crit = (K * np.pi**2 * E * I_stringer)/(L_between_ribs**2 * A_stringer)
+
+calculate_safety_factor(K_one_free_one_fixed, L_ribs_from_tip)
+calculate_safety_factor(K_both_clamped, L_ribs_between)
 
 # L_between_ribs_new = np.sqrt((K * np.pi**2 * E * I_stringer)/(sigma * A_stringer))
 
 # A_stringer_new = np.sqrt((K * np.pi**2 * E * I_stringer)/(sigma * L_between_ribs**2))
+
