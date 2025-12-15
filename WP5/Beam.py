@@ -7,15 +7,15 @@ class Beam():
     def __init__(self, intg_points: int = 100) -> None:
         self.intg_points = intg_points
 
-    def get_stringers(self, wing_box_points, stringer_area, stringer_count_top, stringer_count_bottom):
-        y_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
-        y_interp_bottom = lambda x: np.interp(x, [wing_box_points[3][0], wing_box_points[2][0]], [wing_box_points[3][1], wing_box_points[2][1]])
+    def define_stringers(self, wing_box_points, stringer_area, stringer_count_top, stringer_count_bottom):
+        z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
+        z_interp_bottom = lambda x: np.interp(x, [wing_box_points[3][0], wing_box_points[2][0]], [wing_box_points[3][1], wing_box_points[2][1]])
 
         stringer_x_coords_top = [wing_box_points[0][0] + i/(stringer_count_top-1)*(wing_box_points[1][0]-wing_box_points[0][0]) for i in range(stringer_count_top)]
         stringer_x_coords_bottom = [wing_box_points[3][0] + i/(stringer_count_bottom-1)*(wing_box_points[2][0]-wing_box_points[3][0]) for i in range(stringer_count_bottom)]
 
-        stringers_top = np.array([[y_interp_top(x), stringer_area] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
-        stringers_bottom = np.array([[y_interp_bottom(x), stringer_area] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
+        stringers_top = np.array([[z_interp_top(x), stringer_area] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
+        stringers_bottom = np.array([[z_interp_bottom(x), stringer_area] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
 
         self.stringers = np.vstack((stringers_top, stringers_bottom)) # [[z/c, A], [z/c, A]]
 
@@ -28,7 +28,7 @@ class Beam():
         self.tip_chord = tip_chord
         self.span = span
 
-        self.get_stringers(self.points, stringer_area, stringer_count_top, stringer_count_bottom)
+        self.define_stringers(self.points, stringer_area, stringer_count_top, stringer_count_bottom)
 
         # points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
 
@@ -161,10 +161,10 @@ class Beam():
             z = z_c * chord
             
 
-            self.normal_stress[:, i] = ((0*self.Izz - M * self.Ixz)*x + (M*self.Ixx - 0 * self.Ixz)*z) / (self.Ixx*self.Izz - self.Ixz**2)
-            self.normal_stress[:, i] = M*z / self.Ixx
+            # self.normal_stress[:, i] = ((0*self.Ixx_list - M * self.Ixz)*x + (M*self.Izz - 0 * self.Ixz)*z) / (self.Ixx_list*self.Izz - self.Ixz**2)
+            self.normal_stress[:, i] = M*z / self.Ixx_list
 
-        print(self.normal_stress)
+        print(f'Max tensile: {np.max(self.normal_stress)/1e6:.0f}MPa, max compressive: {np.min(self.normal_stress)/1e6:.0f}MPa')
 
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
@@ -189,11 +189,8 @@ class Beam():
         plt.xlabel('y [$m$]')
         plt.ylabel('Normalised value')
         plt.xlim(0, self.span/2)
-        plt.ylim(-1, 0)
+        plt.ylim(0, 1)
         plt.grid(which='both')
         plt.legend()
         plt.tight_layout()
         plt.show(block=True)
-
-def func():
-    return 1
