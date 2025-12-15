@@ -1,5 +1,6 @@
 from calc import *
 from Beam import *
+from plot import plotFailureMargin
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
