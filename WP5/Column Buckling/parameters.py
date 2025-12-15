@@ -25,7 +25,7 @@ L_hor = 0.02
 
 A_stringer = L_vert * t  + (L_hor - t) * t 
 
-I_stringer = (1/12 * L_hor * t**3 + L_hor * t * (t/2)**2) + (1/12 * t * L_vert**3 + L_vert * t * ((L_vert - t)/2)**2)
+I_stringer = (1/12 * t * L_vert**3 + t * L_vert * (L_vert/2)**2) + (1/12 * (L_hor - t) * t**3 + (L_hor - t) * t * (t/2)**2)
 
 ###########################################################################
 
