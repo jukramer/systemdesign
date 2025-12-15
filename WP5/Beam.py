@@ -166,6 +166,25 @@ class Beam():
 
         print(f'Max tensile: {np.max(self.normal_stress)/1e6:.0f}MPa, max compressive: {np.min(self.normal_stress)/1e6:.0f}MPa')
 
+
+    # FAILURE STRESS CALCULATIONS
+    # Skin Shear
+    def skin_shear_buckling(k_s, t, b):
+        return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+    
+    # Skin Buckling 
+    def findkC(self): # Placeholder
+        return 0
+    
+    def skinBucklingStress(self, t, b):
+        return np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+    
+    # Column Buckling
+    
+    
+    
+    # PLOTTING
+
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
 

@@ -14,7 +14,6 @@ def skin_shear_buckling(k_s, t, b):
    return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
 
 
-
 # SKIN BUCKLING
 
 class Calc:
@@ -36,6 +35,7 @@ class Calc:
 
 ###
 
+# Not needed
 def calculate_safety_factor(K, L_between_ribs):
     sigma_crit = (K * np.pi**2 * E * I_stringer)/(L_between_ribs**2 * A_stringer)
     print("Safety factor: ", sigma_crit/sigma_applied)
