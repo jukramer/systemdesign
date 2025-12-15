@@ -8,7 +8,7 @@ class Calc:
         return
 
     def skinBucklingStress(t, b):
-        return np.pi**2*kC*E / (12*(1-POISSION_RATIO**2)) * (t/b)**2
+        return np.pi**2*kC*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
 
 
 if __name__ == '__main__':

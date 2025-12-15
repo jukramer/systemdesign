@@ -1,7 +1,7 @@
-import numpy as np
+from globalParameters import *
 import matplotlib.pyplot as plt
+import numpy as np
 import scipy as sp
-from scipy import interpolate
 
 class Beam():
     def __init__(self, intg_points: int = 100) -> None:
@@ -168,23 +168,40 @@ class Beam():
 
 
     # FAILURE STRESS CALCULATIONS
-    # Skin Shear
-    def skin_shear_buckling(k_s, t, b):
+    # Shear Buckling
+    def shearBuckStress(self, k_s, t, b):
         return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
     
     # Skin Buckling 
     def findkC(self): # Placeholder
         return 0
     
-    def skinBucklingStress(self, t, b):
+    def skinBuckStress(self, t, b):
         return np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
     
     # Column Buckling
+    def colBuckStress(self, K, A, L, I):
+        return (K * np.pi**2 * E * I)/(L**2 * A)
     
+    def calcStringerLen(self, sigma, K, I, A):
+        return np.sqrt((K * np.pi**2 * E * I)/(sigma * A))
+    
+    def calcStringerArea(self, sigma, K, I, L):
+        return np.sqrt((K * np.pi**2 * E * I)/(sigma * L**2))
+    
+    def calcStringerLenAll(self, K_CF, K_CC):
+        # Wing tip / free end
+        L_ribs_from_tip = self.calcStringerLen(K_CF)
+
+        # Between ribs / both fixed
+        L_ribs_between = self.calcStringerLen(K_CC)
+
+        nRibs = np.ceil((b/2 - L_ribs_from_tip) / L_ribs_between).astype(int)
+
+        return L_ribs_from_tip, L_ribs_between, nRibs
     
     
     # PLOTTING
-
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
 

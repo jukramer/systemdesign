@@ -51,8 +51,6 @@ calculate_safety_factor(K_both_clamped, L_ribs_between)
 # For iteration purposes
 
 ###
-
-
 def calculate_stringer_length(K):
     L_between_ribs_new = np.sqrt((K * np.pi**2 * E * I_stringer)/(sigma * A_stringer))
     return L_between_ribs_new
