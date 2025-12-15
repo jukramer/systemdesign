@@ -69,10 +69,3 @@ if __name__ == '__main__':
                       (1,2),
                       ('Doiuglaes', 'Test'),
                       ('red', 'blue'))
-    
-    
-    
-    
-    
-    
-    
