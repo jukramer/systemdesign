@@ -1,3 +1,22 @@
+"""
+Plotter for margin of safety.
+
+This plotter takes an array of y values and corresponding applied stress values (alongside other parameters) to generate the plots.
+Multiple plots can be generated in subplots by passing 2D arrays.
+
+The parameters work as follows:
+-yVals: numpy array, each row contains the y values for one subplot. Inhomogeneous arrays are allowed. Example:
+        np.array([[y11, y12, y13], [y21, y22]])
+-sigmaAppliedVals: numpy array, each row contains the aoplied stress values for one subplot. Inhomogeneous arrays are allowed. Example:
+        np.array([[s11, s12, s13], [s21, s22]])
+-sigma Fail: Failure stress, single number
+-n: safety factor, single number
+-dimSubplots: tuple, containing dimensions of how you want your subplots. This should match the input value arrays. Example:
+        (2, 3) -> creates 2 rows and 3 columns of subplots
+-titles: tuple, containing the title for each of your plots, in order.
+-colors: tuple, containing the graph color for each of your plots, in order.
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
