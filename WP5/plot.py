@@ -1,20 +1,20 @@
 """
-Plotter for margin of safety.
-
-This plotter takes an array of y values and corresponding applied stress values (alongside other parameters) to generate the plots.
-Multiple plots can be generated in subplots by passing 2D arrays.
-
-The parameters work as follows:
--yVals: numpy array, each row contains the y values for one subplot. Inhomogeneous arrays are allowed. Example:
-        np.array([[y11, y12, y13], [y21, y22]])
--sigmaAppliedVals: numpy array, each row contains the applied stress values for one subplot. Inhomogeneous arrays are allowed. Example:
-        np.array([[s11, s12, s13], [s21, s22]])
--sigma Fail: Failure stress, single number
--n: safety factor, single number
--dimSubplots: tuple, containing dimensions of how you want your subplots. This should match the input value arrays. Example:
-        (2, 3) -> creates 2 rows and 3 columns of subplots
--titles: tuple, containing the title for each of your plots, in order.
--colors: tuple, containing the graph color for each of your plots, in order.
+Plotter for margin of safety.\n
+\n
+This plotter takes an array of y values and corresponding applied stress values (alongside other parameters) to generate the plots.\n
+Multiple plots can be generated in subplots by passing 2D arrays.\n
+\n
+The parameters work as follows:\n
+-yVals: numpy array, each row contains the y values for one subplot. Inhomogeneous arrays are allowed. Example:\n
+        np.array([[y11, y12, y13], [y21, y22]])\n
+-sigmaAppliedVals: numpy array, each row contains the aoplied stress values for one subplot. Inhomogeneous arrays are allowed. Example:\n
+        np.array([[s11, s12, s13], [s21, s22]])\n
+-sigma Fail: Failure stress, single number\n
+-n: safety factor, single number\n
+-dimSubplots: tuple, containing dimensions of how you want your subplots. This should match the input value arrays. Example:\n
+        (2, 3) -> creates 2 rows and 3 columns of subplots\n
+-titles: tuple, containing the title for each of your plots, in order (left-right then down).\n
+-colors: tuple, containing the graph color for each of your plots, in order (left-right then down).
 """
 
 import matplotlib.pyplot as plt
@@ -48,12 +48,28 @@ def plotFailureMargin(yVals: NDArray, sigmaAppliedVals: NDArray, sigmaFail: floa
     
     # Plotting
     fig, axs = plt.subplots(*dimSubplots)
+    if isinstance(axs[0,:], np.ndarray):
+        axs = axs.ravel()
     
     for i, ax in enumerate(axs):
-        ax.plot(yArrays[i], marginOfSafetyArrays[i], color=colors[i])
+        # Handle unspecified colors/plots/titles
+        try:
+            ax.plot(yArrays[i], marginOfSafetyArrays[i], color=colors[i])
+        except IndexError:
+            try:
+                ax.plot(yArrays[i], marginOfSafetyArrays[i], color='blue')
+                print(f'Color for plot {i} not specified.')
+                
+            except IndexError:
+                ax.set_axis_off()
+        
+        try:
+            ax.set_title(titles[i])
+        except IndexError:
+            ax.set_title('')
+            
         ax.set_xlabel('y [m]')
         ax.set_ylabel('Margin of Safety [-]')
-        ax.set_title(titles[i])
         ax.grid()
                 
     fig.tight_layout()
@@ -62,17 +78,10 @@ def plotFailureMargin(yVals: NDArray, sigmaAppliedVals: NDArray, sigmaFail: floa
     
 
 if __name__ == '__main__':
-    plotFailureMargin(np.array([[1,2,3], [1,2]], dtype=object), 
-                      np.array([[2,4,1], [3,5]], dtype=object), 
+    plotFailureMargin(np.array([[1,2,3], [1,2], [2,4,5,6,7]], dtype=object), 
+                      np.array([[2,4,1], [3,5], [9,3,4,5,6]], dtype=object), 
                       10,
                       1.5,
-                      (1,2),
+                      (2,2),
                       ('Doiuglaes', 'Test'),
                       ('red', 'blue'))
-    
-    
-    
-    
-    
-    
-    
