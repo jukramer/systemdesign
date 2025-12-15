@@ -1,6 +1,7 @@
 from calc import *
 from Beam import *
 from Stringer import *
+from plot import plotFailureMargin
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
@@ -91,7 +92,7 @@ def main(debug=False):
     many_stringer_beam.report_stats()
     many_stringer_beam.get_volume()
     many_stringer_beam.konstantinos_konstantinopoulos(y_data, T=T_data, M=M_data)
-    # many_stringer_beam.plot()
+    many_stringer_beam.plot()
 
 if __name__ == '__main__':
     main()
