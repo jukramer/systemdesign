@@ -7,7 +7,7 @@ Multiple plots can be generated in subplots by passing 2D arrays.
 The parameters work as follows:
 -yVals: numpy array, each row contains the y values for one subplot. Inhomogeneous arrays are allowed. Example:
         np.array([[y11, y12, y13], [y21, y22]])
--sigmaAppliedVals: numpy array, each row contains the aoplied stress values for one subplot. Inhomogeneous arrays are allowed. Example:
+-sigmaAppliedVals: numpy array, each row contains the applied stress values for one subplot. Inhomogeneous arrays are allowed. Example:
         np.array([[s11, s12, s13], [s21, s22]])
 -sigma Fail: Failure stress, single number
 -n: safety factor, single number
