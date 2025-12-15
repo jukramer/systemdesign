@@ -4,7 +4,7 @@ from parameters import *
 
 ###
 
-# Need to use Micha's moment of inertia (I_zz for I_stringer)
+# Need to use Micah's moment of inertia (I_zz for I_stringer)
 
 ###
 
