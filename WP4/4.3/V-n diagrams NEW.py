@@ -95,7 +95,7 @@ def plot(k, i, W, rho_0, a, name):
 
         else:
             n_neg = -1 + (V - V_c) / (V_d - V_c)
-        return n_neg
+        return n_neg    
 
     V_values = np.linspace(0, V_d, 200)
 
