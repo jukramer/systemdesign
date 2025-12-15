@@ -1,5 +1,6 @@
 from calc import *
 from Beam import *
+from Stringer import *
 from plot import plotFailureMargin
 import matplotlib.pyplot as plt
 import numpy as np
@@ -65,8 +66,8 @@ def main(debug=False):
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
-
     # Thin stringers
+    thin_stringer = L_Stringer(1/100, 1/100, 2.9/1000)
     stringer_area = 0.05/1000 # m²
     stringer_count_top = 13
     stringer_count_bottom = 13

@@ -69,15 +69,15 @@ class Beam():
         for z, A in self.stringers:
             self.centroid[1] += z*A/(skin_area+stringer_area)
 
-        self.Ixx = 0
-        self.Izz = 0
+        self.Ixx_base_wingbox = 0
+        self.Izz_base_wingbox = 0
         for i, c in enumerate(self.edge_centroids_list):
-            self.Ixx += (
+            self.Ixx_base_wingbox += (
                 self.thickness * self.edge_lengths_list[i]**3 * np.sin(self.edge_angles_list[i])**2 / 12 # main component
                 + self.edge_lengths_list[i] * self.thickness * (c-self.centroid)[1]**2                   # parallel axis component
                 )
 
-            self.Izz += (
+            self.Izz_base_wingbox += (
                 self.thickness * self.edge_lengths_list[i]**3 * np.cos(self.edge_angles_list[i])**2 / 12 # main component
                 + self.edge_lengths_list[i] * self.thickness * (c-self.centroid)[0]**2                   # parallel axis component
                 )
@@ -93,7 +93,7 @@ class Beam():
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
-        I = (self.Ixx*c**3 
+        I = (self.Ixx_base_wingbox*c**3 
             + np.sum(self.stringers[:, 1]*(self.stringers[:, 0]-self.centroid[1])**2, axis=0)*c**2 
             + np.where(y<=self.aux_spar_endpoints[1][1], 1/12*self.aux_spar_thickness*np.interp(y, [self.aux_spar_endpoints[0][1], self.aux_spar_endpoints[1][1]], [self.height_aux_spar_start, self.height_aux_spar_end])**3, 0)
             )
@@ -150,7 +150,7 @@ class Beam():
         print(f'Deflected {self.v[-1]:.4g}m | Allowed {0.15*self.span:.4g}m')
         print(f'Twisted {self.theta[-1]*180/np.pi:.4g}° | Allowed {10.0:.4g}°')
 
-    def konstantinos_konstantinopoulos(self, y, M, T):
+    def konstantinos_konstantinopoulos(self, y, M, T, report=False):
         num_points = M.size
         self.normal_stress = np.empty((num_points, 4))
         chord = self.get_chord(y)
@@ -163,8 +163,10 @@ class Beam():
 
             # self.normal_stress[:, i] = ((0*self.Ixx_list - M * self.Ixz)*x + (M*self.Izz - 0 * self.Ixz)*z) / (self.Ixx_list*self.Izz - self.Ixz**2)
             self.normal_stress[:, i] = M*z / self.Ixx_list
+        if report:
+            print(f'Max tensile: {np.max(self.normal_stress)/1e6:.0f}MPa, max compressive: {np.min(self.normal_stress)/1e6:.0f}MPa')
 
-        print(f'Max tensile: {np.max(self.normal_stress)/1e6:.0f}MPa, max compressive: {np.min(self.normal_stress)/1e6:.0f}MPa')
+        return self.normal_stress
 
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
