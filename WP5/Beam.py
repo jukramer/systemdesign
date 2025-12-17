@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
 
+
 class Beam():
     def __init__(self, intg_points: int = 100) -> None:
         self.intg_points = intg_points
