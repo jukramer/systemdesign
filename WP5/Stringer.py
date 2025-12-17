@@ -38,3 +38,4 @@ class L_Stringer():
 
 if __name__ == '__main__':
     stringer = L_Stringer(5/100, 3/100, 1/1000)
+ 
