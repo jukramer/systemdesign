@@ -31,7 +31,7 @@ class Beam():
         self.define_stringers(self.points, stringer_area, stringer_count_top, stringer_count_bottom)
 
         # points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
-
+        # TODO: How are ribs/bays implemented ??
         chord_at_aux_spar_start = self.get_chord(aux_spar_endpoints[0][1])
         self.height_aux_spar_start = chord_at_aux_spar_start*(
             np.interp(aux_spar_endpoints[0][0], [points[0][0], points[1][0]], [points[0][1], points[1][1]]) # top
@@ -165,20 +165,22 @@ class Beam():
 
         print(f'Max tensile: {np.max(self.normal_stress)/1e6:.0f}MPa, max compressive: {np.min(self.normal_stress)/1e6:.0f}MPa')
 
+    # TODO: Function for shear stress
 
     # FAILURE STRESS CALCULATIONS
-    # Shear Buckling
+    # Shear Buckling - this is a shear stress!!
     def shearBuckStress(self, k_s, t, b):
         return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
     
-    # Skin Buckling 
-    def findkC(self): # Placeholder
+    # Skin Buckling - normal stress
+    def findkC(self): 
+        # Placeholder
         return 0
     
     def skinBuckStress(self, t, b):
         return np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
     
-    # Column Buckling
+    # Column Buckling - normal stress
     def colBuckStress(self, K, A, L, I):
         return (K * np.pi**2 * E * I)/(L**2 * A)
     
@@ -188,23 +190,24 @@ class Beam():
     def calcStringerArea(self, sigma, K, I, L):
         return np.sqrt((K * np.pi**2 * E * I)/(sigma * L**2))
     
-    def calcStringerLenAll(self):
+    def calcStringerLenAll(self, sigma):
         # Wing tip / free end
-        L_ribs_from_tip = self.calcStringerLen(K_FC)
+        # TODO: I_stringer, A_Stringer
+        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, I_Stringer, A_Stringer)
         # Between ribs / both fixed
-        L_ribs_between = self.calcStringerLen(K_CC)
+        L_ribs_between = self.calcStringerLen(sigma, K_CC, I_Stringer, A_Stringer)
 
         nRibs = np.ceil((b/2 - L_ribs_from_tip) / L_ribs_between).astype(int)
 
         return L_ribs_from_tip, L_ribs_between, nRibs
     
-    def calcStringerAreaAll(self):
+    def calcStringerAreaAll(self, sigma):
         LRibsFromTip, LRibsBetween, _ = self.calcStringerLenAll()
         # Wing tip / free end
-        A_ribs_from_tip = self.calcStringerArea(K_FC, LRibsFromTip)
+        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, I_Stringer, LRibsFromTip)
 
         # Between ribs / both fixed
-        A_ribs_between = self.calcStringerArea(K_CC, LRibsBetween)
+        A_ribs_between = self.calcStringerArea(sigma, K_CC, I_Stringer, LRibsBetween)
 
         return A_ribs_from_tip, A_ribs_between
 
