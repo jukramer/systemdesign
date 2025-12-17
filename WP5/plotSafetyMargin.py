@@ -16,10 +16,10 @@ The parameters work as follows:\n
 -titles: tuple, containing the title for each of your plots, in order (left-right then down).\n
 -colors: tuple, containing the graph color for each of your plots, in order (left-right then down).
 """
-
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy.typing import NDArray
+
 
 class DimensionError(Exception):
     pass

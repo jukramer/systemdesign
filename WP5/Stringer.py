@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import scipy as sp
 from scipy import interpolate
 
@@ -16,7 +16,7 @@ class L_Stringer():
         self.z_c = (self.height*self.thickness*self.height/2 + (self.base-self.thickness)*self.thickness*self.thickness/2)/self.area
         self.x_c = (self.base*self.thickness*self.base/2 + (self.height-self.thickness)*self.thickness*self.thickness/2)/self.area
         self.centroid = np.array([self.x_c, self.z_c])
-
+    
         self.Ixx = (
             1/12*self.thickness*self.height**3 + self.thickness*self.height * (self.height/2-self.z_c)**2
           + 1/12*(self.base-self.thickness)*self.thickness**3 + (self.base-self.thickness)*self.thickness * (self.thickness/2-self.z_c)**2
