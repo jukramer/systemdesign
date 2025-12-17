@@ -17,7 +17,7 @@ calculate_safety_factor(K_one_free_one_fixed, L_ribs_from_tip)
 calculate_safety_factor(K_both_clamped, L_ribs_between)
 
 
-
+ 
 ###
 
 # For iteration purposes
