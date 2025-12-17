@@ -7,6 +7,7 @@ import scipy as sp
 class Beam():
     def __init__(self, intg_points: int = 100) -> None:
         self.intg_points = intg_points
+        self.ribPos = []
 
     def define_stringers(self, wing_box_points, stringer_area, stringer_count_top, stringer_count_bottom):
         z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
@@ -19,6 +20,9 @@ class Beam():
         stringers_bottom = np.array([[z_interp_bottom(x), stringer_area] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
 
         self.stringers = np.vstack((stringers_top, stringers_bottom)) # [[z/c, A], [z/c, A]]
+        
+    def defineRibs(self, ribPos):
+        self.ribPos = ribPos
 
     def load_wing_box(self, points, stringer_area, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span):
         self.points = points # [(x/c,z/c), ...] 
