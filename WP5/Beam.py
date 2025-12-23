@@ -1,11 +1,13 @@
-import numpy as np
+from globalParameters import *
 import matplotlib.pyplot as plt
+import numpy as np
 import scipy as sp
-from scipy import interpolate
+
 
 class Beam():
     def __init__(self, intg_points: int = 100) -> None:
         self.intg_points = intg_points
+        self.ribPos = []
 
     def define_stringers(self, wing_box_points, stringer_area, stringer_count_top, stringer_count_bottom):
         z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
@@ -18,6 +20,9 @@ class Beam():
         stringers_bottom = np.array([[z_interp_bottom(x), stringer_area] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
 
         self.stringers = np.vstack((stringers_top, stringers_bottom)) # [[z/c, A], [z/c, A]]
+        
+    def defineRibs(self, ribPos):
+        self.ribPos = ribPos
 
     def load_wing_box(self, points, stringer_area, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span):
         self.points = points # [(x/c,z/c), ...] 
@@ -31,7 +36,7 @@ class Beam():
         self.define_stringers(self.points, stringer_area, stringer_count_top, stringer_count_bottom)
 
         # points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
-
+        # TODO: How are ribs/bays implemented ??
         chord_at_aux_spar_start = self.get_chord(aux_spar_endpoints[0][1])
         self.height_aux_spar_start = chord_at_aux_spar_start*(
             np.interp(aux_spar_endpoints[0][0], [points[0][0], points[1][0]], [points[0][1], points[1][1]]) # top
@@ -89,7 +94,6 @@ class Beam():
         return (1-frac)*self.root_chord + (frac)*self.tip_chord
     
     def get_displacement(self, data, E):
-
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
@@ -168,6 +172,57 @@ class Beam():
 
         return self.normal_stress
 
+    # TODO: Function for shear stress
+
+    # FAILURE STRESS CALCULATIONS
+    # Shear Buckling - this is a shear stress!!
+    def shearBuckStress(self, k_s, t, b):
+        return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+    
+    # Skin Buckling - normal stress
+    def findkC(self): 
+        # Placeholder
+        return 0
+    
+    def skinBuckStress(self, t, b):
+        return np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+    
+    # Column Buckling - normal stress
+    def colBuckStress(self, K, A, L, I):
+        return (K * np.pi**2 * E * I)/(L**2 * A)
+    
+    def calcStringerLen(self, sigma, K, I, A):
+        return np.sqrt((K * np.pi**2 * E * I)/(sigma * A))
+    
+    def calcStringerArea(self, sigma, K, I, L):
+        return np.sqrt((K * np.pi**2 * E * I)/(sigma * L**2))
+    
+    def calcStringerLenAll(self, sigma):
+        # Wing tip / free end
+        # TODO: I_stringer, A_Stringer
+        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, I_Stringer, A_Stringer)
+        # Between ribs / both fixed
+        L_ribs_between = self.calcStringerLen(sigma, K_CC, I_Stringer, A_Stringer)
+
+        nRibs = np.ceil((b/2 - L_ribs_from_tip) / L_ribs_between).astype(int)
+
+        return L_ribs_from_tip, L_ribs_between, nRibs
+    
+    def calcStringerAreaAll(self, sigma):
+        LRibsFromTip, LRibsBetween, _ = self.calcStringerLenAll()
+        # Wing tip / free end
+        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, I_Stringer, LRibsFromTip)
+
+        # Between ribs / both fixed
+        A_ribs_between = self.calcStringerArea(sigma, K_CC, I_Stringer, LRibsBetween)
+
+        return A_ribs_from_tip, A_ribs_between
+
+    # Crack Propagation
+    def calcCCrit(self, sigma):
+        return K_1C ** 2 / (np.pi * SHAPE_FACTOR ** 2 * sigma ** 2) * 10 ** 3 # [mm]
+
+    # PLOTTING
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
 

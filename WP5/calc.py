@@ -1,4 +1,5 @@
-from parameters import *
+# from WP5.old.parameters import *
+from globalParameters import *
 from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np

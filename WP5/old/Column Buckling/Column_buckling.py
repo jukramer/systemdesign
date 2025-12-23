@@ -17,7 +17,7 @@ calculate_safety_factor(K_one_free_one_fixed, L_ribs_from_tip)
 calculate_safety_factor(K_both_clamped, L_ribs_between)
 
 
-
+ 
 ###
 
 # For iteration purposes
@@ -58,8 +58,6 @@ def calculate_all_stringer_area():
 
 
 L_ribs_from_tip, L_ribs_between, number_of_ribs = calculate_all_stringer_length()
-
-
 
 print("Stringer length at wing tip (one free, one fixed): ", L_ribs_from_tip, " m")
 print("Stringer length between ribs (both fixed): ", L_ribs_between, " m")
