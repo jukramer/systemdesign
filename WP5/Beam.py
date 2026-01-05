@@ -5,22 +5,27 @@ import scipy as sp
 
 
 class Beam():
-    def __init__(self, intg_points: int = 100) -> None:
+    def __init__(self, stringers, intg_points: int = 100) -> None:
         self.intg_points = intg_points
+        self.stringer_object = stringers
 
-    def define_stringers(self, wing_box_points, stringer_area, stringer_count_top, stringer_count_bottom):
+    def define_stringers(self, wing_box_points, stringer_count_top, stringer_count_bottom):
         z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
         z_interp_bottom = lambda x: np.interp(x, [wing_box_points[3][0], wing_box_points[2][0]], [wing_box_points[3][1], wing_box_points[2][1]])
 
         stringer_x_coords_top = [wing_box_points[0][0] + i/(stringer_count_top-1)*(wing_box_points[1][0]-wing_box_points[0][0]) for i in range(stringer_count_top)]
         stringer_x_coords_bottom = [wing_box_points[3][0] + i/(stringer_count_bottom-1)*(wing_box_points[2][0]-wing_box_points[3][0]) for i in range(stringer_count_bottom)]
 
-        stringers_top = np.array([[z_interp_top(x), stringer_area] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
-        stringers_bottom = np.array([[z_interp_bottom(x), stringer_area] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
+        stringers_top = np.array([[z_interp_top(x), self.stringer_object.area] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
+        stringers_bottom = np.array([[z_interp_bottom(x), self.stringer_object.area] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
 
         self.stringers = np.vstack((stringers_top, stringers_bottom)) # [[z/c, A], [z/c, A]]
 
-    def load_wing_box(self, points, stringer_area, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span):
+        z_top = np.array([[z_interp_top(x)] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]])
+        z_bottom = np.array([[z_interp_bottom(x)] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]])
+        self.stringer_z_vals = np.vstack((z_top, z_bottom))
+
+    def load_wing_box(self, points, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span):
         self.points = points # [(x/c,z/c), ...] 
         self.aux_spar_endpoints = aux_spar_endpoints # [(x/c_start, y_start), (x/c_end, y_end)]
         self.thickness = thickness
@@ -29,7 +34,7 @@ class Beam():
         self.tip_chord = tip_chord
         self.span = span
 
-        self.define_stringers(self.points, stringer_area, stringer_count_top, stringer_count_bottom)
+        self.define_stringers(self.points, stringer_count_top, stringer_count_bottom)
 
         # points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
         # TODO: How are ribs/bays implemented ??
@@ -93,8 +98,9 @@ class Beam():
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
-        I = (self.Ixx_base_wingbox*c**3 
-            + np.sum(self.stringers[:, 1]*(self.stringers[:, 0]-self.centroid[1])**2, axis=0)*c**2 
+        I = (self.Ixx_base_wingbox*c**3 # scaled wing box
+            + self.stringer_object.Ixx
+            + np.sum(self.stringer_object.area*(self.stringer_z_vals-self.centroid[1])**2, axis=0)*c**2 
             + np.where(y<=self.aux_spar_endpoints[1][1], 1/12*self.aux_spar_thickness*np.interp(y, [self.aux_spar_endpoints[0][1], self.aux_spar_endpoints[1][1]], [self.height_aux_spar_start, self.height_aux_spar_end])**3, 0)
             )
         self.Ixx_list = I

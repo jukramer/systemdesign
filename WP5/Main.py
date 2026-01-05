@@ -2,7 +2,7 @@ from Beam import *
 from calc import *
 from globalParameters import *
 from Stringer import *
-from WP5.plotSafetyMargin import plotFailureMargin
+from plotSafetyMargin import plotFailureMargin
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
@@ -68,8 +68,7 @@ def main(debug=False):
 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
     # Thin stringers
-    thin_stringer = L_Stringer(1/100, 1/100, 2.9/1000)
-    stringer_area = 0.05/1000 # m²
+    thin_stringer = L_Stringer(0.02, 0.02, 0.0015)
     stringer_count_top = 13
     stringer_count_bottom = 13
     skin_thickness = 1/1000
@@ -86,8 +85,8 @@ def main(debug=False):
     # stringer_count_bottom = 0
     # skin_thickness = 1.6/1000
 
-    many_stringer_beam = Beam(y_data.size)
-    many_stringer_beam.load_wing_box(points=wing_box_points, stringer_area=stringer_area, stringer_count_top=stringer_count_top, stringer_count_bottom=stringer_count_bottom, aux_spar_endpoints=aux_spar_endpoints, thickness=skin_thickness, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
+    many_stringer_beam = Beam(stringers=thin_stringer, intg_points=y_data.size)
+    many_stringer_beam.load_wing_box(points=wing_box_points, stringer_count_top=stringer_count_top, stringer_count_bottom=stringer_count_bottom, aux_spar_endpoints=aux_spar_endpoints, thickness=skin_thickness, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
     many_stringer_beam.get_displacement(np.column_stack((y_data, M_data)), E=72.4e9)
     many_stringer_beam.get_twist(np.column_stack((y_data, T_data)), G=28e9)
     many_stringer_beam.report_stats()
