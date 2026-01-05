@@ -94,7 +94,8 @@ class Beam():
         frac = 2*np.abs(y)/self.span
         return (1-frac)*self.root_chord + (frac)*self.tip_chord
     
-    def get_displacement(self, data, E):
+    def get_displacement(self, data, E, disable=False):
+        print(data.shape)
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
@@ -106,7 +107,10 @@ class Beam():
         self.Ixx_list = I
         
         d2v_dy2 = - M / (E * I)
-
+        
+        if disable:
+            return
+            
         integrand_1 = sp.interpolate.interp1d(y, d2v_dy2, kind='cubic', fill_value="extrapolate")
         dv_dy = np.empty(s)
         y2 = np.empty(s)
@@ -149,14 +153,14 @@ class Beam():
         integrand = sp.interpolate.interp1d(y, skin_area+stringer_area, kind='cubic', fill_value="extrapolate")
         self.volume = sp.integrate.quad(integrand, 0, self.span/2)[0] # type: ignore
 
-        print(f'Volume: {self.volume:.4g} m³')
+        # print(f'Volume: {self.volume:.4g} m³')
         return self.volume
 
     def report_stats(self):
         print(f'Deflected {self.v[-1]:.4g}m | Allowed {0.15*self.span:.4g}m')
         print(f'Twisted {self.theta[-1]*180/np.pi:.4g}° | Allowed {10.0:.4g}°')
 
-    def konstantinos_konstantinopoulos(self, y, M, T, report=False):
+    def konstantinos_konstantinopoulos(self, y, M, T=0, report=False):
         num_points = M.size
         self.normal_stress = np.empty((num_points, 4))
         chord = self.get_chord(y)
@@ -179,7 +183,15 @@ class Beam():
     # FAILURE STRESS CALCULATIONS
     # Shear Buckling - this is a shear stress!!
     def shearBuckStress(self, k_s, t, b):
-        return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        k_s = 2.0
+        t = self.thickness
+        tau = 0
+        
+        for l in self.edge_lengths_list:
+            b = l
+            tau = max(tau, np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2)
+            
+        return tau
 
 # from parameters import *
 # import matplotlib.pyplot as plt
@@ -213,8 +225,14 @@ class Beam():
         # Placeholder
         return 0
     
-    def skinBuckStress(self, t, b):
-        return np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+    def skinBuckStress(self):
+        t = self.thickness
+        y = np.arange(0, self.span/2, self.span/2/self.intg_points)
+        chord = self.get_chord(y)
+        edges = np.array(self.edge_lengths_list)
+        b = np.outer(chord, edges)
+        sigma = np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        return sigma
     
     # Column Buckling - normal stress
     def colBuckStress(self, K, A, L, I):
