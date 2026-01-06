@@ -179,9 +179,15 @@ class Beam():
 
         return self.normal_stress
 
-    # TODO: Function for shear stress
-    
-
+    # TODO add torsion shear 
+    def getShearStress(self, y, V):
+        kV = 2 # shear factor, tau_max = kV*tau_avg (see reader app. F)
+        # print(self.points)
+        hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
+        hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
+        
+        return kV*V/(hFrontSpar*self.thickness+hRearSpar*self.thickness)
+        
     # FAILURE STRESS CALCULATIONS
     # Shear Buckling - this is a shear stress!!
     def shearBuckStress(self, k_s, t, b):

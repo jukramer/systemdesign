@@ -187,7 +187,8 @@ def optimise_main():
                                        subplots=True,
                                        plot=False)
     
-    optim = Optimizer(y_data, M_data, T_data)
+    # OPTIMIZATION 
+    # optim = Optimizer(y_data, M_data, T_data)
     optim = sp.optimize.minimize(calcVol, np.array([1e-3, 1e-3,1e-3,1e-3,5,5,5]))    
     print('Result:')
     print(optim.x)
