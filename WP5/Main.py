@@ -76,7 +76,6 @@ def map_values(x):
     return tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach
 
 def reverse_map_values(tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs):
-
     tString_detach = Reverse_sigmoid((tString-1e-3)/0.1)
     tSkin_detach = Reverse_sigmoid((tSkin-1e-3)/0.005)
     LStringBase_detach = Reverse_sigmoid((LStringBase-0.01)/0.1)
@@ -89,8 +88,9 @@ def reverse_map_values(tString, tSkin, LStringBase, hString, nStringTop, nString
 
 def calcVol(x):
     # tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs = x
+    # x[4] = initial_x[4]
+    # x[5] = initial_x[5]
     tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach = map_values(x)
-
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
 
@@ -106,14 +106,48 @@ def calcVol(x):
     sigma_cr = np.minimum(sigma_skin, sigma_col)
     loss = np.sum(np.maximum(0, sigma_applied-sigma_cr))
     
-    if loss>0:
+    if loss > 0:
         print(f'Optimising stresses | {vol:.3f}m³, {loss:.1f}err          ', end='\r')
+        # return loss*1e-5
     else:
         print(f'Optimising mass     | {vol:.3f}m³, {loss:.1f}err                 ', end='\r')
+        # return vol
     
-    return vol + loss*1e-5
+    return vol
 
+def bucklingConstraints(x):
+    tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach = map_values(x)
+    wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
+    aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
+
+    stringer_instance = L_Stringer(LStringBase_detach, hString_detach, tString_detach)
+    wb = Beam(stringers=stringer_instance, intg_points=865)
+    wb.load_wing_box(points=wing_box_points, stringer_count_top=nStringTop_detach, stringer_count_bottom=nStringBottom_detach, aux_spar_endpoints=aux_spar_endpoints, thickness=tSkin_detach, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
+    wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
+    vol = wb.get_volume()
     
+    sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)/1e6
+    sigma_skin = wb.skinBuckStress()/1e6
+    sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)/1e6
+    
+    # print([np.sum(np.maximum(0, sigma_applied-sigma_skin)),
+    #         np.sum(np.maximum(0, sigma_applied-sigma_col)),
+    #         np.sum(np.maximum(0, sigma_applied-sigma_skin))], end='\r')
+    
+    return np.array([-np.sum(np.maximum(0, sigma_applied-sigma_skin)),
+                     -np.sum(np.maximum(0, sigma_applied-sigma_col)),
+                     -np.sum(np.maximum(0, sigma_applied-sigma_skin))])
+    
+# Wrapper functions for constraints (currently unused)
+def bucklingConstraints1(x):
+    return float(bucklingConstraints(x)[0])
+
+def bucklingConstraints2(x):
+    return float(bucklingConstraints(x)[1])
+
+def bucklingConstraints3(x):
+    return float(bucklingConstraints(x)[2])
+
 def main(debug=False):   
     if not debug:
         warnings.simplefilter('ignore', category=UserWarning)
@@ -202,6 +236,7 @@ def main(debug=False):
 
 def optimise_main():
     global y_data, M_data
+    global initial_x
     
     if not False:
         warnings.simplefilter('ignore', category=UserWarning)
@@ -215,7 +250,6 @@ def optimise_main():
     aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
     loadingDist = lambda x: calc.findLoadingDist(x)
     pointLoads, pointTorques = (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[2])(0), (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[4])(0)
-
     
     # INTERNAL LOADING
     y_data, M_data, T_data = calc.plot(aeroLoading,
@@ -230,12 +264,19 @@ def optimise_main():
                                        plot=False)
     
     optim = Optimizer(y_data, M_data, T_data)
-    initial_x = reverse_map_values(0.0015, 1.5e-3, 0.02, 0.02, 13, 13, 2.0)
-    optim = sp.optimize.minimize(calcVol, initial_x, method='nelder-mead')    
+    # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
+    initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
+    bounds_x = [(0, 9e-3), (0, 9e-3), (0, 5e-2), (0, 5e-2), (0, 20), (0, 20), (0, 17)]
+    constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints1},
+                         {'type': 'ineq', 'fun': bucklingConstraints2},
+                         {'type': 'ineq', 'fun': bucklingConstraints3}]
+    
+    constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints}]
+    
+    optim = sp.optimize.minimize(calcVol, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma)    
     raw_result = optim.x
     print('\nResult:')
     print(np.array(map_values(raw_result)))
 
 if __name__ == '__main__':
     optimise_main()
-    
