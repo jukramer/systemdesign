@@ -134,9 +134,8 @@ def bucklingConstraints(x):
     #         np.sum(np.maximum(0, sigma_applied-sigma_col)),
     #         np.sum(np.maximum(0, sigma_applied-sigma_skin))], end='\r')
     
-    return np.array([-np.sum(np.maximum(0, sigma_applied-sigma_skin)),
-                     -np.sum(np.maximum(0, sigma_applied-sigma_col)),
-                     -np.sum(np.maximum(0, sigma_applied-sigma_skin))])
+    return np.array([np.sum(np.maximum(0, sigma_applied-sigma_skin)),
+                     np.sum(np.maximum(0, sigma_applied-sigma_col))])
     
 # Wrapper functions for constraints (currently unused)
 def bucklingConstraints1(x):
@@ -265,13 +264,19 @@ def optimise_main():
     
     optim = Optimizer(y_data, M_data, T_data)
     # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
-    initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
+    # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
+    initial_x = (5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
     bounds_x = [(0, 9e-3), (0, 9e-3), (0, 5e-2), (0, 5e-2), (0, 20), (0, 20), (0, 17)]
-    constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints1},
-                         {'type': 'ineq', 'fun': bucklingConstraints2},
-                         {'type': 'ineq', 'fun': bucklingConstraints3}]
     
-    constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints}]
+    constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf], ub=[0, 0])
+    bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0, 0, 0], [9e-3, 9e-3, 5e-2, 5e-2, 20, 20, 17])
+    
+    # constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints1},
+    #                      {'type': 'ineq', 'fun': bucklingConstraints2},
+    #                      {'type': 'ineq', 'fun': bucklingConstraints3}]
+    
+    # constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints}]
+    
     
     optim = sp.optimize.minimize(calcVol, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma)    
     raw_result = optim.x
