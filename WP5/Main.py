@@ -9,82 +9,13 @@ import warnings
 
 np.set_printoptions(suppress=True)
 
-class Optimizer:
-    n1 = len(tStringVals := np.arange(1e-3, 4e-3, 4e-4))
-    n2 = len(tSkinValues := np.arange(1e-3, 4e-3, 4e-4))
-    n3 = len(LStringBaseVals := np.arange(5e-3, 10e-3, 5e-4))
-    n4 = len(hStringVals := np.arange(5e-3, 10e-3, 5e-4))
-    n5 = len(nStringTopVals := np.arange(4, 5, 1))
-    n6 = len(nStringBotVals := np.arange(4, 5, 1))
-    n7 = len(sRibVals := 33/np.arange(3, 6, 1))
-    
-    
-    def __init__(self, y_data, M_data, T_data):
-        self.y_data = y_data
-        self.M_data = M_data
-        self.T_data = T_data
-        self.nTot = self.n1*self.n2*self.n3*self.n4*self.n5*self.n6*self.n7
-        
-    def setup_wing(self, tString, tSkin, LStringBase, hString, nStringTop, nStringBot, sRibs):
-        wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
-
-        aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
-
-        stringer_instance = L_Stringer(LStringBase, hString, tString)
-
-        many_stringer_beam = Beam(stringers=stringer_instance, intg_points=self.y_data.size)
-        many_stringer_beam.load_wing_box(points=wing_box_points, stringer_count_top=nStringTop, stringer_count_bottom=nStringBot, aux_spar_endpoints=aux_spar_endpoints, thickness=tSkin, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
-        # many_stringer_beam.get_displacement(np.column_stack((self.y_data, self.M_data)), E=72.4e9)
-        # many_stringer_beam.get_twist(np.column_stack((self.y_data, self.T_data)), G=28e9)
-        # many_stringer_beam.report_stats()
-        many_stringer_beam.get_volume()
-        # many_stringer_beam.konstantinos_konstantinopoulos(self.y_data, T=self.T_data, M=self.M_data)
-        # many_stringer_beam.plot()
-    
-    def optimise(self):
-        print(self.n1, self.n2, self.n3, self.n4, self.n5, self.n6, self.n7)
-        i = 0
-        
-        for tString in self.tStringVals:
-            for tSkin in self.tSkinValues:
-                for LStringBase in self.LStringBaseVals:
-                    for hString in self.hStringVals:
-                        for nStringTop in self.nStringTopVals:
-                            for nStringBottom in self.nStringBotVals:
-                                for sRibs in self.sRibVals:
-                                    i+=1
-                                    print(f'{100*i/self.nTot}%')
-                                    self.setup_wing(tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs)
-
-def Sigmoid(x):
-    return 1/(1+np.exp(-x))
-
-def Reverse_sigmoid(x):
-    return -np.log(1/x-1)
-
 def map_values(x):
     tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs = x
 
-    tString_detach = Sigmoid(tString)*0.1+1e-3
-    tSkin_detach = Sigmoid(tSkin)*0.005+1e-3
-    LStringBase_detach = Sigmoid(LStringBase)*0.1+0.01
-    hString_detach = Sigmoid(hString)*0.1+0.01
-    nStringTop_detach = min(max(2, int(nStringTop)), 25)
-    nStringBottom_detach = min(max(2, int(nStringBottom)), 25)
-    sRibs_detach = Sigmoid(sRibs)*20 + 0.3
+    nStringTop_detach = int(nStringTop)
+    nStringBottom_detach = int(nStringBottom)
 
-    return tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach
-
-def reverse_map_values(tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs):
-    tString_detach = Reverse_sigmoid((tString-1e-3)/0.1)
-    tSkin_detach = Reverse_sigmoid((tSkin-1e-3)/0.005)
-    LStringBase_detach = Reverse_sigmoid((LStringBase-0.01)/0.1)
-    hString_detach = Reverse_sigmoid((hString-0.01)/0.1)
-    nStringTop_detach = float(nStringTop)
-    nStringBottom_detach = float(nStringBottom)
-    sRibs_detach = Reverse_sigmoid((sRibs-0.3)/20)
-
-    return tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach
+    return tString, tSkin, LStringBase, hString, nStringTop_detach, nStringBottom_detach, sRibs
 
 def calcVol(x):
     # tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs = x
@@ -263,9 +194,7 @@ def optimise_main():
                                        subplots=True,
                                        plot=False)
     
-    optim = Optimizer(y_data, M_data, T_data)
-    # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
-    initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
+    initial_x = (5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
     bounds_x = [(0, 9e-3), (0, 9e-3), (0, 5e-2), (0, 5e-2), (0, 20), (0, 20), (0, 17)]
     constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints1},
                          {'type': 'ineq', 'fun': bucklingConstraints2},
