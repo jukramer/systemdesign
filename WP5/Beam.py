@@ -2,12 +2,13 @@ from globalParameters import *
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
+from Stringer import L_Stringer
 
 
 class Beam():
     def __init__(self, stringers, intg_points: int = 100) -> None:
         self.intg_points = intg_points
-        self.stringer_object = stringers
+        self.stringer_object: L_Stringer = stringers
 
     def define_stringers(self, wing_box_points, stringer_count_top, stringer_count_bottom):
         z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
@@ -94,7 +95,7 @@ class Beam():
         frac = 2*np.abs(y)/self.span
         return (1-frac)*self.root_chord + (frac)*self.tip_chord
     
-    def get_displacement(self, data, E):
+    def get_displacement(self, data, E, disable=False):
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
@@ -106,7 +107,10 @@ class Beam():
         self.Ixx_list = I
         
         d2v_dy2 = - M / (E * I)
-
+        
+        if disable:
+            return
+            
         integrand_1 = sp.interpolate.interp1d(y, d2v_dy2, kind='cubic', fill_value="extrapolate")
         dv_dy = np.empty(s)
         y2 = np.empty(s)
@@ -149,14 +153,14 @@ class Beam():
         integrand = sp.interpolate.interp1d(y, skin_area+stringer_area, kind='cubic', fill_value="extrapolate")
         self.volume = sp.integrate.quad(integrand, 0, self.span/2)[0] # type: ignore
 
-        print(f'Volume: {self.volume:.4g} m³')
+        # print(f'Volume: {self.volume:.4g} m³')
         return self.volume
 
     def report_stats(self):
         print(f'Deflected {self.v[-1]:.4g}m | Allowed {0.15*self.span:.4g}m')
         print(f'Twisted {self.theta[-1]*180/np.pi:.4g}° | Allowed {10.0:.4g}°')
 
-    def konstantinos_konstantinopoulos(self, y, M, T, report=False):
+    def konstantinos_konstantinopoulos(self, y, M, T=0, report=False):
         num_points = M.size
         self.normal_stress = np.empty((num_points, 4))
         chord = self.get_chord(y)
@@ -174,30 +178,48 @@ class Beam():
 
         return self.normal_stress
 
-    # TODO: Function for shear stress
-
+    # TODO add torsion shear 
+    def getShearStress(self, y, V):
+        kV = 2 # shear factor, tau_max = kV*tau_avg (see reader app. F)
+        # print(self.points)
+        hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
+        hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
+        
+        return kV*V/(hFrontSpar*self.thickness+hRearSpar*self.thickness)
+        
     # FAILURE STRESS CALCULATIONS
     # Shear Buckling - this is a shear stress!!
     def shearBuckStress(self, k_s, t, b):
-        return np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        k_s = 2.0
+        t = self.thickness
+        tau = 0
+        
+        for l in self.edge_lengths_list:
+            b = l
+            tau = max(tau, np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2)
+            
+        return tau
 
 
     # Skin Buckling - normal stress
-    def findkC(self,a,b): 
-        x=[0.7,0.85,1.0,1.15,1.3,1.45,1.6,1.8,2.0,2.2,2.4,2.6,2.75,2.9,3.05,3.2,3.35,3.5,3.7,3.85,4.0,4.15,4.3,4.45,4.6,4.8,5.0]
-        y=[10.7,7.5,6.8,6,5.8,5.5,5.5,5.1,4.9,4.7,4.5,4.5,4.6,4.5,4.4,4.4,4.4,4.3,4.3,4.3,4.2,4.2,4.2,4.1,4.1,4.1,4.1]
-        f=sp.interpolate.interp1d(x,y,kind='cubic')
-        xnew=np.arange(np.min(x),np.max(x),0.001)
-        ynew=f(xnew)
-        plt.plot(x,y,'o',xnew,ynew,'-')
-        plt.show()
+    def findkC(self): 
+        # Placeholder
         return 0
     
-    def skinBuckStress(self, t, b):
-        return np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+    def skinBuckStress(self):
+        t = self.thickness
+        y = np.arange(0, self.span/2, self.span/2/self.intg_points)
+        chord = self.get_chord(y)
+        edges = np.array(self.edge_lengths_list)
+        b = np.outer(chord, edges)
+        sigma = np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        return sigma
     
     # Column Buckling - normal stress
-    def colBuckStress(self, K, A, L, I):
+    def colBuckStress(self, L):
+        K = K_CC
+        A = self.stringer_object.area
+        I = self.Ixx_list
         return (K * np.pi**2 * E * I)/(L**2 * A)
     
     def calcStringerLen(self, sigma, K, I, A):
