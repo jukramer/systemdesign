@@ -179,6 +179,7 @@ class Beam():
         return self.normal_stress
 
     # TODO: Function for shear stress
+    
 
     # FAILURE STRESS CALCULATIONS
     # Shear Buckling - this is a shear stress!!
