@@ -213,7 +213,7 @@ def optimise_main():
     # constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints}]
     
     
-    optim = sp.optimize.minimize(calcVol, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma)    
+    optim = sp.optimize.minimize(calcVol, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma)     # type:ignore
     raw_result = optim.x
     print('\nResult:')
     print(np.array(map_values(raw_result)))

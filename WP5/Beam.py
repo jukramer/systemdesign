@@ -272,21 +272,27 @@ class Beam():
     def calcStringerLenAll(self, sigma):
         # Wing tip / free end
         # TODO: I_stringer, A_Stringer
-        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, I_Stringer, A_Stringer)
+        if 1==1:
+            raise RuntimeError('Check this')
+        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, self.stringer_object.Ixx, self.stringer_object.area)
         # Between ribs / both fixed
-        L_ribs_between = self.calcStringerLen(sigma, K_CC, I_Stringer, A_Stringer)
+        L_ribs_between = self.calcStringerLen(sigma, K_CC, self.stringer_object.Ixx, self.stringer_object.area)
 
         nRibs = np.ceil((b/2 - L_ribs_from_tip) / L_ribs_between).astype(int)
 
         return L_ribs_from_tip, L_ribs_between, nRibs
     
     def calcStringerAreaAll(self, sigma):
-        LRibsFromTip, LRibsBetween, _ = self.calcStringerLenAll()
+        LRibsFromTip, LRibsBetween, _ = self.calcStringerLenAll(sigma)
+
+        if 1==1:
+            raise RuntimeError('Check this')
+        
         # Wing tip / free end
-        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, I_Stringer, LRibsFromTip)
+        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, self.stringer_object.Ixx, LRibsFromTip)
 
         # Between ribs / both fixed
-        A_ribs_between = self.calcStringerArea(sigma, K_CC, I_Stringer, LRibsBetween)
+        A_ribs_between = self.calcStringerArea(sigma, K_CC, self.stringer_object.Ixx, LRibsBetween)
 
         return A_ribs_from_tip, A_ribs_between
 
