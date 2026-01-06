@@ -7,13 +7,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 
+STRINGER_FACTOR = 1e5
+
 np.set_printoptions(suppress=True)
 
 def map_values(x):
+    return x
     tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs = x
 
-    nStringTop_detach = int(nStringTop)
-    nStringBottom_detach = int(nStringBottom)
+    nStringTop_detach = int(nStringTop*STRINGER_FACTOR)
+    nStringBottom_detach = int(nStringBottom*STRINGER_FACTOR)
 
     return tString, tSkin, LStringBase, hString, nStringTop_detach, nStringBottom_detach, sRibs
 
@@ -21,7 +24,8 @@ def calcVol(x):
     # tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs = x
     # x[4] = initial_x[4]
     # x[5] = initial_x[5]
-    tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach = map_values(x)
+    tString_detach, tSkin_detach, LStringBase_detach, hString_detach, sRibs_detach = map_values(x)
+    nStringTop_detach, nStringBottom_detach = 20, 20
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
 
@@ -47,7 +51,8 @@ def calcVol(x):
     return vol
 
 def bucklingConstraints(x):
-    tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach = map_values(x)
+    tString_detach, tSkin_detach, LStringBase_detach, hString_detach, sRibs_detach = map_values(x)
+    nStringTop_detach, nStringBottom_detach = 20, 20
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
 
@@ -57,16 +62,17 @@ def bucklingConstraints(x):
     wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
     vol = wb.get_volume()
     
-    sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)/1e6
-    sigma_skin = wb.skinBuckStress()/1e6
-    sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)/1e6
+    sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)
+    sigma_skin = wb.skinBuckStress()
+    sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)
     
     # print([np.sum(np.maximum(0, sigma_applied-sigma_skin)),
     #         np.sum(np.maximum(0, sigma_applied-sigma_col)),
     #         np.sum(np.maximum(0, sigma_applied-sigma_skin))], end='\r')
     
-    return np.array([np.sum(np.maximum(0, sigma_applied-sigma_skin)),
-                     np.sum(np.maximum(0, sigma_applied-sigma_col))])
+    return np.array([np.max(sigma_applied/sigma_skin),
+                     np.max(sigma_applied/sigma_col),
+                     np.max([np.max(sigma_applied/sigma_skin), np.max(sigma_applied/sigma_col)])])
     
 # Wrapper functions for constraints (currently unused)
 def bucklingConstraints1(x):
@@ -193,25 +199,23 @@ def optimise_main():
                                        subplots=True,
                                        plot=False)
     
-    # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
-    # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
-    initial_x = (5e-3, 5e-3, 2e-2, 2e-2, 13, 13, 2.0)
-    
-    constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf], ub=[0, 0])
-    bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0, 0, 0], 
-                                  [9e-3, 9e-3, 5e-2, 5e-2, 20, 20, 17])
-    
-    # constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints1},
-    #                      {'type': 'ineq', 'fun': bucklingConstraints2},
-    #                      {'type': 'ineq', 'fun': bucklingConstraints3}]
-    
-    # constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints}]
-    
+    initial_x = (9e-3, 2e-3, 9e-2, 9e-2, 2.0)
+    constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf, 0.8], ub=[1, 1, np.inf])
+    bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0], 
+                                  [11e-3, 11e-3, 11e-2, 11e-2, 17],
+                                  keep_feasible=True)
     
     optim = sp.optimize.minimize(calcVol, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma)    
+
     raw_result = optim.x
-    print('\nResult:')
+    print('')
+    print("Success:", optim.success)
+    print("Status:", optim.status)
+    print("Message:", optim.message)
+    print("Constraint violation:", optim.constr_violation)
+    print("Optimality:", optim.optimality)
+    print('\nResults:')
     print(np.array(map_values(raw_result)))
 
 if __name__ == '__main__':
-    optimise_main()
+    optimise_main() 
