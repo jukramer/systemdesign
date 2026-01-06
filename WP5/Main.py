@@ -159,6 +159,8 @@ def main(debug=False):
     many_stringer_beam.plot()
 
 def optimise_main():
+    global y_data, M_data
+    
     if not False:
         warnings.simplefilter('ignore', category=UserWarning)
 
@@ -172,7 +174,6 @@ def optimise_main():
     loadingDist = lambda x: calc.findLoadingDist(x)
     pointLoads, pointTorques = (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[2])(0), (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[4])(0)
 
-    global y_data, M_data
     
     # INTERNAL LOADING
     y_data, M_data, T_data = calc.plot(aeroLoading,
@@ -187,9 +188,6 @@ def optimise_main():
                                        plot=False)
     
     optim = Optimizer(y_data, M_data, T_data)
-    # print(y_data.size)
-    # optim.optimise()
-    
     optim = sp.optimize.minimize(calcVol, np.array([1e-3, 1e-3,1e-3,1e-3,5,5,5]))    
     print('Result:')
     print(optim.x)
