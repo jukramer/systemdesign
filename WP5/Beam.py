@@ -2,12 +2,13 @@ from globalParameters import *
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
+from Stringer import L_Stringer
 
 
 class Beam():
     def __init__(self, stringers, intg_points: int = 100) -> None:
         self.intg_points = intg_points
-        self.stringer_object = stringers
+        self.stringer_object: L_Stringer = stringers
 
     def define_stringers(self, wing_box_points, stringer_count_top, stringer_count_bottom):
         z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
@@ -224,7 +225,7 @@ class Beam():
     # Skin Buckling - normal stress
     def findkC(self): 
         # Placeholder
-        return 0
+        return 2
     
     def skinBuckStress(self):
         t = self.thickness
@@ -236,7 +237,10 @@ class Beam():
         return sigma
     
     # Column Buckling - normal stress
-    def colBuckStress(self, K, A, L, I):
+    def colBuckStress(self, L):
+        K = K_CC
+        A = self.stringer_object.area
+        I = self.Ixx_list
         return (K * np.pi**2 * E * I)/(L**2 * A)
     
     def calcStringerLen(self, sigma, K, I, A):
