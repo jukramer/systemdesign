@@ -193,14 +193,13 @@ def optimise_main():
                                        subplots=True,
                                        plot=False)
     
-    optim = Optimizer(y_data, M_data, T_data)
     # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
     # initial_x = reverse_map_values(5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
-    initial_x = (5e-3, 5e-3, 0.1, 0.1, 13, 13, 2.0)
-    bounds_x = [(0, 9e-3), (0, 9e-3), (0, 5e-2), (0, 5e-2), (0, 20), (0, 20), (0, 17)]
+    initial_x = (5e-3, 5e-3, 2e-2, 2e-2, 13, 13, 2.0)
     
     constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf], ub=[0, 0])
-    bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0, 0, 0], [9e-3, 9e-3, 5e-2, 5e-2, 20, 20, 17])
+    bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0, 0, 0], 
+                                  [9e-3, 9e-3, 5e-2, 5e-2, 20, 20, 17])
     
     # constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints1},
     #                      {'type': 'ineq', 'fun': bucklingConstraints2},
