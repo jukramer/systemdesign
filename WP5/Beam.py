@@ -199,46 +199,36 @@ class Beam():
             tau = max(tau, np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2)
             
         return tau
-
-# from parameters import *
-# import matplotlib.pyplot as plt
-# import numpy as np
-# import scipy as sp
-
-# class Calc:
-#     def __init__(self):
-#         self.t
-
-#     def skinBucklingStress(t, b):
-#         return np.pi**2*kC*E / (12*(1-POISSION_RATIO**2)) * (t/b)**2
     
-#     def SkinBucklingInterpolation(a_b):
-#         x=[0.7,0.85,1.0,1.15,1.3,1.45,1.6,1.8,2.0,2.2,2.4,2.6,2.75,2.9,3.05,3.2,3.35,3.5,3.7,3.85,4.0,4.15,4.3,4.45,4.6,4.8,5.0]
-#         y=[10.7,7.5,6.8,6,5.8,5.5,5.5,5.1,4.9,4.7,4.5,4.5,4.6,4.5,4.4,4.4,4.4,4.3,4.3,4.3,4.2,4.2,4.2,4.1,4.1,4.1,4.1]
-#         f=sp.interpolate.interp1d(x,y,kind='cubic')
-#         xnew=np.arange(np.min(x),np.max(x),0.001)
-#         ynew=f(xnew)
-#         plt.plot(x,y,'o',xnew,ynew,'-')
-#         plt.show()
+    def SkinBucklingInterpolation(self, a_b, plot=False):
+        x_data=[0.7,  0.85, 1.0, 1.15, 1.3, 1.67, 2.0, 2.2, 2.5, 2.75, 3.0, 3.2, 3.35, 3.70, 4.18, 4.66, 4.8, 5.0]
+        y_data=[10.7, 8.16, 6.8, 6.17, 5.8, 5.6,  4.9, 4.7, 4.6, 4.70, 4.5, 4.4, 4.4,  4.45, 4.27, 4.35, 4.3, 4.3]
+        f=sp.interpolate.interp1d(x_data, y_data, kind='cubic', bounds_error=False, fill_value=(np.nan, 4.3))
 
+        if plot:
+            x_plt=np.arange(np.min(x_data)-1, np.max(x_data)+10, 0.001)
+            y_plt=f(x_plt)
+            img = plt.imread('WP5/old/Skin Buckling/image.png')  # replace with your image path
+            fig, ax = plt.subplots()
 
-# if __name__ == '__main__':
-#     calc1 = Calc()
-#     calc2 = Calc()
+            ax.imshow(img, extent=(-0.70, 6.0, 16.45, -1.05),
+                origin='lower', aspect='auto', alpha=0.4, zorder=0)
+            ax.plot(x_data, y_data, 'o', zorder=2, markersize=1, color='k')
+            ax.plot(x_plt, y_plt, '-', zorder=3, linewidth=1)
 
+            ax.set_xlim(-1, 16)
+            ax.set_ylim(-1, 17)
+            plt.show()
 
-    # Skin Buckling - normal stress
-    def findkC(self): 
-        # Placeholder
-        return 4.5
+        return f(a_b)
     
-    def skinBuckStress(self):
+    def skinBuckStress(self, rib_spacing):
         t = self.thickness
         y = np.arange(0, self.span/2, self.span/2/self.intg_points)
         chord = self.get_chord(y)
         edges = np.array(self.edge_lengths_list)
         b = np.outer(chord, edges)
-        sigma = np.pi**2*self.findkC()*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        sigma = np.pi**2*self.SkinBucklingInterpolation(rib_spacing/b)*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
         return sigma
     
     # Column Buckling - normal stress
