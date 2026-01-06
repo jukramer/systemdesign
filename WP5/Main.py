@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import warnings
 
+np.set_printoptions(suppress=True)
+
 class Optimizer:
     n1 = len(tStringVals := np.arange(1e-3, 4e-3, 4e-4))
     n2 = len(tSkinValues := np.arange(1e-3, 4e-3, 4e-4))
@@ -54,23 +56,63 @@ class Optimizer:
                                     print(f'{100*i/self.nTot}%')
                                     self.setup_wing(tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs)
 
-def calcVol(x):
+def Sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+def Reverse_sigmoid(x):
+    return -np.log(1/x-1)
+
+def map_values(x):
     tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs = x
-    nStringTop = int(nStringTop)
-    nStringBottom = int(nStringBottom)
+
+    tString_detach = Sigmoid(tString)*0.1+1e-3
+    tSkin_detach = Sigmoid(tSkin)*0.005+1e-3
+    LStringBase_detach = Sigmoid(LStringBase)*0.1+0.01
+    hString_detach = Sigmoid(hString)*0.1+0.01
+    nStringTop_detach = min(max(2, int(nStringTop)), 25)
+    nStringBottom_detach = min(max(2, int(nStringBottom)), 25)
+    sRibs_detach = Sigmoid(sRibs)*20 + 0.3
+
+    return tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach
+
+def reverse_map_values(tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs):
+
+    tString_detach = Reverse_sigmoid((tString-1e-3)/0.1)
+    tSkin_detach = Reverse_sigmoid((tSkin-1e-3)/0.005)
+    LStringBase_detach = Reverse_sigmoid((LStringBase-0.01)/0.1)
+    hString_detach = Reverse_sigmoid((hString-0.01)/0.1)
+    nStringTop_detach = float(nStringTop)
+    nStringBottom_detach = float(nStringBottom)
+    sRibs_detach = Reverse_sigmoid((sRibs-0.3)/20)
+
+    return tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach
+
+def calcVol(x):
+    # tString, tSkin, LStringBase, hString, nStringTop, nStringBottom, sRibs = x
+    tString_detach, tSkin_detach, LStringBase_detach, hString_detach, nStringTop_detach, nStringBottom_detach, sRibs_detach = map_values(x)
+
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
-    stringer_instance = L_Stringer(LStringBase, hString, tString)
+
+    stringer_instance = L_Stringer(LStringBase_detach, hString_detach, tString_detach)
     wb = Beam(stringers=stringer_instance, intg_points=865)
-    wb.load_wing_box(points=wing_box_points, stringer_count_top=nStringTop, stringer_count_bottom=nStringBottom, aux_spar_endpoints=aux_spar_endpoints, thickness=tSkin, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
+    wb.load_wing_box(points=wing_box_points, stringer_count_top=nStringTop_detach, stringer_count_bottom=nStringBottom_detach, aux_spar_endpoints=aux_spar_endpoints, thickness=tSkin_detach, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
     wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
-    mass = wb.get_volume()
+    vol = wb.get_volume()
     
-    sigma = wb.konstantinos_konstantinopoulos(y_data, M_data)
-    sigma_cr = wb.skinBuckStress()
-    margin = np.sum(np.maximum(0, sigma-sigma_cr))*1e-9
+    sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)
+    sigma_skin = wb.skinBuckStress()
+    sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)
+    sigma_cr = np.minimum(sigma_skin, sigma_col)
+    loss = np.sum(np.maximum(0, sigma_applied-sigma_cr))
     
-    return mass + margin
+    if loss>0:
+        print(f'Optimising stresses | {vol:.3f}m³, {loss:.1f}err          ', end='\r')
+    else:
+        print(f'Optimising mass     | {vol:.3f}m³, {loss:.1f}err                 ', end='\r')
+    
+    return vol + loss*1e-5
+
     
 def main(debug=False):   
     if not debug:
@@ -187,11 +229,12 @@ def optimise_main():
                                        subplots=True,
                                        plot=False)
     
-    # OPTIMIZATION 
-    # optim = Optimizer(y_data, M_data, T_data)
-    optim = sp.optimize.minimize(calcVol, np.array([1e-3, 1e-3,1e-3,1e-3,5,5,5]))    
-    print('Result:')
-    print(optim.x)
+    optim = Optimizer(y_data, M_data, T_data)
+    initial_x = reverse_map_values(0.0015, 1.5e-3, 0.02, 0.02, 13, 13, 2.0)
+    optim = sp.optimize.minimize(calcVol, initial_x, method='nelder-mead')    
+    raw_result = optim.x
+    print('\nResult:')
+    print(np.array(map_values(raw_result)))
 
 if __name__ == '__main__':
     optimise_main()

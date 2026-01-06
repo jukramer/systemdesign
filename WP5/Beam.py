@@ -96,7 +96,6 @@ class Beam():
         return (1-frac)*self.root_chord + (frac)*self.tip_chord
     
     def get_displacement(self, data, E, disable=False):
-        print(data.shape)
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
@@ -231,7 +230,7 @@ class Beam():
     # Skin Buckling - normal stress
     def findkC(self): 
         # Placeholder
-        return 2
+        return 4.5
     
     def skinBuckStress(self):
         t = self.thickness
