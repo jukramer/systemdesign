@@ -187,18 +187,44 @@ class Beam():
         
         return kV*V/(hFrontSpar*self.thickness+hRearSpar*self.thickness)
         
+
+    def ShearBucklingInterpolation(self, a_b, plot=False):
+        x_data=[1.00, 1.17, 1.50, 1.750, 2.00, 2.50, 3.0, 4.0, 5.0]
+        y_data=[15.0, 13.0, 11.6, 10.84, 10.4, 9.84, 9.7, 9.5, 9.53]
+        f=sp.interpolate.interp1d(x_data, y_data, kind='cubic', bounds_error=False, fill_value=(np.nan, 9.53))
+
+        if plot:
+            x_plt=np.arange(np.min(x_data)-1, np.max(x_data)+10, 0.001)
+            y_plt=f(x_plt)
+            img = plt.imread('WP5/old/Skin Buckling/web.png')  # replace with your image path
+            fig, ax = plt.subplots()
+
+            ax.imshow(img, extent=(-0.5, 5.55, 15.25, 3.85),
+                origin='lower', aspect='auto', alpha=0.4, zorder=0)
+            ax.plot(x_data, y_data, 'o', zorder=2, markersize=1, color='k')
+            ax.plot(x_plt, y_plt, '-', zorder=3, linewidth=1)
+
+            ax.set_xlim(-1, 6)
+            ax.set_ylim(3, 17)
+            plt.show()
+
+        return f(a_b)
+    
     # FAILURE STRESS CALCULATIONS
     # Shear Buckling - this is a shear stress!!
-    def shearBuckStress(self, k_s, t, b):
-        k_s = 2.0
+    def shearBuckStress(self, y, rib_spacing):
+        hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
+        hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
+        heights = np.array([hFrontSpar, hRearSpar]).T
+
+        a_b = rib_spacing/heights
+        k_s = self.ShearBucklingInterpolation(a_b)
+
         t = self.thickness
-        tau = 0
         
-        for l in self.edge_lengths_list:
-            b = l
-            tau = max(tau, np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/b)**2)
+        tau = np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/heights)**2
             
-        return tau
+        return tau # shape(y.size, 2) for both spars
     
     def SkinBucklingInterpolation(self, a_b, plot=False):
         x_data=[0.7,  0.85, 1.0, 1.15, 1.3, 1.67, 2.0, 2.2, 2.5, 2.75, 3.0, 3.2, 3.35, 3.70, 4.18, 4.66, 4.8, 5.0]
@@ -222,9 +248,8 @@ class Beam():
 
         return f(a_b)
     
-    def skinBuckStress(self, rib_spacing):
+    def skinBuckStress(self, y, rib_spacing):
         t = self.thickness
-        y = np.arange(0, self.span/2, self.span/2/self.intg_points)
         chord = self.get_chord(y)
         edges = np.array(self.edge_lengths_list)
         b = np.outer(chord, edges)
@@ -247,21 +272,27 @@ class Beam():
     def calcStringerLenAll(self, sigma):
         # Wing tip / free end
         # TODO: I_stringer, A_Stringer
-        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, I_Stringer, A_Stringer)
+        if 1==1:
+            raise RuntimeError('Check this')
+        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, self.stringer_object.Ixx, self.stringer_object.area)
         # Between ribs / both fixed
-        L_ribs_between = self.calcStringerLen(sigma, K_CC, I_Stringer, A_Stringer)
+        L_ribs_between = self.calcStringerLen(sigma, K_CC, self.stringer_object.Ixx, self.stringer_object.area)
 
         nRibs = np.ceil((b/2 - L_ribs_from_tip) / L_ribs_between).astype(int)
 
         return L_ribs_from_tip, L_ribs_between, nRibs
     
     def calcStringerAreaAll(self, sigma):
-        LRibsFromTip, LRibsBetween, _ = self.calcStringerLenAll()
+        LRibsFromTip, LRibsBetween, _ = self.calcStringerLenAll(sigma)
+
+        if 1==1:
+            raise RuntimeError('Check this')
+        
         # Wing tip / free end
-        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, I_Stringer, LRibsFromTip)
+        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, self.stringer_object.Ixx, LRibsFromTip)
 
         # Between ribs / both fixed
-        A_ribs_between = self.calcStringerArea(sigma, K_CC, I_Stringer, LRibsBetween)
+        A_ribs_between = self.calcStringerArea(sigma, K_CC, self.stringer_object.Ixx, LRibsBetween)
 
         return A_ribs_from_tip, A_ribs_between
 
@@ -298,3 +329,9 @@ class Beam():
         plt.legend()
         plt.tight_layout()
         plt.show(block=True)
+
+
+if __name__=='__main__':
+    wb = Beam(stringers=1, intg_points=865)
+    y = np.arange(0, 17.29/2, 17.29/2/wb.intg_points)
+    wb.shearBuckStress(y, 2)
