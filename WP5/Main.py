@@ -32,7 +32,7 @@ def calcVol(x):
     vol = wb.get_volume()
     
     sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)
-    sigma_skin = wb.skinBuckStress()
+    sigma_skin = wb.skinBuckStress(sRibs_detach)
     sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)
     sigma_cr = np.minimum(sigma_skin, sigma_col)
     loss = np.sum(np.maximum(0, sigma_applied-sigma_cr))
@@ -58,7 +58,7 @@ def bucklingConstraints(x):
     vol = wb.get_volume()
     
     sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)/1e6
-    sigma_skin = wb.skinBuckStress()/1e6
+    sigma_skin = wb.skinBuckStress(sRibs_detach)/1e6
     sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)/1e6
     
     # print([np.sum(np.maximum(0, sigma_applied-sigma_skin)),
@@ -199,7 +199,8 @@ def optimise_main():
     
     constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf], ub=[0, 0])
     bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0, 0, 0], 
-                                  [9e-3, 9e-3, 5e-2, 5e-2, 20, 20, 17])
+                                  [9e-3, 9e-3, 5e-2, 5e-2, 20, 20, 17],
+                                  keep_feasible=True)
     
     # constraints_sigma = [{'type': 'ineq', 'fun': bucklingConstraints1},
     #                      {'type': 'ineq', 'fun': bucklingConstraints2},
