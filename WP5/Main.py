@@ -32,9 +32,13 @@ def calcVol(x):
     vol = wb.get_volume()
     
     sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)
-    sigma_skin = wb.skinBuckStress(sRibs_detach)
+    sigma_skin = wb.skinBuckStress(y_data, sRibs_detach)
     sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)
     sigma_cr = np.minimum(sigma_skin, sigma_col)
+
+    tau_web = wb.shearBuckStress(y_data, sRibs_detach)
+
+
     loss = np.sum(np.maximum(0, sigma_applied-sigma_cr))
     
     if loss > 0:
@@ -58,7 +62,7 @@ def bucklingConstraints(x):
     vol = wb.get_volume()
     
     sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)/1e6
-    sigma_skin = wb.skinBuckStress(sRibs_detach)/1e6
+    sigma_skin = wb.skinBuckStress(y_data, sRibs_detach)/1e6
     sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)/1e6
     
     # print([np.sum(np.maximum(0, sigma_applied-sigma_skin)),
