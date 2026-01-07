@@ -196,7 +196,7 @@ class Beam():
         
         # Torsion contribution
         a, b, c, d = self.points # Order matters
-        self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * self.chord(y)**2
+        self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * self.get_chord(y)**2
         torsionShearStress = T/(2*self.Areas*self.thickness)
 
         # This gives the maximum shear stress in the section, which should occur in the front spar.
