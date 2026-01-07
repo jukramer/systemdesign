@@ -13,6 +13,13 @@ class Beam():
         
         # SPANWISE ARRAYS
 
+    def vertical_average_square_distance(self):
+        z_top1 = self.points[0][1]
+        z_top2 = self.points[1][1]
+        z_bot1 = self.points[3][1]
+        z_bot2 = self.points[2][1]
+        return np.mean((np.array(z_top1, z_top2) - self.centroid[1])**2), np.mean((np.array(z_bot1, z_bot2) - self.centroid[1])**2)
+
     def define_spanwise_arrays(self, y, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
         self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and 1 for tip and root!!!!
         assert int(posRibs[0]) == 0
@@ -97,7 +104,7 @@ class Beam():
         c = self.get_chord(y)
         # raise RuntimeError('Multiply by stringer count???')
 
-        avg_squared_dist_top, avg_squared_dist_bot = 0.1, 0.1 #[m]
+        avg_squared_dist_top, avg_squared_dist_bot = self.vertical_average_square_distance()
 
         I = (self.Ixx_base_wingbox*c**3 # scaled wing box
             + self.stringer_object.Ixx*(self.nStringersTop + self.nStringersBottom)
