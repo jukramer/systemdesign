@@ -18,7 +18,9 @@ class Beam():
         z_top2 = self.points[1][1]
         z_bot1 = self.points[3][1]
         z_bot2 = self.points[2][1]
-        return np.mean((np.array(z_top1, z_top2) - self.centroid[1])**2), np.mean((np.array(z_bot1, z_bot2) - self.centroid[1])**2)
+        y_centroid_stacked = self.centroid[:, 1, None].repeat(2, axis=1)
+
+        return np.mean((np.array([z_top1, z_top2]) - y_centroid_stacked)**2, axis=1, keepdims=False), np.mean((np.array([z_bot1, z_bot2]) - y_centroid_stacked)**2, axis=1, keepdims=False)
 
     def define_spanwise_arrays(self, y, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
         self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and for root!!!!
@@ -33,6 +35,10 @@ class Beam():
         self.tStringersBay = tStringersBay[sectionIDX]
         self.bStringersBay = bStringersBay[sectionIDX]
         self.hStringersBay = hStringersBay[sectionIDX]
+        self.single_stringer_area = self.stringer_object.area[sectionIDX]
+        self.single_stringer_Ixx = self.stringer_object.Ixx[sectionIDX]
+
+        self.sectionIDX = sectionIDX
         
         # self.posRibs = self.posRibs[:-1]
         
@@ -40,12 +46,10 @@ class Beam():
         
     def load_wing_box(self, points, thickness, root_chord, tip_chord, span):
         self.points = points # [(x/c,z/c), ...] 
-        self.thickness = thickness
+        self.thickness = thickness[self.sectionIDX]
         self.root_chord = root_chord
         self.tip_chord = tip_chord
         self.span = span
-
-        # self.DO_NOT_USE(self.points, stringer_count_top, stringer_count_bottom)
 
         self.get_I_of_cross_section()
 
@@ -66,31 +70,33 @@ class Beam():
             self.edge_lengths_list.append(edge_length)
             self.edge_angles_list.append(edge_angle)
 
-        self.centroid = np.array([0.0, 0.0])
+        self.centroid = np.zeros((self.sectionIDX.size, 2))
         skin_area = sum(self.edge_lengths_list)*self.thickness
-        total_stringer_area = (self.nStringersTop + self.nStringersBottom) * self.stringer_object.area
+        total_stringer_area = (self.nStringersTop + self.nStringersBottom) * self.single_stringer_area
         for i, c in enumerate(self.edge_centroids_list):
-            self.centroid += c * self.edge_lengths_list[i]*self.thickness / (skin_area+total_stringer_area)
+            self.centroid[:, 0] += c[0] * self.edge_lengths_list[i]*self.thickness / (skin_area+total_stringer_area)
+            self.centroid[:, 1] += c[1] * self.edge_lengths_list[i]*self.thickness / (skin_area+total_stringer_area)
+        self.centroid = self.centroid[self.sectionIDX]
 
         # [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)]
         z_top1 = self.points[0][1]
         z_top2 = self.points[1][1]
         z_bot1 = self.points[3][1]
         z_bot2 = self.points[2][1]
-        self.centroid[1] = self.nStringersTop * (z_top1+z_top2)/2 * self.stringer_object.area / (skin_area+total_stringer_area)
-        self.centroid[1] = self.nStringersBottom * (z_bot1+z_bot2)/2 * self.stringer_object.area / (skin_area+total_stringer_area)
+        self.centroid[:, 1] = self.nStringersTop * (z_top1+z_top2)/2 * self.single_stringer_area / (skin_area+total_stringer_area)
+        self.centroid[:, 1] = self.nStringersBottom * (z_bot1+z_bot2)/2 * self.single_stringer_area / (skin_area+total_stringer_area)
 
         self.Ixx_base_wingbox = 0
         self.Izz_base_wingbox = 0
         for i, c in enumerate(self.edge_centroids_list):
             self.Ixx_base_wingbox += (
                 self.thickness * self.edge_lengths_list[i]**3 * np.sin(self.edge_angles_list[i])**2 / 12 # main component
-                + self.edge_lengths_list[i] * self.thickness * (c-self.centroid)[1]**2                   # parallel axis component
+                + self.edge_lengths_list[i] * self.thickness * (c-self.centroid)[:, 1]**2                   # parallel axis component
                 )
 
             self.Izz_base_wingbox += (
                 self.thickness * self.edge_lengths_list[i]**3 * np.cos(self.edge_angles_list[i])**2 / 12 # main component
-                + self.edge_lengths_list[i] * self.thickness * (c-self.centroid)[0]**2                   # parallel axis component
+                + self.edge_lengths_list[i] * self.thickness * (c-self.centroid)[:, 0]**2                   # parallel axis component
                 )
             
         self.Ixz = 0
@@ -108,18 +114,19 @@ class Beam():
         avg_squared_dist_top, avg_squared_dist_bot = self.vertical_average_square_distance()
 
         I = (self.Ixx_base_wingbox*c**3 # scaled wing box
-            + self.stringer_object.Ixx*(self.nStringersTop + self.nStringersBottom)
-            + self.nStringersTop*avg_squared_dist_top*self.stringer_object.area
-            + self.nStringersBottom*avg_squared_dist_bot*self.stringer_object.area
+            + self.single_stringer_Ixx*(self.nStringersTop + self.nStringersBottom)
+            + self.nStringersTop*avg_squared_dist_top*self.single_stringer_area
+            + self.nStringersBottom*avg_squared_dist_bot*self.single_stringer_area
             )
         self.Ixx_list = I
         
         d2v_dy2 = - M/(E * I)
         
         if disable:
-            return
+            return np.zeros(s)
             
         integrand_1 = sp.interpolate.interp1d(y, d2v_dy2, kind='cubic', fill_value="extrapolate")
+
         dv_dy = np.empty(s)
         y2 = np.empty(s)
         for i in range(s):
@@ -133,8 +140,8 @@ class Beam():
 
         return self.v
     
-    def get_twist(self, data, G):
-        print(data.shape)
+    def get_twist(self, data, G, disable=False):
+        s = self.intg_points
         a, b, c, d = self.points # Order matters
         chord = self.get_chord(data[:, 0])
         self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * chord**2
@@ -144,7 +151,9 @@ class Beam():
         torque = data[:, 1]
         dtheta_dy = torque/(self.J*G)
 
-        s = self.intg_points
+        if disable:
+            return np.zeros(s)
+
         y = data[:, 0]
         integrand = sp.interpolate.interp1d(y, dtheta_dy, kind='cubic', fill_value="extrapolate")
         self.theta = np.empty(s)
@@ -157,7 +166,7 @@ class Beam():
         y = np.linspace(0, self.span/2, self.intg_points)
         chord = self.get_chord(y)
         skin_area = sum(self.edge_lengths_list)*self.thickness*chord
-        total_stringer_area = (self.nStringersTop + self.nStringersBottom) * self.stringer_object.area
+        total_stringer_area = (self.nStringersTop + self.nStringersBottom) * self.single_stringer_area
 
         integrand = sp.interpolate.interp1d(y, skin_area+total_stringer_area, kind='cubic', fill_value="extrapolate")
         self.volume = sp.integrate.quad(integrand, 0, self.span/2)[0] # type: ignore
@@ -217,13 +226,13 @@ class Beam():
         skinBuckStressCrit = self.skinBuckStress(y, self.distRibs)
         colBuckStressCrit = self.colBuckStress(self.distRibs)
         compYieldCrit = np.full_like(y, SIGMA_Y_COMP)
+
         
         # Tensile
         tensYieldCrit = np.full_like(y, SIGMA_Y_TENS)
-        crackPropStressCrit = np.full_like(y, self.crackPropStress())
-        
-        stressStack = np.vstack([shearBuckStressCrit, skinBuckStressCrit, colBuckStressCrit, compYieldCrit, tensYieldCrit, crackPropStressCrit])
-                 
+        crackPropStressCrit = np.full_like(y, self.crackPropStress())  
+
+        stressStack = np.hstack([shearBuckStressCrit, skinBuckStressCrit, colBuckStressCrit[:, None], compYieldCrit[:, None], tensYieldCrit[:, None], crackPropStressCrit[:, None]])
         return np.min(stressStack, axis=1), stressStack    
 
     # Shear Buckling - this is a shear stress!!
@@ -232,10 +241,11 @@ class Beam():
         hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
         heights = np.array([hFrontSpar, hRearSpar]).T
 
-        a_b = rib_spacing/heights
+        a_b = rib_spacing[:, None]/heights
+
         k_s = self.ShearBucklingInterpolation(a_b)
 
-        t = self.thickness
+        t = self.thickness[:, None]
         
         tau = np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/heights)**2
             
@@ -265,11 +275,11 @@ class Beam():
     
     # Skin buckling
     def skinBuckStress(self, y, rib_spacing):
-        t = self.thickness
+        t = self.thickness[:, None]
         chord = self.get_chord(y)
         edges = np.array(self.edge_lengths_list)
         b = np.outer(chord, edges)
-        sigma = np.pi**2*self.SkinBucklingInterpolation(rib_spacing/b)*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        sigma = np.pi**2*self.SkinBucklingInterpolation(rib_spacing[:, None]/b)*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
         return sigma
     
     def SkinBucklingInterpolation(self, a_b, plot=False):
@@ -291,13 +301,16 @@ class Beam():
             ax.set_xlim(-1, 16)
             ax.set_ylim(-1, 17)
             plt.show()
+        
+        if (a_b<0.7).any():
+            raise RuntimeError(np.min(a_b))
 
         return f(a_b)
     
     # Column Buckling - normal stress
     def colBuckStress(self, L):
         K = K_CC
-        A = self.stringer_object.area
+        A = self.single_stringer_area
         I = self.Ixx_list
         return (K * np.pi**2 * E * I)/(L**2 * A)
     
@@ -312,9 +325,9 @@ class Beam():
         # TODO: I_stringer, A_Stringer
         if 1==1:
             raise RuntimeError('Check this')
-        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, self.stringer_object.Ixx, self.stringer_object.area)
+        L_ribs_from_tip = self.calcStringerLen(sigma, K_FC, self.single_stringer_Ixx, self.single_stringer_area)
         # Between ribs / both fixed
-        L_ribs_between = self.calcStringerLen(sigma, K_CC, self.stringer_object.Ixx, self.stringer_object.area)
+        L_ribs_between = self.calcStringerLen(sigma, K_CC, self.single_stringer_Ixx, self.single_stringer_area)
 
         nRibs = np.ceil((b/2 - L_ribs_from_tip) / L_ribs_between).astype(int)
 
@@ -327,10 +340,10 @@ class Beam():
             raise RuntimeError('Check this')
         
         # Wing tip / free end
-        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, self.stringer_object.Ixx, LRibsFromTip)
+        A_ribs_from_tip = self.calcStringerArea(sigma, K_FC, self.single_stringer_Ixx, LRibsFromTip)
 
         # Between ribs / both fixed
-        A_ribs_between = self.calcStringerArea(sigma, K_CC, self.stringer_object.Ixx, LRibsBetween)
+        A_ribs_between = self.calcStringerArea(sigma, K_CC, self.single_stringer_Ixx, LRibsBetween)
 
         return A_ribs_from_tip, A_ribs_between
 
