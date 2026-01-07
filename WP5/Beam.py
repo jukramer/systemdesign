@@ -279,6 +279,7 @@ class Beam():
         edges = np.array(self.edge_lengths_list)
         b = np.outer(chord, edges)
         sigma = np.pi**2*self.SkinBucklingInterpolation(rib_spacing[:, None]/b)*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        print(rib_spacing[:, None]/b)
         return sigma
     
     def SkinBucklingInterpolation(self, a_b, plot=False):
