@@ -40,7 +40,6 @@ def calcVol(x):
 
     vol = wb.get_volume()
     
-    
     # Applied Stresses
     normalStressAppliedTens = np.max(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1)
     normalStressAppliedComp = np.tile(np.min(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1), (1,3))
@@ -56,21 +55,21 @@ def calcVol(x):
     marginArrayComp = critStressArrayComp/normalStressAppliedComp
     marginArrayTens = critStressArrayTens/normalStressAppliedTens
     
-    deltaArrayShear = critStressArrayShear - shearStressApplied
-    deltaArrayComp = critStressArrayComp - normalStressAppliedComp
-    deltaArrayTens = critStressArrayTens - normalStressAppliedTens
+    maxMarginShear = np.max(marginArrayShear)
+    maxMarginComp = np.max(np.max(marginArrayComp, axis=1), axis=0)
+    maxMarginTens = np.max(np.max(marginArrayTens, axis=1), axis=0)
+    
+    # deltaArrayShear = critStressArrayShear - shearStressApplied
+    # deltaArrayComp = critStressArrayComp - normalStressAppliedComp
+    # deltaArrayTens = critStressArrayTens - normalStressAppliedTens
     
     global iters2
     iters2+=1
 
-    loss = np.sum(np.maximum(0, sigma_applied-sigma_cr))
     if iters2 % 100 == 0:
-        if loss > 0:
-            print(f'Optimising stresses | {vol:.3f}m³, {loss:.1f}err, {maxMargin:.2f}          ', end='\r')
-        else:
-            print(f'Optimising mass     | {vol:.3f}m³, {loss:.1f}err, {maxMargin:.2f}          ', end='\r')
+        print(f'Optimising | {vol:.3f}m³, Shear Margin: {maxMarginShear}, Comp Margin: {maxMarginComp}, Tens Margin: {maxMarginTens}', end='\r')
     
-    return vol*maxMargin 
+    return vol
 
 def bucklingConstraints(x):
     global iters
@@ -146,13 +145,13 @@ def optimise_main():
     print('\nResults:')
     print(np.array(map_values(raw_result)))
     
-    print(stressList[0].shape)
-    print(stressList2[0].shape)
-    # plt.plot(iterList, stressList)
-    # plt.plot(iterList, stressList2)
-    # plt.yscale('log')
-    plt.plot(np.linspace(0, 1, maxMarginArray.shape[0]), maxMarginArray)
-    plt.show()
+    # print(stressList[0].shape)
+    # print(stressList2[0].shape)
+    # # plt.plot(iterList, stressList)
+    # # plt.plot(iterList, stressList2)
+    # # plt.yscale('log')
+    # # plt.plot(np.linspace(0, 1, maxMarginArray.shape[0]), maxMarginArray)
+    # plt.show()
 
 if __name__ == '__main__':
     optimise_main() 
