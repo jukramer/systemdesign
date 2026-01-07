@@ -69,7 +69,12 @@ def calcVol(x):
     # deltaArrayShear = critStressArrayShear - shearStressApplied
     # deltaArrayComp = critStressArrayComp - normalStressAppliedComp
     # deltaArrayTens = critStressArrayTens - normalStressAppliedTens
-    
+
+    rolled_ribs = np.roll(posRibs, -1)
+    diff = rolled_ribs-posRibs
+    diff[-1] = np.inf
+    min_dist = np.sum(np.minimum(0, diff))
+
     global iters2
     iters2 += 1
 
@@ -80,7 +85,7 @@ def calcVol(x):
         arr = x.reshape(7, bay_count).T
         print('\n', np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
     
-    return vol, np.array([minMarginShear, minMarginComp, minMarginTens, v[-1], theta[-1]*180/np.pi])
+    return vol, np.array([minMarginShear, minMarginComp, minMarginTens, v[-1], theta[-1]*180/np.pi, min_dist])
 
 def volWrap(x):
     # print(calcVol(x)[0])
@@ -123,7 +128,7 @@ def optimise_main():
     ones = np.ones_like(posRibs)
     initial_x = (np.array([posRibs, 2e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 30*ones, 30*ones])/order_of_mag.T).flatten()
     
-    constraints_sigma = sp.optimize.NonlinearConstraint(constraintWrap, lb=[1, 1, 1, -0.15*2*HALF_SPAN, -10.0], ub=[np.inf, np.inf, np.inf, 0.15*2*HALF_SPAN, 10.0])
+    constraints_sigma = sp.optimize.NonlinearConstraint(constraintWrap, lb=[1, 1, 1, -0.15*2*HALF_SPAN, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 0.15*2*HALF_SPAN, 10.0, np.inf])
     bounds_x = sp.optimize.Bounds((np.array([0*ones, 0*ones,     0*ones,     0*ones,     0*ones,     2*ones,   2*ones])/order_of_mag.T).flatten(), 
                                   (np.array([ones,   10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones])/order_of_mag.T).flatten(),
                                   keep_feasible=True)
