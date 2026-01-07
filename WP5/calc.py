@@ -258,7 +258,7 @@ class Calc():
             plt.savefig(f'diagrams/torsionDiagram{ARRAY_PATH}.png')
             plt.clf()
             
-        return np.vstack((xVals, momentVals, torsionVals))
+        return np.vstack((xVals, momentVals, torsionVals, shearVals))
     
     def plot_coeffs_half_span(self):
 

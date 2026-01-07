@@ -29,27 +29,34 @@ def calcVol(x):
     global maxMargin, maxMarginArray
     tString_detach, tSkin_detach, LStringBase_detach, hString_detach, sRibs_detach = map_values(x)
     nStringTop_detach, nStringBottom_detach = 20, 20
-    # TODO: Stopped at calling function to define arrays
     
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
-    aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
 
     stringer_instance = L_Stringer(LStringBase_detach, hString_detach, tString_detach)
     wb = Beam(stringers=stringer_instance, intg_points=865)
+    wb.define_spanwise_arrays()
     wb.load_wing_box(points=wing_box_points, thickness=tSkin_detach, root_chord=2.85, tip_chord=1.03, span=17.29)
-    
     wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
+    
     vol = wb.get_volume()
     
-    sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)
-    sigma_skin = wb.skinBuckStress(y_data, sRibs_detach)
-    # sigma_col = np.repeat(wb.colBuckStress(sRibs_detach)[:, None], 4, 1)
-    sigma_col = sigma_skin
-    sigma_cr = np.minimum(sigma_skin, sigma_col)
+    # Applied Stresses
+    normalStressAppliedTens = wb.konstantinos_konstantinopoulos(y_data, M_data)
+    normalStressAppliedComp = wb.konstantinos_konstantinopoulos(y_data, M_data)
+    shearStressApplied = wb.getShearStress(y_data, V_data, T_data)
     
-    maxMargin = np.max(np.maximum(sigma_applied/sigma_skin, sigma_applied/sigma_col))
-    maxMarginArray = (np.maximum(sigma_applied/sigma_skin, sigma_applied/sigma_col))
-
+    # Critical Stresses
+    critStressArrayShear = wb.getFailureStresses(y_data)[1][0,:]
+    critStressArrayComp = wb.getFailureStresses(y_data)[1][1:4,:]
+    critStressArrayTens = wb.getFailureStresses(y_data)[1][4:,:]
+    
+    # Stress Margins
+    marginArrayShear = critStressArrayShear/shearStressApplied
+    marginArrayComp = critStressArrayComp/normalStressAppliedComp
+    marginArrayTens = critStressArrayTens/normalStressAppliedTens
+    
+    
+    
     tau_web = wb.shearBuckStress(y_data, sRibs_detach)
     global iters2
     iters2+=1
@@ -72,6 +79,7 @@ def bucklingConstraints(x):
 
     stringer_instance = L_Stringer(LStringBase_detach, hString_detach, tString_detach)
     wb = Beam(stringers=stringer_instance, intg_points=865)
+    wb.define_spanwise_arrays()
     wb.load_wing_box(points=wing_box_points, thickness=tSkin_detach, root_chord=2.85, tip_chord=1.03, span=17.29)
     wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
     
@@ -84,7 +92,7 @@ def bucklingConstraints(x):
                      np.max(sigma_applied - sigma_col)])
 
 def optimise_main():
-    global y_data, M_data
+    global y_data, M_data, T_data, V_data
     global initial_x
     global posRibs
     posRibs = (0,)
@@ -103,7 +111,7 @@ def optimise_main():
     pointLoads, pointTorques = (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[2])(0), (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[4])(0)
     
     # INTERNAL LOADING
-    y_data, M_data, T_data = calc.plot(aeroLoading,
+    y_data, M_data, T_data, V_data = calc.plot(aeroLoading,
                                        inertialLoading, 
                                        torsionLoading, 
                                        loadingDist, 
@@ -115,6 +123,7 @@ def optimise_main():
                                        plot=False)
     
     initial_x = (4e-3, 2e-3, 9e-2, 9e-2, 2.0)
+    
     constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf], ub=[0, 0])
     bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0], 
                                   [11e-3, 11e-3, 11e-2, 11e-2, 17],

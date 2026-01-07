@@ -29,8 +29,8 @@ class Beam():
         print(self.posRibs)
         
         self.distRibs = np.array([self.posRibs[i+1] - self.posRibs[i] for i in range(self.nBays)])[sectionIDX]
-        self.nStringersTop = nStringersBayTop[sectionIDX] # TODO: THIS SHOULD WORK ?? TEST IT THO
-        self.nStringersBottom = nStringersBayBottom[sectionIDX] # THIS SHOULD WORK ??
+        self.nStringersTop = nStringersBayTop[sectionIDX]
+        self.nStringersBottom = nStringersBayBottom[sectionIDX]
         self.tStringersBay = tStringersBay[sectionIDX]
         self.bStringersBay = bStringersBay[sectionIDX]
         self.hStringersBay = hStringersBay[sectionIDX]
@@ -208,11 +208,15 @@ class Beam():
             raise Exception
         
         # Failure stresses
+        # Shear 
         shearBuckStressCrit = self.shearBuckStress(y, self.distRibs)
+        
+        # Compressive
         skinBuckStressCrit = self.skinBuckStress(y, self.distRibs)
         colBuckStressCrit = self.colBuckStress(self.distRibs)
         compYieldCrit = np.full_like(y, SIGMA_Y_COMP)
         
+        # Tensile
         tensYieldCrit = np.full_like(y, SIGMA_Y_TENS)
         crackPropStressCrit = np.full_like(y, self.crackPropStress())
         
