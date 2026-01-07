@@ -1,6 +1,7 @@
 ############## WP5 ##############
 # MATERIAL PROPERTIES
 E = 72.4e9
+G = 28.0e9
 POISSON_RATIO = 1/3
 SHAPE_FACTOR = 1.1 # SHAPE FACTOR
 CRACK_LENGTH = 1.5e-3 #[m]

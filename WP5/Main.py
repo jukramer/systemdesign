@@ -73,7 +73,8 @@ def bucklingConstraints(x):
     stringer_instance = L_Stringer(LStringBase_detach, hString_detach, tString_detach)
     wb = Beam(stringers=stringer_instance, intg_points=865)
     wb.load_wing_box(points=wing_box_points, thickness=tSkin_detach, root_chord=2.85, tip_chord=1.03, span=17.29)
-    wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
+    v = wb.get_displacement(np.vstack((y_data, M_data)).T, E, False)
+    theta = wb.get_twist(np.vstack((y_data, T_data)).T, G)
     
     sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)
     sigma_skin = wb.skinBuckStress(y_data, sRibs_detach)
@@ -84,7 +85,7 @@ def bucklingConstraints(x):
                      np.max(sigma_applied - sigma_col)])
 
 def optimise_main():
-    global y_data, M_data
+    global y_data, M_data, T_data
     global initial_x
     global posRibs
     posRibs = (0,)
