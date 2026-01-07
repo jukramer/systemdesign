@@ -210,7 +210,7 @@ class Beam():
         torsionShearStress = T/(2*self.Areas*self.thickness)
 
         # This gives the maximum shear stress in the section, which should occur in the front spar.
-        return np.array([forceShearStress+torsionShearStress, forceShearStress-torsionShearStress])
+        return np.array([forceShearStress+torsionShearStress, forceShearStress-torsionShearStress]).T
         
     # FAILURE STRESS CALCULATIONS
     def getFailureStresses(self, y):
@@ -226,7 +226,6 @@ class Beam():
         skinBuckStressCrit = self.skinBuckStress(y, self.distRibs)
         colBuckStressCrit = self.colBuckStress(self.distRibs)
         compYieldCrit = np.full_like(y, SIGMA_Y_COMP)
-
         
         # Tensile
         tensYieldCrit = np.full_like(y, SIGMA_Y_TENS)
@@ -254,7 +253,7 @@ class Beam():
     def ShearBucklingInterpolation(self, a_b, plot=False):
         x_data=[1.00, 1.17, 1.50, 1.750, 2.00, 2.50, 3.0, 4.0, 5.0]
         y_data=[15.0, 13.0, 11.6, 10.84, 10.4, 9.84, 9.7, 9.5, 9.53]
-        f=sp.interpolate.interp1d(x_data, y_data, kind='cubic', bounds_error=False, fill_value=(np.nan, 9.53))
+        f=sp.interpolate.interp1d(x_data, y_data, kind='cubic', bounds_error=False, fill_value=(15, 9.53))
 
         if plot:
             x_plt=np.arange(np.min(x_data)-1, np.max(x_data)+10, 0.001)
@@ -285,12 +284,12 @@ class Beam():
     def SkinBucklingInterpolation(self, a_b, plot=False):
         x_data=[0.7,  0.85, 1.0, 1.15, 1.3, 1.67, 2.0, 2.2, 2.5, 2.75, 3.0, 3.2, 3.35, 3.70, 4.18, 4.66, 4.8, 5.0]
         y_data=[10.7, 8.16, 6.8, 6.17, 5.8, 5.6,  4.9, 4.7, 4.6, 4.70, 4.5, 4.4, 4.4,  4.45, 4.27, 4.35, 4.3, 4.3]
-        f=sp.interpolate.interp1d(x_data, y_data, kind='cubic', bounds_error=False, fill_value=(np.nan, 4.3))
+        f=sp.interpolate.interp1d(x_data, y_data, kind='cubic', bounds_error=False, fill_value=(10.7, 4.3))
 
         if plot:
             x_plt=np.arange(np.min(x_data)-1, np.max(x_data)+10, 0.001)
             y_plt=f(x_plt)
-            img = plt.imread('WP5/old/Skin Buckling/image.png')  # replace with your image path
+            img = plt.imread('WP5/old/Skin Buckling/skin.png')  # replace with your image path
             fig, ax = plt.subplots()
 
             ax.imshow(img, extent=(-0.70, 6.0, 16.45, -1.05),
@@ -302,8 +301,8 @@ class Beam():
             ax.set_ylim(-1, 17)
             plt.show()
         
-        if (a_b<0.7).any():
-            raise RuntimeError(np.min(a_b))
+        # if (a_b<0.7).any():
+        #     raise RuntimeError(np.min(a_b))
 
         return f(a_b)
     

@@ -40,16 +40,18 @@ def calcVol(x):
     vol = wb.get_volume()
     
     # Applied Stresses
-    normalStressAppliedTens = np.tile(np.maximum(0, np.max(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1, keepdims=True)), (1,3))
+    normalStressAppliedTens = np.tile(np.maximum(0, np.max(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1, keepdims=True)), (1,2))
     normalStressAppliedComp = np.tile(np.minimum(0, np.min(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1, keepdims=True)), (1,6))
 
     shearStressApplied = wb.getShearStress(y_data, V_data, T_data)
     
     # Critical Stresses
     stressStack = wb.getFailureStresses(y_data)[1]
-    critStressArrayShear = stressStack[:, 0] # width 1
-    critStressArrayComp = stressStack[:, 1:7] # width 6
-    critStressArrayTens = stressStack[:, 7:] # width 3 
+    critStressArrayShear = stressStack[:, :2] # width 2
+    critStressArrayComp = stressStack[:, 2:8] # width 6
+    critStressArrayTens = stressStack[:, 8:] # width 2 
+
+    modes = ['shearBuckStress', 'shearBuckStress', *['skinBuckStress' for _ in range(4)], 'colBuckStress', 'compYield', 'tensYield', 'crackPropStress']
     
     # Stress Margins
     marginArrayShear = critStressArrayShear/(shearStressApplied+1e-8)
@@ -58,6 +60,7 @@ def calcVol(x):
 
     minMarginShear = np.min(marginArrayShear)
     minMarginComp = np.min(marginArrayComp)
+    argmin_comp = np.argmin(marginArrayComp, axis=1)[0]
     minMarginTens = np.min(marginArrayTens)
     
     # deltaArrayShear = critStressArrayShear - shearStressApplied
@@ -67,8 +70,8 @@ def calcVol(x):
     global iters2
     iters2 += 1
 
-    if iters2 % 1 == 0:
-        print(f'Optimising ({iters2})| {vol:.3f}m³, Shear Margin: {minMarginShear}, Comp Margin: {minMarginComp}, Tens Margin: {minMarginTens}', end='\r')
+    if iters2 % 50 == 0:
+        print(f'Optimising ({iters2})| {vol:.3f}m³, Shear Margin: {minMarginShear}, Comp Margin: {minMarginComp}, {modes[argmin_comp]}, Tens Margin: {minMarginTens}', end='\r')
     
     return vol, np.array([minMarginShear, minMarginComp, minMarginTens, v[-1], theta[-1]*180/np.pi])
 
@@ -109,25 +112,16 @@ def optimise_main():
     
     # OPTIMIZATION
     # posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
-    posRibs = np.linspace(0, 1, 10)[:-1]
+    posRibs = np.linspace(0, 1, 20)[:-1]
     ones = np.ones_like(posRibs)
-    initial_x = np.array([posRibs, 1e-3*ones, 1e-3*ones, 5e-2*ones, 5e-2*ones, 10*ones, 10*ones]).flatten()
+    initial_x = np.array([posRibs, 2e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 30*ones, 30*ones]).flatten()
     
     constraints_sigma = sp.optimize.NonlinearConstraint(constraintWrap, lb=[1, 1, 1, -0.15*2*HALF_SPAN, -10.0], ub=[np.inf, np.inf, np.inf, 0.15*2*HALF_SPAN, 10.0])
     bounds_x = sp.optimize.Bounds(np.array([0*ones,         0*ones,     0*ones,     0*ones,     0*ones,     2*ones,  2*ones]).flatten(), 
-                                  np.array([HALF_SPAN*ones, 10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 17*ones, 17*ones]).flatten(),
+                                  np.array([HALF_SPAN*ones, 10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones]).flatten(),
                                   keep_feasible=True)
     
-    optim = sp.optimize.minimize(volWrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma) # type:ignore   
-
-    # Results
-    # [0.00000016 0.1621644  0.318702   0.46757667 0.608365   0.73805047 0.86448276 0.97967541 1.09330593 
-    # 0.0035064  0.00171734 0.00266392 0.00272438 0.0032722  0.002634   0.0026265  0.00263328 0.00266319
-    # 0.01       0.00885375 0.0068109  0.00400306 0.00277392 0.00263857 0.00263642 0.00264774 0.00266927 
-    # 0.05136447 0.04943088 0.05111249 0.05035423 0.04988118 0.04983118 0.04989997 0.0498209  0.04982948
-    # 0.05165682 0.04936004 0.05137473 0.05048262 0.0498748  0.04983118 0.04989997 0.0498209  0.04982948 
-    # 9.98985625 9.99150495 9.99172316 9.99139945 9.99169402 9.99140341 9.99172596 9.99154263 9.99143238
-    # 9.98238154 9.99146641 9.9917225  9.991399   9.99169401 9.99140341 9.99172596 9.99154263 9.99143238]
+    optim = sp.optimize.minimize(volWrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma) # type:ignore
 
     raw_result = optim.x
     print('')
