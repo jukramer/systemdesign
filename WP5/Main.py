@@ -36,8 +36,8 @@ def calcVol(x):
     wb = Beam(stringers=stringer_instance, intg_points=865)
     wb.define_spanwise_arrays()
     wb.load_wing_box(points=wing_box_points, thickness=tSkin_detach, root_chord=2.85, tip_chord=1.03, span=17.29)
-    wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
-    
+    wb.get_displacement(np.vstack((y_data, M_data)).T, E, True)
+
     vol = wb.get_volume()
     
     
@@ -83,7 +83,8 @@ def bucklingConstraints(x):
     wb = Beam(stringers=stringer_instance, intg_points=865)
     wb.define_spanwise_arrays()
     wb.load_wing_box(points=wing_box_points, thickness=tSkin_detach, root_chord=2.85, tip_chord=1.03, span=17.29)
-    wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
+    v = wb.get_displacement(np.vstack((y_data, M_data)).T, E, False)
+    theta = wb.get_twist(np.vstack((y_data, T_data)).T, G)
     
     sigma_applied = wb.konstantinos_konstantinopoulos(y_data, M_data)
     sigma_skin = wb.skinBuckStress(y_data, sRibs_detach)
@@ -91,10 +92,12 @@ def bucklingConstraints(x):
     sigma_col=sigma_skin
 
     return np.array([np.max(sigma_applied - sigma_skin),
-                     np.max(sigma_applied - sigma_col)])
+                     np.max(sigma_applied - sigma_col),
+                     v[-1], # type:ignore
+                     theta[-1]*180/np.pi])
 
 def optimise_main():
-    global y_data, M_data, T_data, V_data
+    global y_data, M_data, T_data, V_data, T_data
     global initial_x
     global posRibs
     posRibs = (0,)
@@ -126,7 +129,7 @@ def optimise_main():
     
     initial_x = (4e-3, 2e-3, 9e-2, 9e-2, 2.0)
     
-    constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf], ub=[0, 0])
+    constraints_sigma = sp.optimize.NonlinearConstraint(bucklingConstraints, lb=[-np.inf, -np.inf, -0.15*wb.span, -10.0], ub=[0, 0, 0.15*wb.span, 10.0])
     bounds_x = sp.optimize.Bounds([0, 0, 0, 0, 0], 
                                   [11e-3, 11e-3, 11e-2, 11e-2, 17],
                                   keep_feasible=True)

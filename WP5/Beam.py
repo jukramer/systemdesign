@@ -98,7 +98,7 @@ class Beam():
         frac = 2*np.abs(y)/self.span
         return (1-frac)*self.root_chord + (frac)*self.tip_chord
     
-    def get_displacement(self, data, E, disable=False):
+    def get_displacement(self, data, E=E, disable=False):
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
@@ -133,6 +133,7 @@ class Beam():
         return self.v
     
     def get_twist(self, data, G):
+        print(data.shape)
         a, b, c, d = self.points # Order matters
         chord = self.get_chord(data[:, 0])
         self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * chord**2
@@ -195,7 +196,7 @@ class Beam():
         
         # Torsion contribution
         a, b, c, d = self.points # Order matters
-        self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * self.chord(y)**2
+        self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * self.get_chord(y)**2
         torsionShearStress = T/(2*self.Areas*self.thickness)
 
         # This gives the maximum shear stress in the section, which should occur in the front spar.
