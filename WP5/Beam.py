@@ -120,6 +120,7 @@ class Beam():
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
+        raise RuntimeError('Multiply by stringer count???')
         I = (self.Ixx_base_wingbox*c**3 # scaled wing box
             + self.stringer_object.Ixx
             + np.sum(self.stringer_object.area*(self.stringer_z_vals-self.centroid[1])**2, axis=0)*c**2 
