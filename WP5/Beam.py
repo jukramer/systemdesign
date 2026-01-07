@@ -187,7 +187,6 @@ class Beam():
         
         return kV*V/(hFrontSpar*self.thickness+hRearSpar*self.thickness)
         
-
     def ShearBucklingInterpolation(self, a_b, plot=False):
         x_data=[1.00, 1.17, 1.50, 1.750, 2.00, 2.50, 3.0, 4.0, 5.0]
         y_data=[15.0, 13.0, 11.6, 10.84, 10.4, 9.84, 9.7, 9.5, 9.53]
