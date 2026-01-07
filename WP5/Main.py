@@ -40,24 +40,26 @@ def calcVol(x):
     
     vol = wb.get_volume()
     
+    
     # Applied Stresses
-    normalStressAppliedTens = wb.konstantinos_konstantinopoulos(y_data, M_data)
-    normalStressAppliedComp = wb.konstantinos_konstantinopoulos(y_data, M_data)
+    normalStressAppliedTens = np.max(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1)
+    normalStressAppliedComp = np.tile(np.min(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1), (1,3))
     shearStressApplied = wb.getShearStress(y_data, V_data, T_data)
     
     # Critical Stresses
-    critStressArrayShear = wb.getFailureStresses(y_data)[1][0,:]
-    critStressArrayComp = wb.getFailureStresses(y_data)[1][1:4,:]
-    critStressArrayTens = wb.getFailureStresses(y_data)[1][4:,:]
+    critStressArrayShear = wb.getFailureStresses(y_data)[1][0,:] # width 1
+    critStressArrayComp = wb.getFailureStresses(y_data)[1][1:4,:] # width 3
+    critStressArrayTens = wb.getFailureStresses(y_data)[1][4:,:] # width 2
     
     # Stress Margins
     marginArrayShear = critStressArrayShear/shearStressApplied
     marginArrayComp = critStressArrayComp/normalStressAppliedComp
     marginArrayTens = critStressArrayTens/normalStressAppliedTens
     
+    deltaArrayShear = critStressArrayShear - shearStressApplied
+    deltaArrayComp = critStressArrayComp - normalStressAppliedComp
+    deltaArrayTens = critStressArrayTens - normalStressAppliedTens
     
-    
-    tau_web = wb.shearBuckStress(y_data, sRibs_detach)
     global iters2
     iters2+=1
 
