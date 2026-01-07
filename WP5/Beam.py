@@ -13,24 +13,6 @@ class Beam():
         
         # SPANWISE ARRAYS
 
-    def define_stringers(self, wing_box_points, stringer_count_top, stringer_count_bottom):
-        z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
-        z_interp_bottom = lambda x: np.interp(x, [wing_box_points[3][0], wing_box_points[2][0]], [wing_box_points[3][1], wing_box_points[2][1]])
-
-        stringer_x_coords_top = [wing_box_points[0][0] + i/(stringer_count_top-1)*(wing_box_points[1][0]-wing_box_points[0][0]) for i in range(stringer_count_top)]
-        stringer_x_coords_bottom = [wing_box_points[3][0] + i/(stringer_count_bottom-1)*(wing_box_points[2][0]-wing_box_points[3][0]) for i in range(stringer_count_bottom)]
-
-        stringers_top = np.array([[z_interp_top(x), self.stringer_object.area] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
-        stringers_bottom = np.array([[z_interp_bottom(x), self.stringer_object.area] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]]) # [[z/c, A], [z/c, A]]
-
-        self.stringers = np.vstack((stringers_top, stringers_bottom)) # [[z/c, A], [z/c, A]]
-
-        z_top = np.array([[z_interp_top(x)] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]])
-        z_bottom = np.array([[z_interp_bottom(x)] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]])
-        self.stringer_z_vals = np.vstack((z_top, z_bottom))
-        
-        # self, NDArray, NDArray, 
-        # SKIN WILL STAY CONST. THICKNESS!!
     def define_spanwise_arrays(self, y, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
         self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and 1 for tip and root!!!!
         assert int(posRibs[0]) == 0
@@ -48,28 +30,15 @@ class Beam():
         
         return self.distRibs, self.tStringersBay, self.bStringersBay, self.hStringersBay, self.nStringersTop, self.nStringersBottom
         
-    def load_wing_box(self, points, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span, posRibs=(0,)):
+    def load_wing_box(self, points, thickness, root_chord, tip_chord, span, posRibs=(0,)):
         self.points = points # [(x/c,z/c), ...] 
-        self.aux_spar_endpoints = aux_spar_endpoints # [(x/c_start, y_start), (x/c_end, y_end)]
         self.thickness = thickness
-        self.aux_spar_thickness = aux_spart_thickness
         self.root_chord = root_chord
         self.tip_chord = tip_chord
         self.span = span
 
-        self.define_stringers(self.points, stringer_count_top, stringer_count_bottom)
+        # self.DO_NOT_USE(self.points, stringer_count_top, stringer_count_bottom)
 
-        # points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
-        chord_at_aux_spar_start = self.get_chord(aux_spar_endpoints[0][1])
-        self.height_aux_spar_start = chord_at_aux_spar_start*(
-            np.interp(aux_spar_endpoints[0][0], [points[0][0], points[1][0]], [points[0][1], points[1][1]]) # top
-            - np.interp(aux_spar_endpoints[0][0], [points[3][0], points[2][0]], [points[3][1], points[2][1]])) # bottom
-        
-        chord_at_aux_spar_end = self.get_chord(aux_spar_endpoints[1][1])
-        self.height_aux_spar_end = chord_at_aux_spar_end*(
-            np.interp(aux_spar_endpoints[1][0], [points[0][0], points[1][0]], [points[0][1], points[1][1]]) # top
-            - np.interp(aux_spar_endpoints[1][0], [points[3][0], points[2][0]], [points[3][1], points[2][1]])) # bottom
-        
         self.get_I_of_cross_section()
 
     def get_I_of_cross_section(self):
@@ -91,11 +60,17 @@ class Beam():
 
         self.centroid = np.array([0.0, 0.0])
         skin_area = sum(self.edge_lengths_list)*self.thickness
-        stringer_area = np.sum(self.stringers[:,1])
+        total_stringer_area = (self.nStringersTop + self.nStringersBottom) * self.stringer_object.area
         for i, c in enumerate(self.edge_centroids_list):
-            self.centroid += c * self.edge_lengths_list[i]*self.thickness / (skin_area+stringer_area)
-        for z, A in self.stringers:
-            self.centroid[1] += z*A/(skin_area+stringer_area)
+            self.centroid += c * self.edge_lengths_list[i]*self.thickness / (skin_area+total_stringer_area)
+
+        # [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)]
+        z_top1 = self.points[0][1]
+        z_top2 = self.points[1][1]
+        z_bot1 = self.points[3][1]
+        z_bot2 = self.points[2][1]
+        self.centroid[1] = self.nStringersTop * (z_top1+z_top2)/2 * self.stringer_object.area / (skin_area+total_stringer_area)
+        self.centroid[1] = self.nStringersBottom * (z_bot1+z_bot2)/2 * self.stringer_object.area / (skin_area+total_stringer_area)
 
         self.Ixx_base_wingbox = 0
         self.Izz_base_wingbox = 0
@@ -120,11 +95,14 @@ class Beam():
         s = self.intg_points
         y, M = data[:, 0], data[:, 1]
         c = self.get_chord(y)
-        raise RuntimeError('Multiply by stringer count???')
+        # raise RuntimeError('Multiply by stringer count???')
+
+        avg_squared_dist_top, avg_squared_dist_bot = 0.1, 0.1 #[m]
+
         I = (self.Ixx_base_wingbox*c**3 # scaled wing box
-            + self.stringer_object.Ixx
-            + np.sum(self.stringer_object.area*(self.stringer_z_vals-self.centroid[1])**2, axis=0)*c**2 
-            + np.where(y<=self.aux_spar_endpoints[1][1], 1/12*self.aux_spar_thickness*np.interp(y, [self.aux_spar_endpoints[0][1], self.aux_spar_endpoints[1][1]], [self.height_aux_spar_start, self.height_aux_spar_end])**3, 0)
+            + self.stringer_object.Ixx*(self.nStringersTop + self.nStringersBottom)
+            + self.nStringersTop*avg_squared_dist_top*self.stringer_object.area
+            + self.nStringersBottom*avg_squared_dist_bot*self.stringer_object.area
             )
         self.Ixx_list = I
         
@@ -170,9 +148,9 @@ class Beam():
         y = np.linspace(0, self.span/2, self.intg_points)
         chord = self.get_chord(y)
         skin_area = sum(self.edge_lengths_list)*self.thickness*chord
-        stringer_area = np.sum(self.stringers[:,1])
+        total_stringer_area = (self.nStringersTop + self.nStringersBottom) * self.stringer_object.area
 
-        integrand = sp.interpolate.interp1d(y, skin_area+stringer_area, kind='cubic', fill_value="extrapolate")
+        integrand = sp.interpolate.interp1d(y, skin_area+total_stringer_area, kind='cubic', fill_value="extrapolate")
         self.volume = sp.integrate.quad(integrand, 0, self.span/2)[0] # type: ignore
 
         # print(f'Volume: {self.volume:.4g} m³')
