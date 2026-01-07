@@ -121,7 +121,8 @@ def optimise_main():
                                   np.array([HALF_SPAN*ones, 10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones]).flatten(),
                                   keep_feasible=True)
     
-    optim = sp.optimize.minimize(volWrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma) # type:ignore
+    # optim = sp.optimize.minimize(volWrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma) # type:ignore
+    optim = sp.optimize.differential_evolution(volWrap, bounds=bounds_x, constraints=constraints_sigma) # type:ignore
 
     raw_result = optim.x
     print('')

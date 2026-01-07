@@ -23,8 +23,8 @@ class Beam():
         return np.mean((np.array([z_top1, z_top2]) - y_centroid_stacked)**2, axis=1, keepdims=False), np.mean((np.array([z_bot1, z_bot2]) - y_centroid_stacked)**2, axis=1, keepdims=False)
 
     def define_spanwise_arrays(self, y, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
-        self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and for root!!!!
-        assert int(posRibs[0]) == 0
+        self.posRibs = np.sort(np.array(posRibs))*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and for root!!!!
+        # assert int(posRibs[0]) == 0
         self.nBays = self.posRibs.shape[0]
         sectionIDX = np.digitize(y, self.posRibs[1:])
         self.posRibs = np.concatenate([self.posRibs, np.array([HALF_SPAN])])
@@ -279,7 +279,7 @@ class Beam():
         edges = np.array(self.edge_lengths_list)
         b = np.outer(chord, edges)
         sigma = np.pi**2*self.SkinBucklingInterpolation(rib_spacing[:, None]/b)*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
-        print(rib_spacing[:, None]/b)
+        # print(rib_spacing[:, None]/b)
         return sigma
     
     def SkinBucklingInterpolation(self, a_b, plot=False):
