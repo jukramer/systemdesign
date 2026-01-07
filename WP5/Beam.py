@@ -9,6 +9,8 @@ class Beam():
     def __init__(self, stringers, intg_points: int = 100) -> None:
         self.intg_points = intg_points
         self.stringer_object: L_Stringer = stringers
+        
+        # SPANWISE ARRAYS
 
     def define_stringers(self, wing_box_points, stringer_count_top, stringer_count_bottom):
         z_interp_top = lambda x: np.interp(x, [wing_box_points[0][0], wing_box_points[1][0]], [wing_box_points[0][1], wing_box_points[1][1]])
@@ -25,7 +27,20 @@ class Beam():
         z_top = np.array([[z_interp_top(x)] for x in stringer_x_coords_top]) if len(stringer_x_coords_top)>0 else np.array([[0,0]])
         z_bottom = np.array([[z_interp_bottom(x)] for x in stringer_x_coords_bottom]) if len(stringer_x_coords_bottom)>0 else np.array([[0,0]])
         self.stringer_z_vals = np.vstack((z_top, z_bottom))
-
+        
+        # self, NDArray, NDArray, 
+        # SKIN WILL STAY CONST. THICKNESS!!
+    def define_spanwise_arrays(self, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
+        self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...]
+        sectionIDX = np.digitize(self.posRibs)
+        
+        self.nStringersTop = nStringersBayTop[sectionIDX] # THIS SHOULD WORK ??
+        self.nStringersBottom = nStringersBayBottom[sectionIDX] # THIS SHOULD WORK ??
+        self.tStringersBay = tStringersBay[sectionIDX]
+        self.bStringersBay = bStringersBay[sectionIDX]
+        self.hStringersBay = hStringersBay[sectionIDX]
+        
+        
     def load_wing_box(self, points, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span):
         self.points = points # [(x/c,z/c), ...] 
         self.aux_spar_endpoints = aux_spar_endpoints # [(x/c_start, y_start), (x/c_end, y_end)]
@@ -106,7 +121,7 @@ class Beam():
             )
         self.Ixx_list = I
         
-        d2v_dy2 = - M / (E * I)
+        d2v_dy2 = - M/(E * I)
         
         if disable:
             return
@@ -187,6 +202,26 @@ class Beam():
         
         return kV*V/(hFrontSpar*self.thickness+hRearSpar*self.thickness)
         
+    # FAILURE STRESS CALCULATIONS
+    def getFailureStresses(self, y):
+        pass
+         
+    
+    # Shear Buckling - this is a shear stress!!
+    def shearBuckStress(self, y, rib_spacing):
+        hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
+        hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
+        heights = np.array([hFrontSpar, hRearSpar]).T
+
+        a_b = rib_spacing/heights
+        k_s = self.ShearBucklingInterpolation(a_b)
+
+        t = self.thickness
+        
+        tau = np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/heights)**2
+            
+        return tau # shape(y.size, 2) for both spars
+    
     def ShearBucklingInterpolation(self, a_b, plot=False):
         x_data=[1.00, 1.17, 1.50, 1.750, 2.00, 2.50, 3.0, 4.0, 5.0]
         y_data=[15.0, 13.0, 11.6, 10.84, 10.4, 9.84, 9.7, 9.5, 9.53]
@@ -209,21 +244,14 @@ class Beam():
 
         return f(a_b)
     
-    # FAILURE STRESS CALCULATIONS
-    # Shear Buckling - this is a shear stress!!
-    def shearBuckStress(self, y, rib_spacing):
-        hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
-        hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
-        heights = np.array([hFrontSpar, hRearSpar]).T
-
-        a_b = rib_spacing/heights
-        k_s = self.ShearBucklingInterpolation(a_b)
-
+    # Skin buckling
+    def skinBuckStress(self, y, rib_spacing):
         t = self.thickness
-        
-        tau = np.pi**2 * k_s * E / (12*(1-POISSON_RATIO**2)) * (t/heights)**2
-            
-        return tau # shape(y.size, 2) for both spars
+        chord = self.get_chord(y)
+        edges = np.array(self.edge_lengths_list)
+        b = np.outer(chord, edges)
+        sigma = np.pi**2*self.SkinBucklingInterpolation(rib_spacing/b)*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
+        return sigma
     
     def SkinBucklingInterpolation(self, a_b, plot=False):
         x_data=[0.7,  0.85, 1.0, 1.15, 1.3, 1.67, 2.0, 2.2, 2.5, 2.75, 3.0, 3.2, 3.35, 3.70, 4.18, 4.66, 4.8, 5.0]
@@ -246,14 +274,6 @@ class Beam():
             plt.show()
 
         return f(a_b)
-    
-    def skinBuckStress(self, y, rib_spacing):
-        t = self.thickness
-        chord = self.get_chord(y)
-        edges = np.array(self.edge_lengths_list)
-        b = np.outer(chord, edges)
-        sigma = np.pi**2*self.SkinBucklingInterpolation(rib_spacing/b)*E / (12*(1-POISSON_RATIO**2)) * (t/b)**2
-        return sigma
     
     # Column Buckling - normal stress
     def colBuckStress(self, L):
