@@ -192,7 +192,6 @@ class Beam():
             x = x_c * chord
             z = z_c * chord
             
-
             # self.normal_stress[:, i] = ((0*self.Ixx_list - M * self.Ixz)*x + (M*self.Izz - 0 * self.Ixz)*z) / (self.Ixx_list*self.Izz - self.Ixz**2)
             self.normal_stress[:, i] = M*z / self.Ixx_list
         if report:
@@ -201,13 +200,21 @@ class Beam():
         return self.normal_stress
 
     # TODO add torsion shear 
-    def getShearStress(self, y, V):
+    def getShearStress(self, y, V, T):
+        # Shear force contribution
         kV = 2 # shear factor, tau_max = kV*tau_avg (see reader app. F)
         # print(self.points)
         hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
         hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
+        forceShearStress = kV*V/(hFrontSpar*self.thickness+hRearSpar*self.thickness)
         
-        return kV*V/(hFrontSpar*self.thickness+hRearSpar*self.thickness)
+        # Torsion contribution
+        a, b, c, d = self.points # Order matters
+        self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * self.chord(y)**2
+        torsionShearStress = T/(2*self.Areas*self.thickness)
+
+        # This gives the maximum shear stress in the section, which should occur in the front spar.
+        return forceShearStress + torsionShearStress
         
     # FAILURE STRESS CALCULATIONS
     def getFailureStresses(self, y):
@@ -216,13 +223,18 @@ class Beam():
             raise Exception
         
         # Failure stresses
-        shearBuckStressCrit = self.shearBuckStress(y, )
+        shearBuckStressCrit = self.shearBuckStress(y, self.distRibs)
+        skinBuckStressCrit = self.skinBuckStress(y, self.distRibs)
+        colBuckStressCrit = self.colBuckStress(self.distRibs)
+        compYieldCrit = np.full_like(y, SIGMA_Y_COMP)
         
+        tensYieldCrit = np.full_like(y, SIGMA_Y_TENS)
+        crackPropStressCrit = np.full_like(y, self.crackPropStress())
+        
+        stressStack = np.vstack([shearBuckStressCrit, skinBuckStressCrit, colBuckStressCrit, compYieldCrit, tensYieldCrit, crackPropStressCrit])
+                 
+        return np.min(stressStack, axis=1), stressStack    
 
-        
-        
-         
-    
     # Shear Buckling - this is a shear stress!!
     def shearBuckStress(self, y, rib_spacing):
         hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
@@ -334,7 +346,10 @@ class Beam():
     # Crack Propagation
     def calcCCrit(self, sigma):
         return K_1C ** 2 / (np.pi * SHAPE_FACTOR ** 2 * sigma ** 2) * 10 ** 3 # [mm]
-
+    
+    def crackPropStress(self):
+        return K_1C/np.sqrt(np.pi*CRACK_LENGTH)
+    
     # PLOTTING
     def plot(self):
         y = np.linspace(0, self.span/2, self.intg_points)
@@ -368,8 +383,6 @@ class Beam():
 
 if __name__=='__main__':
     wb = Beam(stringers=1, intg_points=865)
-    # y = np.arange(0, 17.29/2, 17.29/2/wb.intg_points)
-    # wb.shearBuckStress(y, 2)
     
     print(wb.define_spanwise_arrays(np.linspace(0, HALF_SPAN, 100),
                                     np.array([0, 0.5, 1]),
@@ -378,4 +391,6 @@ if __name__=='__main__':
                                     np.array([1, 0.5]),
                                     np.array([2, 1]),
                                     np.array([2, 1]),))
+    
+    print(wb.getFailureStresses(np.linspace(0, HALF_SPAN, 100))[0])
     
