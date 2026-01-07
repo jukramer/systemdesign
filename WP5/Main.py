@@ -14,11 +14,14 @@ stressList2 = []
 iters = 1
 iters2 = 1
 
+order_of_mag = np.array([[1, 1e-3, 1e-3, 1e-2, 1e-2, 1e2, 1e2]])
+
 np.set_printoptions(suppress=True)
 
 def calcVol(x):
     bay_count = x.size//7
-    posRibs, tStringersBay, tSkinBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x.reshape(7, bay_count)
+    x = x.reshape(7, bay_count) * order_of_mag.T
+    posRibs, tStringersBay, tSkinBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
     
     posRibs = np.array(posRibs)
     tStringersBay = np.array(tStringersBay)
@@ -72,6 +75,10 @@ def calcVol(x):
 
     if iters2 % 50 == 0:
         print(f'Optimising ({iters2})| {vol:.3f}m³, Shear Margin: {minMarginShear}, Comp Margin: {minMarginComp}, {modes[argmin_comp]}, Tens Margin: {minMarginTens}', end='\r')
+
+    if iters2 % 500 == 0:
+        arr = x.reshape(7, bay_count).T
+        print('\n', np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
     
     return vol, np.array([minMarginShear, minMarginComp, minMarginTens, v[-1], theta[-1]*180/np.pi])
 
@@ -114,11 +121,11 @@ def optimise_main():
     # posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
     posRibs = np.linspace(0, 1, 20)[:-1]
     ones = np.ones_like(posRibs)
-    initial_x = np.array([posRibs, 2e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 30*ones, 30*ones]).flatten()
+    initial_x = (np.array([posRibs, 2e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 30*ones, 30*ones])/order_of_mag.T).flatten()
     
     constraints_sigma = sp.optimize.NonlinearConstraint(constraintWrap, lb=[1, 1, 1, -0.15*2*HALF_SPAN, -10.0], ub=[np.inf, np.inf, np.inf, 0.15*2*HALF_SPAN, 10.0])
-    bounds_x = sp.optimize.Bounds(np.array([0*ones,         0*ones,     0*ones,     0*ones,     0*ones,     2*ones,  2*ones]).flatten(), 
-                                  np.array([HALF_SPAN*ones, 10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones]).flatten(),
+    bounds_x = sp.optimize.Bounds((np.array([0*ones, 0*ones,     0*ones,     0*ones,     0*ones,     2*ones,   2*ones])/order_of_mag.T).flatten(), 
+                                  (np.array([ones,   10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones])/order_of_mag.T).flatten(),
                                   keep_feasible=True)
     
     optim = sp.optimize.minimize(volWrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma) # type:ignore
