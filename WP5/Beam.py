@@ -37,7 +37,7 @@ class Beam():
         
         return self.distRibs, self.tStringersBay, self.bStringersBay, self.hStringersBay, self.nStringersTop, self.nStringersBottom
         
-    def load_wing_box(self, points, thickness, root_chord, tip_chord, span, posRibs=(0,)):
+    def load_wing_box(self, points, thickness, root_chord, tip_chord, span):
         self.points = points # [(x/c,z/c), ...] 
         self.thickness = thickness
         self.root_chord = root_chord
@@ -200,7 +200,7 @@ class Beam():
         torsionShearStress = T/(2*self.Areas*self.thickness)
 
         # This gives the maximum shear stress in the section, which should occur in the front spar.
-        return forceShearStress + torsionShearStress
+        return np.array([forceShearStress+torsionShearStress, forceShearStress-torsionShearStress])
         
     # FAILURE STRESS CALCULATIONS
     def getFailureStresses(self, y):
