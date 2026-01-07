@@ -9,6 +9,7 @@ class Beam():
     def __init__(self, stringers, intg_points: int = 100) -> None:
         self.intg_points = intg_points
         self.stringer_object: L_Stringer = stringers
+        self.nBays = False
         
         # SPANWISE ARRAYS
 
@@ -30,18 +31,24 @@ class Beam():
         
         # self, NDArray, NDArray, 
         # SKIN WILL STAY CONST. THICKNESS!!
-    def define_spanwise_arrays(self, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
-        self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...]
-        sectionIDX = np.digitize(self.posRibs)
+    def define_spanwise_arrays(self, y, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
+        self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and 1 for tip and root!!!!
+        assert int(posRibs[0]) == 0
+        assert int(posRibs[-1]) == 1
+        self.nBays = self.posRibs.shape[0] - 1
+        sectionIDX = np.digitize(y, self.posRibs[1:-1])
+        print(self.posRibs)
         
-        self.nStringersTop = nStringersBayTop[sectionIDX] # THIS SHOULD WORK ??
+        self.distRibs = np.array([self.posRibs[i+1] - self.posRibs[i] for i in range(self.nBays)])[sectionIDX]
+        self.nStringersTop = nStringersBayTop[sectionIDX] # TODO: THIS SHOULD WORK ?? TEST IT THO
         self.nStringersBottom = nStringersBayBottom[sectionIDX] # THIS SHOULD WORK ??
         self.tStringersBay = tStringersBay[sectionIDX]
         self.bStringersBay = bStringersBay[sectionIDX]
         self.hStringersBay = hStringersBay[sectionIDX]
         
+        return self.distRibs, self.tStringersBay, self.bStringersBay, self.hStringersBay, self.nStringersTop, self.nStringersBottom
         
-    def load_wing_box(self, points, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span):
+    def load_wing_box(self, points, stringer_count_top, stringer_count_bottom, aux_spar_endpoints, thickness, aux_spart_thickness, root_chord, tip_chord, span, posRibs=(0,)):
         self.points = points # [(x/c,z/c), ...] 
         self.aux_spar_endpoints = aux_spar_endpoints # [(x/c_start, y_start), (x/c_end, y_end)]
         self.thickness = thickness
@@ -53,7 +60,6 @@ class Beam():
         self.define_stringers(self.points, stringer_count_top, stringer_count_bottom)
 
         # points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
-        # TODO: How are ribs/bays implemented ??
         chord_at_aux_spar_start = self.get_chord(aux_spar_endpoints[0][1])
         self.height_aux_spar_start = chord_at_aux_spar_start*(
             np.interp(aux_spar_endpoints[0][0], [points[0][0], points[1][0]], [points[0][1], points[1][1]]) # top
@@ -204,7 +210,16 @@ class Beam():
         
     # FAILURE STRESS CALCULATIONS
     def getFailureStresses(self, y):
-        pass
+        if not self.nBays:
+            print('You must define the ribs first!')
+            raise Exception
+        
+        # Failure stresses
+        shearBuckStressCrit = self.shearBuckStress(y, )
+        
+
+        
+        
          
     
     # Shear Buckling - this is a shear stress!!
@@ -352,5 +367,14 @@ class Beam():
 
 if __name__=='__main__':
     wb = Beam(stringers=1, intg_points=865)
-    y = np.arange(0, 17.29/2, 17.29/2/wb.intg_points)
-    wb.shearBuckStress(y, 2)
+    # y = np.arange(0, 17.29/2, 17.29/2/wb.intg_points)
+    # wb.shearBuckStress(y, 2)
+    
+    print(wb.define_spanwise_arrays(np.linspace(0, HALF_SPAN, 100),
+                                    np.array([0, 0.5, 1]),
+                                    np.array([1, 0.5]),
+                                    np.array([1, 0.5]),
+                                    np.array([1, 0.5]),
+                                    np.array([2, 1]),
+                                    np.array([2, 1]),))
+    

@@ -29,6 +29,7 @@ def calcVol(x):
     global maxMargin, maxMarginArray
     tString_detach, tSkin_detach, LStringBase_detach, hString_detach, sRibs_detach = map_values(x)
     nStringTop_detach, nStringBottom_detach = 20, 20
+    # TODO: Stopped at calling function to define arrays
     
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
     aux_spar_endpoints = [(0.425, -1), (0.2, -1)] # [(x/c_start, y_start), (x/c_end, y_end)] | Mind the units
@@ -36,6 +37,7 @@ def calcVol(x):
     stringer_instance = L_Stringer(LStringBase_detach, hString_detach, tString_detach)
     wb = Beam(stringers=stringer_instance, intg_points=865)
     wb.load_wing_box(points=wing_box_points, stringer_count_top=nStringTop_detach, stringer_count_bottom=nStringBottom_detach, aux_spar_endpoints=aux_spar_endpoints, thickness=tSkin_detach, aux_spart_thickness=np.nan, root_chord=2.85, tip_chord=1.03, span=17.29)
+    
     wb.get_displacement(np.vstack((y_data, M_data)).T, 1, True)
     vol = wb.get_volume()
     
@@ -85,6 +87,8 @@ def bucklingConstraints(x):
 def optimise_main():
     global y_data, M_data
     global initial_x
+    global posRibs
+    posRibs = (0,)
     
     if not False:
         warnings.simplefilter('ignore', category=UserWarning)
