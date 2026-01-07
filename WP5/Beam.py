@@ -21,12 +21,11 @@ class Beam():
         return np.mean((np.array(z_top1, z_top2) - self.centroid[1])**2), np.mean((np.array(z_bot1, z_bot2) - self.centroid[1])**2)
 
     def define_spanwise_arrays(self, y, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
-        self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and 1 for tip and root!!!!
+        self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and for root!!!!
         assert int(posRibs[0]) == 0
-        assert int(posRibs[-1]) == 1
-        self.nBays = self.posRibs.shape[0] - 1
-        sectionIDX = np.digitize(y, self.posRibs[1:-1])
-        print(self.posRibs)
+        self.nBays = self.posRibs.shape[0]
+        sectionIDX = np.digitize(y, self.posRibs[1:])
+        self.posRibs = np.concatenate([self.posRibs, np.array([HALF_SPAN])])
         
         self.distRibs = np.array([self.posRibs[i+1] - self.posRibs[i] for i in range(self.nBays)])[sectionIDX]
         self.nStringersTop = nStringersBayTop[sectionIDX]
@@ -34,6 +33,8 @@ class Beam():
         self.tStringersBay = tStringersBay[sectionIDX]
         self.bStringersBay = bStringersBay[sectionIDX]
         self.hStringersBay = hStringersBay[sectionIDX]
+        
+        # self.posRibs = self.posRibs[:-1]
         
         return self.distRibs, self.tStringersBay, self.bStringersBay, self.hStringersBay, self.nStringersTop, self.nStringersBottom
         
@@ -375,7 +376,7 @@ if __name__=='__main__':
     wb = Beam(stringers=1, intg_points=865)
     
     print(wb.define_spanwise_arrays(np.linspace(0, HALF_SPAN, 100),
-                                    np.array([0, 0.5, 1]),
+                                    np.array([0, 0.5]),
                                     np.array([1, 0.5]),
                                     np.array([1, 0.5]),
                                     np.array([1, 0.5]),
