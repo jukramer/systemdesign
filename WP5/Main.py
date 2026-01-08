@@ -13,7 +13,7 @@ stressList = []
 stressList2 = []
 iters = 1
 
-order_of_mag = np.array([[1e-1, 1e-3, 1e-3, 1e-1, 1e-1, 1e-3, 1e-3]])
+order_of_mag = np.array([[1e0, 1e-1, 1e-1, 1e0, 1e0, 1e2, 1e2]])
 
 np.set_printoptions(suppress=True)
 
@@ -124,7 +124,7 @@ def calc_mass(x):
 
 
     # wb.plot()
-    return wb.mass, np.array([minMarginShear, minMarginComp, minMarginTens, np.min([minMarginShear,minMarginComp,minMarginTens]), v[-1], theta[-1]*180/np.pi, min_dist])
+    return wb.mass, np.array([minMarginShear, minMarginComp, minMarginTens, np.average([minMarginShear,minMarginComp,minMarginTens]), v[-1], theta[-1]*180/np.pi, min_dist])
 
 def mass_wrap(x):
     global iters
@@ -168,17 +168,17 @@ def optimise_main():
     posRibs = (np.linspace(0, 1, 9)[:-1])**2
     ones = np.ones_like(posRibs)
     # initial_x = (np.array([posRibs, 4e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 20*ones, 20*ones])/order_of_mag.T).flatten()
-    x_vals = x_from_print()
+    # x_vals = x_from_print()
     # print(initial_x.reshape(7, 9).T * order_of_mag)
-    # initial_x = (np.array([posRibs, 4e-3*ones, 2.7e-3*ones, 3e-2*ones, 3e-2*ones, np.linspace(20, 5, 9), np.linspace(20, 5, 9)])/order_of_mag.T).flatten()
+    initial_x = (np.array([posRibs, 4.0e-3*ones, 2e-3*ones, 2.1e-2*ones, 2.1e-2*ones, np.linspace(7, 4, ones.size), np.linspace(7, 4, ones.size)])/order_of_mag.T).flatten()
 
     
-    constraints_sigma = sp.optimize.NonlinearConstraint(constr_wrap, lb=[1, 1, 1, 1, -0.15*HALF_SPAN*2, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 1.1, 0.15*HALF_SPAN*2, 10.0, np.inf], keep_feasible=False)
+    constraints_sigma = sp.optimize.NonlinearConstraint(constr_wrap, lb=[1, 1, 1, 1, -0.15*HALF_SPAN*2, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 1.5, 0.15*HALF_SPAN*2, 10.0, np.inf], keep_feasible=False)
     bounds_x = sp.optimize.Bounds((np.array([0*ones, 1e-3*ones,     1e-3*ones,     1e-2*ones,     1e-2*ones,     2*ones,   2*ones])/order_of_mag.T).flatten(), 
                                   (np.array([ones,   10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones])/order_of_mag.T).flatten(),
                                   keep_feasible=False)
     
-    optim = sp.optimize.minimize(mass_wrap, x_vals, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma, ) # type:ignore | options = {"gtol": 1e-8}
+    optim = sp.optimize.minimize(mass_wrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma, ) # type:ignore | options = {"gtol": 1e-8}
     # optim = sp.optimize.shgo(volWrap, bounds=bounds_x, constraints=constraints_sigma) # type:ignore
 
     raw_result = optim.x
@@ -268,5 +268,5 @@ def show_design():
     # plt.show()
 
 if __name__ == '__main__':
-    # optimise_main() 
-    show_design()
+    optimise_main() 
+    # show_design()
