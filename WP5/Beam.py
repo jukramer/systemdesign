@@ -380,7 +380,7 @@ class Beam():
         plt.plot(y, self.Ixx_list*1e4, label=f'I$_x$$_x$')
         plt.plot(y, self.J*1e4, label=f'J')
         plt.xlabel('y [$m$]')
-        plt.ylabel('Stiffness × $10^4$ [$m^4$]')
+        plt.ylabel('Stiffness × $10^{-4}$ [$m^4$]')
         plt.xlim(0, self.span/2)
         plt.ylim(0, )
         plt.grid(which='both')
