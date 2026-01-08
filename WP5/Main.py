@@ -71,11 +71,13 @@ def calc_mass(x):
     wb.get_mass(y_data)
     
     # Applied Stresses
+    global normalStressAppliedComp, normalStressAppliedTens, shearStressApplied
+
     normalStressAppliedTens = np.tile(np.maximum(0, np.max(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1, keepdims=True)), (1,2))
     normalStressAppliedComp = np.tile(np.minimum(0, np.min(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1, keepdims=True)), (1,6))
-
     shearStressApplied = wb.getShearStress(y_data, V_data, T_data)
     
+    global stressStack
     # Critical Stresses
     stressStack = wb.getFailureStresses(y_data)[1]
     critStressArrayShear = stressStack[:, :2] # width 2
@@ -191,3 +193,33 @@ def optimise_main():
 
 if __name__ == '__main__':
     optimise_main() 
+
+    # shear buckling
+    critStressArrayShear = np.min(stressStack[:, :2], axis=1) # width 1
+    # skin buckling (4x, for each skin), column buckling (stringers), compressive yielding 
+    critStressArrayComp = stressStack[:, 2:8] # width 6
+    skinBucklArray = np.min(stressStack[:, 2:6], axis=1)
+    # tensile yielding, crack propagation
+    critStressArrayTens = stressStack[:, 8:] # width 2 
+
+    marginShearBuckl = critStressArrayShear/shearStressApplied[:,1]
+    marginSkinBuckl = -skinBucklArray/normalStressAppliedComp[:,1]
+    marginColBuckl = -stressStack[:, 6]/normalStressAppliedComp[:,1]
+    marginCompYield = -stressStack[:, 7]/normalStressAppliedComp[:,1]
+    marginTensYield = stressStack[:, 8]/normalStressAppliedTens[:,1]
+    marginCrackProp = stressStack[:, 9]/normalStressAppliedTens[:,1]
+    print('done')
+
+    y_data
+    #plt.plot(y_data,marginShearBuckl,'r-')
+    #plt.plot(y_data,marginSkinBuckl,"r-")
+    plt.axhline(1)
+    plt.plot(y_data,marginColBuckl,'r-')
+    #plt.plot(y_data,marginCompYield,'r-')
+    #plt.plot(y_data,marginTensYield,'r-')
+    #plt.plot(y_data,marginCrackProp,'r-')
+    #plt.ylim(0,10)
+    plt.show()
+
+
+    # plotFailureMargin()
