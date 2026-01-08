@@ -12,16 +12,45 @@ iterList = []
 stressList = []
 stressList2 = []
 iters = 1
-iters2 = 1
 
-order_of_mag = np.array([[1, 1e-3, 1e-3, 1e-2, 1e-2, 1e2, 1e2]])
+order_of_mag = np.array([[1e-2, 1e-2, 1e-2, 1e-2, 1e-2, 1e-1, 1e-1]])
 
 np.set_printoptions(suppress=True)
 
-def calcVol(x):
+def x_from_print():
+    # from optimisation run:
+    x = np.array(
+        [[0.001604, 0.004027, 0.002671, 0.03842, 0.03804, 19.86, 19.73],
+        [0.0116, 0.00341, 0.002097, 0.04197, 0.04137, 19.35, 18.8],
+        [0.05499, 0.003279, 0.001675, 0.04031, 0.04099, 19.38, 17.46],
+        [0.107, 0.004129, 0.00118, 0.03246, 0.03049, 20, 18.34],
+        [0.1476, 0.003667, 0.000745, 0.03095, 0.02923, 18.74, 16.65],
+        [0.3293, 0.003324, 0.0005258, 0.0291, 0.02715, 18.34, 17.73],
+        [0.4559, 0.003633, 0.0004261, 0.02776, 0.02615, 17.88, 17.48],
+        [0.6238, 0.003086, 0.0003407, 0.02764, 0.02703, 17.91, 18.06],
+        [0.8198, 0.003612, 0.000461, 0.02909, 0.02893, 18.71, 17.73]]
+        )/order_of_mag
+
+    # tweaked:
+    x = np.array(
+        [[0.001417, 0.004, 0.00103, 0.0105, 0.0105, 12., 12.],
+        [0.02386, 0.003356, 0.001006, 0.01002, 0.01384, 12, 12.],
+        [0.06164, 0.005389, 0.001, 0.01016, 0.01075, 12., 12],
+        [0.1122, 0.002557, 0.001026, 0.02028, 0.01109, 10., 10.],
+        [0.1598, 0.003367, 0.001, 0.01004, 0.01012, 10., 10.],
+        [0.3235, 0.005497, 0.001005, 0.01008, 0.01013, 8.0, 8.0],
+        [0.4562, 0.007303, 0.00101, 0.01002, 0.01091, 6.0, 6.0],
+        [0.6231, 0.004324, 0.001007, 0.01009, 0.01057, 4., 4.],
+        [0.8206, 0.003553, 0.001002, 0.01047, 0.01012, 3., 3.]]
+        )/order_of_mag
+    
+    return x.T.flatten()
+
+def calc_mass(x):
+    global bay_count
     bay_count = x.size//7
     x = x.reshape(7, bay_count) * order_of_mag.T
-    posRibs, tStringersBay, tSkinBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
+    posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
     
     posRibs = np.array(posRibs)
     tStringersBay = np.array(tStringersBay)
@@ -37,10 +66,9 @@ def calcVol(x):
     wb = Beam(stringers=stringer_instance, intg_points=865)
     wb.define_spanwise_arrays(y_data, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom)
     wb.load_wing_box(points=wing_box_points, thickness=tSkinBay, root_chord=2.85, tip_chord=1.03, span=17.29)
-    v = wb.get_displacement(np.vstack((y_data, M_data)).T, E, True)
-    theta = wb.get_twist(np.vstack((y_data, T_data)).T, G, True)
-
-    vol = wb.get_volume()
+    v = wb.get_displacement(np.vstack((y_data, M_data)).T, E, False)
+    theta = wb.get_twist(np.vstack((y_data, T_data)).T, G, False)
+    wb.get_mass(y_data)
     
     # Applied Stresses
     normalStressAppliedTens = np.tile(np.maximum(0, np.max(wb.konstantinos_konstantinopoulos(y_data, M_data), axis=1, keepdims=True)), (1,2))
@@ -73,27 +101,27 @@ def calcVol(x):
     rolled_ribs = np.roll(posRibs, -1)
     diff = rolled_ribs-posRibs
     diff[-1] = np.inf
-    min_dist = np.sum(np.minimum(0, diff))
+    min_dist = np.min(diff)
 
-    global iters2
-    iters2 += 1
+    if iters % 100 == 0:
+        print(f'Optimising ({iters})| {wb.mass:.1f}kg/{wb.volume:.3g}m³, Shear Margin: {minMarginShear:.3g}, Comp Margin: {minMarginComp:.3g}, Tens Margin: {minMarginTens:.3g}', end='\r')
 
-    if iters2 % 50 == 0:
-        print(f'Optimising ({iters2})| {vol:.3f}m³, Shear Margin: {minMarginShear}, Comp Margin: {minMarginComp}, {modes[argmin_comp]}, Tens Margin: {minMarginTens}', end='\r')
-
-    if iters2 % 500 == 0:
+    if iters % 500 == 0:
         arr = x.reshape(7, bay_count).T
-        # print('\n', np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
+        print('\n', np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
+        wb.report_stats()
     
-    return vol, np.array([minMarginShear, minMarginComp, minMarginTens, np.min([minMarginShear,minMarginComp,minMarginTens]), v[-1], theta[-1]*180/np.pi, min_dist])
+    return wb.mass, np.array([minMarginShear, minMarginComp, minMarginTens, np.min([minMarginShear,minMarginComp,minMarginTens]), v[-1], theta[-1]*180/np.pi, min_dist])
 
-def volWrap(x):
+def mass_wrap(x):
+    global iters
+    iters += 1
     # print(calcVol(x)[0])
-    return calcVol(x)[0]
+    return calc_mass(x)[0]
 
-def constraintWrap(x):
+def constr_wrap(x):
     # print(calcVol(x)[1].shape)
-    return calcVol(x)[1]
+    return calc_mass(x)[1]
 
 def optimise_main():
     global y_data, M_data, T_data, V_data, T_data
@@ -124,17 +152,21 @@ def optimise_main():
     
     # OPTIMIZATION
     # posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
-    posRibs = np.linspace(0, 1, 20)[:-1]
+    posRibs = (np.linspace(0, 1, 10)[:-1])**2
     ones = np.ones_like(posRibs)
-    initial_x = (np.array([posRibs, 2e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 30*ones, 30*ones])/order_of_mag.T).flatten()
+    # initial_x = (np.array([posRibs, 4e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 20*ones, 20*ones])/order_of_mag.T).flatten()
+    initial_x = x_from_print()
+    # print(initial_x.reshape(7, 9).T * order_of_mag)
+    # initial_x = (np.array([posRibs, 4e-3*ones, 2.7e-3*ones, 3e-2*ones, 3e-2*ones, np.linspace(20, 5, 9), np.linspace(20, 5, 9)])/order_of_mag.T).flatten()
+
     
-    constraints_sigma = sp.optimize.NonlinearConstraint(constraintWrap, lb=[1, 1, 1, 1, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 1.1, 10.0, np.inf])
-    bounds_x = sp.optimize.Bounds((np.array([0*ones, 0*ones,     0*ones,     0*ones,     0*ones,     2*ones,   2*ones])/order_of_mag.T).flatten(), 
+    constraints_sigma = sp.optimize.NonlinearConstraint(constr_wrap, lb=[1, 1, 1, 1, -0.15*HALF_SPAN*2, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 1.1, 0.15*HALF_SPAN*2, 10.0, np.inf], keep_feasible=False)
+    bounds_x = sp.optimize.Bounds((np.array([0*ones, 1e-3*ones,     1e-3*ones,     1e-2*ones,     1e-2*ones,     2*ones,   2*ones])/order_of_mag.T).flatten(), 
                                   (np.array([ones,   10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones])/order_of_mag.T).flatten(),
-                                  keep_feasible=True)
+                                  keep_feasible=False)
     
-    # optim = sp.optimize.minimize(volWrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma) # type:ignore
-    optim = sp.optimize.shgo(volWrap, bounds=bounds_x, constraints=constraints_sigma) # type:ignore
+    optim = sp.optimize.minimize(mass_wrap, initial_x, method='trust-constr', bounds=bounds_x, constraints=constraints_sigma, ) # type:ignore | options = {"gtol": 1e-8}
+    # optim = sp.optimize.shgo(volWrap, bounds=bounds_x, constraints=constraints_sigma) # type:ignore
 
     raw_result = optim.x
     print('')
@@ -144,7 +176,10 @@ def optimise_main():
     print("Constraint violation:", optim.constr_violation)
     print("Optimality:", optim.optimality)
     print('\nResults:')
-    print(np.array(raw_result))
+    arr = raw_result.reshape(7, bay_count).T * order_of_mag
+    print(np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
+    print(constr_wrap(raw_result))
+
     
     # print(stressList[0].shape)
     # print(stressList2[0].shape)

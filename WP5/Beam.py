@@ -14,6 +14,7 @@ class Beam():
         # SPANWISE ARRAYS
 
     def vertical_average_square_distance(self):
+        return 0.00231111397305, 0.00035866651005
         z_top1 = self.points[0][1]
         z_top2 = self.points[1][1]
         z_bot1 = self.points[3][1]
@@ -23,7 +24,12 @@ class Beam():
         return np.mean((np.array([z_top1, z_top2]) - y_centroid_stacked)**2, axis=1, keepdims=False), np.mean((np.array([z_bot1, z_bot2]) - y_centroid_stacked)**2, axis=1, keepdims=False)
 
     def define_spanwise_arrays(self, y, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom):
-        self.posRibs = np.sort(np.array(posRibs)*HALF_SPAN) # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and for root!!!!
+        self.posRibs = np.array(posRibs)*HALF_SPAN # [% span] e.g. [0.1, 0.3, 0.5, ...] MUST Have 0 and for root!!!!
+        prev_rib = np.roll(self.posRibs, 1)
+        prev_rib[0] = 0
+        if (prev_rib>self.posRibs).any():
+            print(f'Found misordered ribs. Trying to fix it.', end='\r')
+            self.posRibs = np.maximum(self.posRibs, prev_rib)
         assert int(posRibs[0]) == 0
         self.nBays = self.posRibs.shape[0]
         sectionIDX = np.digitize(y, self.posRibs[1:])
@@ -32,11 +38,11 @@ class Beam():
         self.distRibs = np.array([self.posRibs[i+1] - self.posRibs[i] for i in range(self.nBays)])[sectionIDX]
         self.nStringersTop = nStringersBayTop[sectionIDX]
         self.nStringersBottom = nStringersBayBottom[sectionIDX]
-        self.tStringersBay = tStringersBay[sectionIDX]
-        self.bStringersBay = bStringersBay[sectionIDX]
-        self.hStringersBay = hStringersBay[sectionIDX]
-        self.single_stringer_area = self.stringer_object.area[sectionIDX]
-        self.single_stringer_Ixx = self.stringer_object.Ixx[sectionIDX]
+        self.tStringersBay = tStringersBay[sectionIDX*0]
+        self.bStringersBay = bStringersBay[sectionIDX*0]
+        self.hStringersBay = hStringersBay[sectionIDX*0]
+        self.single_stringer_area = self.stringer_object.area[sectionIDX*0]
+        self.single_stringer_Ixx = self.stringer_object.Ixx[sectionIDX*0]
 
         self.sectionIDX = sectionIDX
         
@@ -46,7 +52,7 @@ class Beam():
         
     def load_wing_box(self, points, thickness, root_chord, tip_chord, span):
         self.points = points # [(x/c,z/c), ...] 
-        self.thickness = thickness[self.sectionIDX]
+        self.thickness = thickness[self.sectionIDX*0]
         self.root_chord = root_chord
         self.tip_chord = tip_chord
         self.span = span
@@ -125,18 +131,23 @@ class Beam():
         if disable:
             return np.zeros(s)
             
-        integrand_1 = sp.interpolate.interp1d(y, d2v_dy2, kind='cubic', fill_value="extrapolate")
+        # integrand_1 = sp.interpolate.interp1d(y, d2v_dy2, kind='cubic', fill_value="extrapolate")
+        # dv_dy = np.empty(s)
+        # y2 = np.empty(s)
+        # for i in range(s):
+        #     y2[i] = self.span/2*i/(s-1)
+        #     dv_dy[i] = sp.integrate.quad(integrand_1, 0, self.span/2*i/(s-1))[0] # type: ignore
+        
 
-        dv_dy = np.empty(s)
-        y2 = np.empty(s)
-        for i in range(s):
-            y2[i] = self.span/2*i/(s-1)
-            dv_dy[i] = sp.integrate.quad(integrand_1, 0, self.span/2*i/(s-1))[0] # type: ignore
+        # integrand_2 = sp.interpolate.interp1d(y2, dv_dy, kind='cubic', fill_value="extrapolate")
+        # self.v = np.empty(s)
+        # for i in range(s):
+        #     self.v[i] = sp.integrate.quad(integrand_2, 0, self.span/2*i/(dv_dy.size-1))[0] # type: ignore
 
-        integrand_2 = sp.interpolate.interp1d(y2, dv_dy, kind='cubic', fill_value="extrapolate")
-        self.v = np.empty(s)
-        for i in range(s):
-            self.v[i] = sp.integrate.quad(integrand_2, 0, self.span/2*i/(dv_dy.size-1))[0] # type: ignore
+        self.dv_dy = sp.integrate.cumulative_trapezoid(y=d2v_dy2, x=y, initial=0) # type: ignore
+        self.v = sp.integrate.cumulative_trapezoid(y=self.dv_dy, x=y, initial=0) # type: ignore
+        # self.v = np.zeros_like(self.dv_dy)
+        # self.v[-1] = sp.integrate.simpson(self.dv_dy, y)
 
         return self.v
     
@@ -147,32 +158,36 @@ class Beam():
         self.Areas = (a[1]-d[1]+b[1]-c[1])/2*(c[0]-d[0]) * chord**2
         integral = chord*sum(self.edge_lengths_list)/self.thickness
         self.J = 4*self.Areas**2 / (integral)
-        
+
+        y = data[:, 0]
         torque = data[:, 1]
         dtheta_dy = torque/(self.J*G)
 
         if disable:
             return np.zeros(s)
 
-        y = data[:, 0]
-        integrand = sp.interpolate.interp1d(y, dtheta_dy, kind='cubic', fill_value="extrapolate")
-        self.theta = np.empty(s)
-        for i in range(s):
-            self.theta[i] = sp.integrate.quad(integrand, 0, self.span/2*i/(s-1))[0] # type: ignore
+        # integrand = sp.interpolate.interp1d(y, dtheta_dy, kind='cubic', fill_value="extrapolate")
+        # self.theta = np.empty(s)
+        # for i in range(s):
+        #     self.theta[i] = sp.integrate.quad(integrand, 0, self.span/2*i/(s-1))[0] # type: ignore
+
+        self.theta = sp.integrate.cumulative_trapezoid(dtheta_dy, y, initial=0)
 
         return self.theta
 
-    def get_volume(self):
-        y = np.linspace(0, self.span/2, self.intg_points)
+    def get_mass(self, y):
+        # y = np.linspace(0, self.span/2, self.intg_points)
         chord = self.get_chord(y)
         skin_area = sum(self.edge_lengths_list)*self.thickness*chord
         total_stringer_area = (self.nStringersTop + self.nStringersBottom) * self.single_stringer_area
 
-        integrand = sp.interpolate.interp1d(y, skin_area+total_stringer_area, kind='cubic', fill_value="extrapolate")
-        self.volume = sp.integrate.quad(integrand, 0, self.span/2)[0] # type: ignore
+        # integrand = sp.interpolate.interp1d(y, skin_area+total_stringer_area, kind='cubic', fill_value="extrapolate")
+        # self.volume = sp.integrate.quad(integrand, 0, self.span/2)[0] # type: ignore
+        self.volume = sp.integrate.simpson(skin_area+total_stringer_area, y) #type:ignore
+        self.mass = self.volume*density
 
         # print(f'Volume: {self.volume:.4g} m³')
-        return self.volume
+        return self.mass
 
     def report_stats(self):
         print(f'Deflected {self.v[-1]:.4g}m | Allowed {0.15*self.span:.4g}m')
@@ -195,7 +210,6 @@ class Beam():
 
         return self.normal_stress
 
-    # TODO add torsion shear 
     def getShearStress(self, y, V, T):
         # Shear force contribution
         kV = 2 # shear factor, tau_max = kV*tau_avg (see reader app. F)
@@ -389,15 +403,5 @@ class Beam():
 
 
 if __name__=='__main__':
-    wb = Beam(stringers=1, intg_points=865)
-    
-    print(wb.define_spanwise_arrays(np.linspace(0, HALF_SPAN, 100),
-                                    np.array([0, 0.5]),
-                                    np.array([1, 0.5]),
-                                    np.array([1, 0.5]),
-                                    np.array([1, 0.5]),
-                                    np.array([2, 1]),
-                                    np.array([2, 1]),))
-    
-    print(wb.getFailureStresses(np.linspace(0, HALF_SPAN, 100))[0])
+    print(f'Wrong file dummy')
     
