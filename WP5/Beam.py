@@ -329,6 +329,7 @@ class Beam():
         K = K_CC
         A = self.single_stringer_area
         I = self.Ixx_list
+        # print((K * np.pi**2 * E * I)/(L**2 * A))
         return (K * np.pi**2 * E * I)/(L**2 * A)
     
     def calcStringerLen(self, sigma, K, I, A):

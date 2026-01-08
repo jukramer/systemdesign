@@ -13,7 +13,7 @@ stressList = []
 stressList2 = []
 iters = 1
 
-order_of_mag = np.array([[1e0, 1e-1, 1e-1, 1e0, 1e0, 1e2, 1e2]])
+order_of_mag = np.array([[1e-1, 1e-1, 1e-1, 1e0, 1e0, 1e2, 1e2]])
 
 np.set_printoptions(suppress=True)
 
@@ -172,9 +172,9 @@ def optimise_main():
     # initial_x = (np.array([posRibs, 4e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 20*ones, 20*ones])/order_of_mag.T).flatten()
     # x_vals = x_from_print()
     # print(initial_x.reshape(7, 9).T * order_of_mag)
-    initial_x = (np.array([posRibs, 4.0e-3*ones, 2e-3*ones, 2.1e-2*ones, 2.1e-2*ones, np.linspace(7, 4, ones.size), np.linspace(7, 4, ones.size)])/order_of_mag.T).flatten()
-
-    
+    initial_x = (np.array([posRibs, 4e-3*ones, 2e-3*ones, 5e-2*ones, 5e-2*ones, np.linspace(40, 20, ones.size), np.linspace(40, 20, ones.size)])/order_of_mag.T).flatten()
+    # print(initial_x.reshape(7, 8).T * order_of_mag)
+    # quit()
     constraints_sigma = sp.optimize.NonlinearConstraint(constr_wrap, lb=[1, 1, 1, 1, -0.15*HALF_SPAN*2, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 1.5, 0.15*HALF_SPAN*2, 10.0, np.inf], keep_feasible=False)
     bounds_x = sp.optimize.Bounds((np.array([0*ones, 1e-3*ones,     1e-3*ones,     1e-2*ones,     1e-2*ones,     2*ones,   2*ones])/order_of_mag.T).flatten(), 
                                   (np.array([ones,   10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones])/order_of_mag.T).flatten(),
@@ -232,7 +232,7 @@ def show_design():
     
     # OPTIMIZATION
     # posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
-    x_vals = np.array(
+    x_vals = np.array( # Design one
         [[0.0000, 0.0042, 0.0011, 0.011, 0.011, 12, 12],
         [0.05000, 0.0042, 0.0011, 0.011, 0.011, 12, 12],
         [0.12000, 0.0042, 0.0011, 0.011, 0.011, 10, 10],
@@ -241,6 +241,17 @@ def show_design():
         [0.43000, 0.0042, 0.0011, 0.011, 0.011, 6, 6],
         [0.59500, 0.0042, 0.0011, 0.011, 0.011, 4, 4],
         [0.82000, 0.0042, 0.0011, 0.011, 0.011, 4, 4]]
+        )/order_of_mag
+    
+    x_vals = np.array( # design two
+        [[0.0000, 0.004, 0.0011, 0.024, 0.031, 35., 50.],
+        [0.02800, 0.004, 0.0011, 0.024, 0.031, 35., 50.],
+        [0.09000, 0.004, 0.0011, 0.024, 0.031, 35., 50.],
+        [0.22672, 0.004, 0.0011, 0.024, 0.031, 35., 30.],
+        [0.27000, 0.004, 0.0011, 0.024, 0.031, 20., 30.],
+        [0.43350, 0.004, 0.0011, 0.024, 0.031, 20., 20.],
+        [0.52830, 0.004, 0.0011, 0.024, 0.031, 20., 20.],
+        [0.79260, 0.004, 0.0011, 0.024, 0.031, 14., 10.]]
         )/order_of_mag
     
     x_vals = x_vals.T.flatten()
@@ -256,7 +267,7 @@ def show_design():
     plt.plot(y_data/HALF_SPAN, marginArrayTens, label=modes[8:])
     plt.plot([0,20], [1,1])
     plt.xlim(0, 1)
-    plt.ylim(0,5)
+    plt.ylim(0,20)
     plt.legend()
     # plt.yscale('log')
     plt.show()
@@ -270,35 +281,5 @@ def show_design():
     # plt.show()
 
 if __name__ == '__main__':
-    optimise_main() 
-
-    # shear buckling
-    critStressArrayShear = np.min(stressStack[:, :2], axis=1) # width 1
-    # skin buckling (4x, for each skin), column buckling (stringers), compressive yielding 
-    critStressArrayComp = stressStack[:, 2:8] # width 6
-    skinBucklArray = np.min(stressStack[:, 2:6], axis=1)
-    # tensile yielding, crack propagation
-    critStressArrayTens = stressStack[:, 8:] # width 2 
-
-    marginShearBuckl = critStressArrayShear/shearStressApplied[:,1]
-    marginSkinBuckl = -skinBucklArray/normalStressAppliedComp[:,1]
-    marginColBuckl = -stressStack[:, 6]/normalStressAppliedComp[:,1]
-    marginCompYield = -stressStack[:, 7]/normalStressAppliedComp[:,1]
-    marginTensYield = stressStack[:, 8]/normalStressAppliedTens[:,1]
-    marginCrackProp = stressStack[:, 9]/normalStressAppliedTens[:,1]
-    print('done')
-
-    y_data
-    #plt.plot(y_data,marginShearBuckl,'r-')
-    #plt.plot(y_data,marginSkinBuckl,"r-")
-    plt.axhline(1)
-    plt.plot(y_data,marginColBuckl,'r-')
-    #plt.plot(y_data,marginCompYield,'r-')
-    #plt.plot(y_data,marginTensYield,'r-')
-    #plt.plot(y_data,marginCrackProp,'r-')
-    #plt.ylim(0,10)
-    plt.show()
-
-
-    # plotFailureMargin()
-    # show_design()
+    # optimise_main() 
+    show_design()
