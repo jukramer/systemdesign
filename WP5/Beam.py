@@ -212,7 +212,7 @@ class Beam():
 
     def getShearStress(self, y, V, T):
         # Shear force contribution
-        kV = 2 # shear factor, tau_max = kV*tau_avg (see reader app. F)
+        kV = 1.7 # shear factor, tau_max = kV*tau_avg (see reader app. F)
         # print(self.points)
         hFrontSpar = abs(self.points[0][1] - self.points[3][1])*self.get_chord(y)
         hRearSpar = abs(self.points[1][1] - self.points[2][1])*self.get_chord(y)
@@ -380,7 +380,7 @@ class Beam():
         plt.plot(y, self.Ixx_list*1e4, label=f'I$_x$$_x$')
         plt.plot(y, self.J*1e4, label=f'J')
         plt.xlabel('y [$m$]')
-        plt.ylabel('Stiffness × $10^4$ [$m^4$]')
+        plt.ylabel('Stiffness × $10^{-4}$ [$m^4$]')
         plt.xlim(0, self.span/2)
         plt.ylim(0, )
         plt.grid(which='both')

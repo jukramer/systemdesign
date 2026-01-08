@@ -13,7 +13,7 @@ stressList = []
 stressList2 = []
 iters = 1
 
-order_of_mag = np.array([[1e-2, 1e-2, 1e-2, 1e-2, 1e-2, 1e-1, 1e-1]])
+order_of_mag = np.array([[1e0, 1e-1, 1e-1, 1e0, 1e0, 1e2, 1e2]])
 
 np.set_printoptions(suppress=True)
 
@@ -44,10 +44,21 @@ def x_from_print():
         [0.8206, 0.0042, 0.0011, 0.0105, 0.0105, 3., 3.]]
         )/order_of_mag
     
+    x = np.array(
+        [[0.000, 0.0042, 0.0011, 0.0105, 0.0105, 12., 12.],
+        [0.0500, 0.0042, 0.0011, 0.0105, 0.0105, 12., 12],
+        [0.1122, 0.0042, 0.0011, 0.0105, 0.0105, 10., 10.],
+        [0.1598, 0.0042, 0.0011, 0.0105, 0.0105, 10., 10.],
+        [0.2700, 0.0042, 0.0011, 0.0105, 0.0105, 8.0, 8.0],
+        [0.4250, 0.0042, 0.0011, 0.0105, 0.0105, 6.0, 6.0],
+        [0.5900, 0.0042, 0.0011, 0.0105, 0.0105, 4.0, 4.0],
+        [0.8206, 0.0042, 0.0011, 0.0105, 0.0105, 4.0, 4.0]]
+        )/order_of_mag
+    
     return x.T.flatten()
 
 def calc_mass(x):
-    global bay_count
+    global bay_count, stressStack, marginArrayShear, marginArrayComp, marginArrayTens, modes
     bay_count = x.size//7
     x = x.reshape(7, bay_count) * order_of_mag.T
     posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
@@ -112,8 +123,10 @@ def calc_mass(x):
         arr = x.reshape(7, bay_count).T
         print('\n', np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
         wb.report_stats()
-    
-    return wb.mass, np.array([minMarginShear, minMarginComp, minMarginTens, np.min([minMarginShear,minMarginComp,minMarginTens]), v[-1], theta[-1]*180/np.pi, min_dist])
+
+
+    # wb.plot()
+    return wb.mass, np.array([minMarginShear, minMarginComp, minMarginTens, np.average([minMarginShear,minMarginComp,minMarginTens]), v[-1], theta[-1]*180/np.pi, min_dist])
 
 def mass_wrap(x):
     global iters
@@ -127,7 +140,7 @@ def constr_wrap(x):
 
 def optimise_main():
     global y_data, M_data, T_data, V_data, T_data
-    global initial_x
+    global x_vals
     
     if not False:
         warnings.simplefilter('ignore', category=UserWarning)
@@ -154,15 +167,15 @@ def optimise_main():
     
     # OPTIMIZATION
     # posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
-    posRibs = (np.linspace(0, 1, 10)[:-1])**2
+    posRibs = (np.linspace(0, 1, 9)[:-1])**2
     ones = np.ones_like(posRibs)
     # initial_x = (np.array([posRibs, 4e-3*ones, 3e-3*ones, 5e-2*ones, 5e-2*ones, 20*ones, 20*ones])/order_of_mag.T).flatten()
-    initial_x = x_from_print()
+    # x_vals = x_from_print()
     # print(initial_x.reshape(7, 9).T * order_of_mag)
-    # initial_x = (np.array([posRibs, 4e-3*ones, 2.7e-3*ones, 3e-2*ones, 3e-2*ones, np.linspace(20, 5, 9), np.linspace(20, 5, 9)])/order_of_mag.T).flatten()
+    initial_x = (np.array([posRibs, 4.0e-3*ones, 2e-3*ones, 2.1e-2*ones, 2.1e-2*ones, np.linspace(7, 4, ones.size), np.linspace(7, 4, ones.size)])/order_of_mag.T).flatten()
 
     
-    constraints_sigma = sp.optimize.NonlinearConstraint(constr_wrap, lb=[1, 1, 1, 1, -0.15*HALF_SPAN*2, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 1.1, 0.15*HALF_SPAN*2, 10.0, np.inf], keep_feasible=False)
+    constraints_sigma = sp.optimize.NonlinearConstraint(constr_wrap, lb=[1, 1, 1, 1, -0.15*HALF_SPAN*2, -10.0, 0.01], ub=[np.inf, np.inf, np.inf, 1.5, 0.15*HALF_SPAN*2, 10.0, np.inf], keep_feasible=False)
     bounds_x = sp.optimize.Bounds((np.array([0*ones, 1e-3*ones,     1e-3*ones,     1e-2*ones,     1e-2*ones,     2*ones,   2*ones])/order_of_mag.T).flatten(), 
                                   (np.array([ones,   10e-3*ones, 10e-3*ones, 10e-2*ones, 10e-2*ones, 100*ones, 100*ones])/order_of_mag.T).flatten(),
                                   keep_feasible=False)
@@ -181,8 +194,73 @@ def optimise_main():
     arr = raw_result.reshape(7, bay_count).T * order_of_mag
     print(np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
     print(constr_wrap(raw_result))
-
     
+    # print(stressList[0].shape)
+    # print(stressList2[0].shape)
+    # # plt.plot(iterList, stressList)
+    # # plt.plot(iterList, stressList2)
+    # # plt.yscale('log')
+    # # plt.plot(np.linspace(0, 1, maxMarginArray.shape[0]), maxMarginArray)
+    # plt.show()
+
+def show_design():
+    global y_data, M_data, T_data, V_data, T_data
+    global x_vals
+    
+    if not False:
+        warnings.simplefilter('ignore', category=UserWarning)
+
+    # EXTERNAL LOADING
+    calc = Calc(r'WP4\WP4_1\dataa0.txt', r'WP4\WP4_1\dataa10.txt')
+    calc.set_load_case_from_flight(LOAD_FACTOR, W_MTOW)
+
+    aeroLoading, inertialLoading, torsionLoading = lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[0], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[1], lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[3]
+    loadingDist = lambda x: calc.findLoadingDist(x)
+    pointLoads, pointTorques = (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[2])(0), (lambda x: calc.totalLoading(x, LOAD_FACTOR, M_WING)[4])(0)
+    
+    # INTERNAL LOADING
+    y_data, M_data, T_data, V_data = calc.plot(aeroLoading,
+                                       inertialLoading, 
+                                       torsionLoading, 
+                                       loadingDist, 
+                                       pointLoads, 
+                                       NULL_ARRAY_2, 
+                                       pointTorques, 
+                                       (0, HALF_SPAN),
+                                       subplots=True,
+                                       plot=False)
+    
+    # OPTIMIZATION
+    # posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
+    x_vals = np.array(
+        [[0.0000, 0.0042, 0.0011, 0.011, 0.011, 12, 12],
+        [0.05000, 0.0042, 0.0011, 0.011, 0.011, 12, 12],
+        [0.12000, 0.0042, 0.0011, 0.011, 0.011, 10, 10],
+        [0.22672, 0.0042, 0.0011, 0.011, 0.011, 10, 10],
+        [0.27000, 0.0042, 0.0011, 0.011, 0.011, 8, 8],
+        [0.43000, 0.0042, 0.0011, 0.011, 0.011, 6, 6],
+        [0.59500, 0.0042, 0.0011, 0.011, 0.011, 4, 4],
+        [0.82000, 0.0042, 0.0011, 0.011, 0.011, 4, 4]]
+        )/order_of_mag
+    
+    x_vals = x_vals.T.flatten()
+    bay_count = x_vals.size//7
+    # initial_x = (np.array([posRibs, 4e-3*ones, 2.7e-3*ones, 3e-2*ones, 3e-2*ones, np.linspace(20, 5, 9), np.linspace(20, 5, 9)])/order_of_mag.T).flatten()
+
+    arr = x_vals.reshape(7, bay_count).T * order_of_mag
+    print(np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
+    print(calc_mass(x_vals))    
+
+    plt.plot(y_data/HALF_SPAN, marginArrayShear, label=modes[:2])
+    plt.plot(y_data/HALF_SPAN, marginArrayComp, label=modes[2:8])
+    plt.plot(y_data/HALF_SPAN, marginArrayTens, label=modes[8:])
+    plt.plot([0,20], [1,1])
+    plt.xlim(0, 1)
+    plt.ylim(0,5)
+    plt.legend()
+    # plt.yscale('log')
+    plt.show()
+
     # print(stressList[0].shape)
     # print(stressList2[0].shape)
     # # plt.plot(iterList, stressList)
@@ -223,3 +301,4 @@ if __name__ == '__main__':
 
 
     # plotFailureMargin()
+    # show_design()
