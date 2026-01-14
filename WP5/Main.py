@@ -57,8 +57,55 @@ def x_from_print():
     
     return x.T.flatten()
 
+def prelim_x(idx):
+# posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
+    x1 = np.array( 
+        [[00, 1.6e-3, 1.0, 10.0, 10.0, 0, 0],
+        [0.0, 1.6e-3, 1.0, 10.0, 10.0, 0, 0],
+        [0.0, 1.6e-3, 1.0, 10.0, 10.0, 0, 0],
+        [0.0, 1.6e-3, 1.0, 10.0, 10.0, 0, 0],
+        [0.0, 1.6e-3, 1.0, 10.0, 10.0, 0, 0],
+        [0.0, 1.6e-3, 1.0, 10.0, 10.0, 0, 0],
+        [0.0, 1.6e-3, 1.0, 10.0, 10.0, 0, 0],
+        [0.0, 1.6e-3, 1.0, 10.0, 10.0, 0, 0]]
+        )/order_of_mag
+    
+    if idx==1:
+        return x1
+    
+    x2 = np.array( 
+        [[00, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2],
+        [0.0, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2],
+        [0.0, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2],
+        [0.0, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2],
+        [0.0, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2],
+        [0.0, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2],
+        [0.0, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2],
+        [0.0, 1.e-3, 2.65e-3, 0.06, 0.06, 2, 2]]
+        )/order_of_mag
+
+    if idx==2:
+        return x2
+    
+    x3 = np.array( 
+        [[00, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13],
+        [0.0, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13],
+        [0.0, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13],
+        [0.0, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13],
+        [0.0, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13],
+        [0.0, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13],
+        [0.0, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13],
+        [0.0, 1.e-3, 2.e-3, 0.012, 0.015, 13, 13]]
+        )/order_of_mag
+
+    if idx==3:
+        return x3
+    
+    else:
+        raise RuntimeError
+
 def calc_mass(x):
-    global bay_count, stressStack, marginArrayShear, marginArrayComp, marginArrayTens, modes
+    global bay_count, stressStack, marginArrayShear, marginArrayComp, marginArrayTens, modes, new_modes
     bay_count = x.size//7
     x = x.reshape(7, bay_count) * order_of_mag.T
     posRibs, tSkinBay, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom = x
@@ -74,6 +121,7 @@ def calc_mass(x):
     wing_box_points = [(0.2, 0.071507), (0.65, 0.071822), (0.65, -0.021653), (0.2, -0.034334)] # [(x/c,z/c), ...] 
 
     stringer_instance = L_Stringer(bStringersBay, hStringersBay, tStringersBay)
+    # print(f'Stringer area: {stringer_instance.area[0]}')
     wb = Beam(stringers=stringer_instance, intg_points=865)
     wb.define_spanwise_arrays(y_data, posRibs, tStringersBay, bStringersBay, hStringersBay, nStringersBayTop, nStringersBayBottom)
     wb.load_wing_box(points=wing_box_points, thickness=tSkinBay, root_chord=2.85, tip_chord=1.03, span=17.29)
@@ -96,6 +144,7 @@ def calc_mass(x):
     critStressArrayTens = stressStack[:, 8:] # width 2 
 
     modes = ['shearBuckStress', 'shearBuckStress', *['skinBuckStress' for _ in range(4)], 'colBuckStress', 'compYield', 'tensYield', 'crackPropStress']
+    new_modes = ['Web shear buckling', 'Skin buckling', 'Stringer buckling', 'Compressive yield failure', 'Tensile yield failure', 'Crack propagation failure']
     
     # Stress Margins
     marginArrayShear = critStressArrayShear/(shearStressApplied+1e-8)
@@ -254,20 +303,36 @@ def show_design():
         [0.79260, 0.004, 0.0011, 0.024, 0.031, 14., 10.]]
         )/order_of_mag
     
+    # x_vals = prelim_x(3)
+
     x_vals = x_vals.T.flatten()
     bay_count = x_vals.size//7
     # initial_x = (np.array([posRibs, 4e-3*ones, 2.7e-3*ones, 3e-2*ones, 3e-2*ones, np.linspace(20, 5, 9), np.linspace(20, 5, 9)])/order_of_mag.T).flatten()
 
     arr = x_vals.reshape(7, bay_count).T * order_of_mag
-    print(np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
-    print(calc_mass(x_vals))    
+    # print(np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
+    print(calc_mass(x_vals)[0])    
+    plt.figure(figsize=(8,8))
+    plt.plot(y_data/HALF_SPAN, marginArrayShear, color='red')
+    plt.plot([19,20], [1,1], label=new_modes[0], color='red')
+    plt.plot(y_data/HALF_SPAN, marginArrayComp[:, :4], color="#0000FF")
+    plt.plot([19,20], [1,1], label=new_modes[1], color="#0000FF")
 
-    plt.plot(y_data/HALF_SPAN, marginArrayShear, label=modes[:2])
-    plt.plot(y_data/HALF_SPAN, marginArrayComp, label=modes[2:8])
-    plt.plot(y_data/HALF_SPAN, marginArrayTens, label=modes[8:])
-    plt.plot([0,20], [1,1])
+    if arr[0,-1] !=0:
+        plt.plot(y_data/HALF_SPAN, marginArrayComp[:, 4], label=new_modes[2], color="#778EFF")
+    plt.plot(y_data/HALF_SPAN, marginArrayComp[:, 5], label=new_modes[3], color="#77C9FF")
+    plt.plot(y_data/HALF_SPAN, marginArrayTens[:, 0], color="#009E00")
+    plt.plot([19,20], [1,1], label=new_modes[4], color="#009E00")
+    plt.plot(y_data/HALF_SPAN, marginArrayTens[:, 1], color="#BCE052")
+    plt.plot([19,20], [1,1], label=new_modes[5], color="#BCE052")
+
+    plt.plot([0,20], [1,1], linestyle=':', color='k')
+    plt.grid()
+    plt.xlabel(r'$\frac{2y}{b}$ (fraction of half-span)')
+    plt.ylabel(r'Allowed/applied stress (failure margin)')
     plt.xlim(0, 1)
-    plt.ylim(0,20)
+    plt.ylim(0,5)
+    plt.tight_layout()
     plt.legend()
     # plt.yscale('log')
     plt.show()
