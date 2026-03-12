@@ -251,12 +251,17 @@ def show_design():
     print(np.array2string(arr, formatter={'float_kind':lambda v: f"{v:.4g}"}, separator=', '))
     print(calc_mass(x_vals))    
 
-    plt.plot(y_data/HALF_SPAN, marginArrayShear, label=modes[:2])
-    plt.plot(y_data/HALF_SPAN, marginArrayComp, label=modes[2:8])
-    plt.plot(y_data/HALF_SPAN, marginArrayTens, label=modes[8:])
-    plt.plot([0,20], [1,1])
+    plt.grid(True)
+    plt.xlabel('Spanwise Location [-]')
+    plt.ylabel('Margin of Safety [-]')
+
+    #plt.plot(y_data/HALF_SPAN, marginArrayShear[:,0:1], label=modes[0:1])
+    #plt.plot(y_data/HALF_SPAN, marginArrayComp[:, 5:6], label=modes[7:8],ls='-.')
+    plt.plot(y_data/HALF_SPAN, marginArrayTens[:,1:2], label=modes[9:10],ls='-.')
+    plt.plot([0,20], [1,1],label='MOS=1')
+    plt.scatter(0.0,1.93,label='Critical point', color='red')
     plt.xlim(0, 1)
-    plt.ylim(0,5)
+    plt.ylim(0,10)
     plt.legend()
     # plt.yscale('log')
     plt.show()
@@ -270,7 +275,10 @@ def show_design():
     # plt.show()
 
 if __name__ == '__main__':
-    optimise_main() 
+    # optimise_main() 
+    show_design()
+
+    input('puase')
 
     # shear buckling
     critStressArrayShear = np.min(stressStack[:, :2], axis=1) # width 1
