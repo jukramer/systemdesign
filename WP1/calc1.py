@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import colorsys as cs
 from parameters1 import *
-# hello
+
+plt.rcParams['font.size'] = 14.5
 
 class Calc:
     def __init__(self):
@@ -124,7 +124,7 @@ class Calc:
         
         # Design Points (including reference aircraft)
         designPointHandles = []
-        designPoint = plt.scatter(2084, 0.43, color='#ff0000', edgecolors='black', label='Design Point', zorder=3)
+        designPoint = plt.scatter(2084, 0.453, color='#ff0000', edgecolors='black', label='Design Point', zorder=3)
         designPointHandles.append(designPoint)
         
         for i, ac in enumerate(TWWS_AC_REF):
